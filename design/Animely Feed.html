@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animely — Feed</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red: #e63946;
+  --bg: #0a0a0a;
+  --fg: #f0eeec;
+  --muted: #666;
+  --border: rgba(255,255,255,0.07);
+  --sidebar-w: 220px;
+}
+html, body { height: 100%; overflow: hidden; background: #000; }
+body { font-family: 'Space Grotesk', sans-serif; color: var(--fg); display: flex; }
+
+/* ── SIDEBAR ── */
+aside {
+  width: var(--sidebar-w); height: 100vh;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0;
+  background: var(--bg);
+}
+.sb-logo { padding: 20px 20px 16px; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; border-bottom: 1px solid var(--border); }
+.sb-logo span { color: var(--red); }
+.sb-search { margin: 12px 14px; display: flex; align-items: center; gap: 8px; background: #161616; border: 1px solid var(--border); padding: 8px 12px; }
+.sb-search input { background: none; border: none; color: var(--fg); font-family: inherit; font-size: 12px; outline: none; width: 100%; }
+.sb-search input::placeholder { color: var(--muted); }
+.sb-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #3a3a3a; padding: 14px 20px 6px; }
+nav { flex: 1; overflow-y: auto; }
+nav::-webkit-scrollbar { display: none; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 9px 20px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted); transition: color 0.15s, background 0.15s; border-left: 2px solid transparent; }
+.nav-item:hover { color: var(--fg); background: rgba(255,255,255,0.03); }
+.nav-item.active { color: var(--fg); border-left-color: var(--red); background: rgba(230,57,70,0.06); }
+.nav-item .nav-count { margin-left: auto; font-size: 11px; font-weight: 600; color: #3a3a3a; font-family: monospace; }
+.nav-item .badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); margin-left: auto; animation: blink 2s ease infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.sb-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.sb-user { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.sb-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #e63946, #6930c3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.sb-user-info { flex: 1; }
+.sb-user-name { font-size: 13px; font-weight: 700; }
+.sb-user-role { font-size: 11px; color: var(--muted); }
+
+/* ── FEED STAGE ── */
+.feed-stage {
+  flex: 1; position: relative; overflow: hidden;
+  background: #000;
+  display: flex; flex-direction: column;
+}
+
+/* top filter bar */
+.feed-topbar {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, transparent 100%);
+  pointer-events: none;
+}
+.feed-filters {
+  display: flex; gap: 0; pointer-events: all;
+  padding-top: 16px;
+}
+.feed-filter {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); padding: 6px 14px;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.feed-filter.active { color: var(--fg); border-bottom-color: var(--red); }
+.feed-filter:hover { color: rgba(255,255,255,0.7); }
+.feed-topbar-right { pointer-events: all; padding-top: 16px; }
+.compose-pill {
+  background: none; border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.5); font-family: inherit; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 14px;
+  cursor: pointer; transition: all 0.15s;
+}
+.compose-pill:hover { color: var(--fg); border-color: rgba(255,255,255,0.4); }
+
+/* scroll container */
+.feed-scroll {
+  flex: 1;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.feed-scroll::-webkit-scrollbar { display: none; }
+
+/* ── CARDS ── */
+.card {
+  height: 100vh;
+  position: relative;
+  scroll-snap-align: start;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+/* full bg */
+.card-bg {
+  position: absolute; inset: 0;
+  transition: transform 0.6s cubic-bezier(0.25,0,0,1);
+}
+.card:hover .card-bg { transform: scale(1.025); }
+
+/* scrim */
+.card-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.25) 0%,
+    transparent 25%,
+    transparent 45%,
+    rgba(0,0,0,0.55) 70%,
+    rgba(0,0,0,0.92) 100%
+  );
+}
+
+/* right action bar */
+.card-actions {
+  position: absolute; right: 18px; bottom: 140px;
+  display: flex; flex-direction: column; align-items: center; gap: 22px;
+  z-index: 10;
+}
+.action-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; border: none; cursor: pointer; padding: 0;
+  color: rgba(255,255,255,0.85);
+  transition: color 0.15s, transform 0.15s;
+}
+.action-btn:hover { transform: scale(1.12); }
+.action-btn.liked { color: var(--red); }
+.action-btn svg { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)); }
+.action-count {
+  font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  letter-spacing: 0.02em;
+}
+
+/* series avatar on action bar */
+.series-avatar {
+  width: 44px; height: 44px;
+  border: 2px solid rgba(255,255,255,0.3);
+  overflow: hidden; position: relative;
+  margin-bottom: 4px;
+}
+.series-avatar-inner {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 800;
+}
+.series-avatar-plus {
+  position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+  width: 16px; height: 16px; background: var(--red);
+  border-radius: 50%; border: 2px solid #000;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* bottom info */
+.card-info {
+  position: absolute; bottom: 0; left: 0; right: 80px;
+  padding: 0 20px 28px;
+  z-index: 10;
+}
+.card-series-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.card-series-tag {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--red); background: rgba(230,57,70,0.12);
+  border: 1px solid rgba(230,57,70,0.35); padding: 3px 10px;
+}
+.card-ep-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.12);
+  padding: 3px 10px;
+}
+.card-caption {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px; letter-spacing: 0.04em; line-height: 1.05;
+  color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+  margin-bottom: 10px;
+  text-wrap: pretty;
+}
+.card-caption.reaction {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px; font-weight: 700; letter-spacing: -0.2px; line-height: 1.3;
+}
+.card-meta {
+  display: flex; align-items: center; gap: 8px;
+}
+.card-avatar-mini {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 800;
+  border: 1.5px solid rgba(255,255,255,0.25);
+}
+.card-username { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); }
+.card-dot { color: rgba(255,255,255,0.2); font-size: 10px; }
+.card-time { font-size: 11px; color: rgba(255,255,255,0.35); font-family: monospace; }
+
+/* progress bar */
+.card-progress {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: rgba(255,255,255,0.08); z-index: 10;
+}
+.card-progress-bar { height: 100%; background: var(--red); width: 0%; transition: width 0.1s linear; }
+
+/* spoiler veil */
+.spoiler-veil {
+  position: absolute; inset: 0; z-index: 15;
+  background: rgba(0,0,0,0.88); backdrop-filter: blur(20px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  transition: opacity 0.3s;
+}
+.spoiler-label { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #444; }
+.spoiler-reveal {
+  border: 1px solid #333; color: rgba(255,255,255,0.45);
+  background: none; font-family: inherit; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 24px; cursor: pointer;
+  transition: all 0.15s;
+}
+.spoiler-reveal:hover { border-color: #666; color: var(--fg); }
+
+/* scroll indicator */
+.scroll-hint {
+  position: absolute; bottom: 20px; right: 50%; transform: translateX(50%);
+  z-index: 20; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  opacity: 0; animation: hintFade 4s ease 1s forwards;
+  pointer-events: none;
+}
+@keyframes hintFade {
+  0% { opacity:0; transform: translateX(50%) translateY(0); }
+  20% { opacity:0.7; }
+  80% { opacity:0.7; transform: translateX(50%) translateY(-6px); }
+  100% { opacity:0; }
+}
+.scroll-hint-arrow { color: rgba(255,255,255,0.4); }
+.scroll-hint-text { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.25); }
+
+/* Slide counter */
+.slide-counter {
+  position: absolute; top: 18px; right: 20px; z-index: 25;
+  font-size: 11px; font-family: monospace; color: rgba(255,255,255,0.3);
+  font-weight: 600; letter-spacing: 0.06em;
+  pointer-events: none;
+  padding-top: 14px;
+}
+
+/* ── CARD CONTENT TYPES ── */
+
+/* Cinematic scene */
+.bg-scene { width: 100%; height: 100%; object-fit: cover; }
+.bg-ph {
+  width: 100%; height: 100%;
+  position: relative;
+}
+
+/* Manga panel layout card */
+.manga-grid {
+  position: absolute; inset: 0;
+  display: grid;
+}
+.manga-grid.layout-2x2 {
+  grid-template-columns: 55% 45%;
+  grid-template-rows: 50% 50%;
+  gap: 3px;
+  background: #000;
+}
+.manga-grid.layout-big-small {
+  grid-template-columns: 60% 40%;
+  grid-template-rows: 1fr;
+  gap: 3px;
+  background: #000;
+}
+.manga-grid.layout-strip {
+  grid-template-columns: 1fr;
+  grid-template-rows: 45% 55%;
+  gap: 3px;
+  background: #000;
+}
+.manga-panel {
+  overflow: hidden; position: relative;
+  background: #111;
+}
+.manga-panel-ph {
+  width: 100%; height: 100%;
+}
+.manga-panel-label {
+  position: absolute; bottom: 8px; left: 10px;
+  font-size: 8px; font-family: monospace;
+  color: rgba(255,255,255,0.15); letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+/* Speed lines on manga panel */
+.manga-panel::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-conic-gradient(
+    from 0deg at 110% 50%,
+    rgba(255,255,255,0.015) 0deg,
+    transparent 3deg,
+    transparent 6deg
+  );
+  pointer-events: none;
+  opacity: 0.6;
+}
+.manga-panel:nth-child(2)::after {
+  background: repeating-conic-gradient(
+    from 0deg at -10% 50%,
+    rgba(255,255,255,0.015) 0deg,
+    transparent 4deg,
+    transparent 8deg
+  );
+}
+
+/* Text / reaction card */
+.text-card-bg {
+  position: absolute; inset: 0;
+}
+.text-card-content {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 60px 32px 160px;
+  z-index: 5;
+}
+.text-card-quote-mark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 100px; color: rgba(255,255,255,0.06);
+  line-height: 0.8; margin-bottom: 16px; letter-spacing: -4px;
+}
+.text-card-body {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px; line-height: 1.05; letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.95);
+  text-shadow: none;
+  text-wrap: pretty;
+}
+.text-card-sub {
+  margin-top: 14px;
+  font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.35);
+  line-height: 1.55;
+}
+.text-card-score {
+  margin-top: 20px; display: flex; align-items: center; gap: 8px;
+}
+.score-stars { color: #f4a261; font-size: 14px; letter-spacing: 2px; }
+.score-num { font-family: monospace; font-size: 18px; font-weight: 800; color: #f4a261; }
+
+/* Episode drop card */
+.ep-card-content {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 20px 140px;
+  z-index: 5;
+}
+.ep-label {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ep-label-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); animation: blink 1.4s ease infinite; }
+.ep-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 46px; letter-spacing: 0.03em; line-height: 1;
+  color: #fff; margin-bottom: 6px;
+}
+.ep-subtitle {
+  font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 20px;
+  font-weight: 500;
+}
+.ep-watch-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--red); color: #fff;
+  font-family: inherit; font-size: 12px; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 10px 22px; border: none; cursor: pointer; width: fit-content;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.ep-watch-btn:hover { opacity: 0.85; transform: scale(1.02); }
+
+/* bg palettes */
+.ph-aot { background: linear-gradient(160deg, #1a0800, #3d1500 50%, #0a0400); }
+.ph-jjk { background: linear-gradient(160deg, #100010, #2a002a 50%, #060006); }
+.ph-frieren { background: linear-gradient(160deg, #0a0a1f, #1a1a3d 50%, #060610); }
+.ph-dandadan { background: linear-gradient(160deg, #001510, #002a20 50%, #000d08); }
+.ph-slone { background: linear-gradient(160deg, #00111f, #002a40 50%, #000810); }
+.ph-blue { background: linear-gradient(160deg, #00101f, #002040 50%, #000810); }
+.ph-oshi { background: linear-gradient(160deg, #150010, #30002a 50%, #0a0008); }
+.ph-ping { background: linear-gradient(160deg, #0d0d00, #1f1f00 50%, #080800); }
+.ph-chainsaw { background: linear-gradient(160deg, #1a0000, #3a0505 50%, #0d0000); }
+.ph-text1 { background: linear-gradient(135deg, #0a0a12 0%, #12121e 60%, #0a0a12); }
+.ph-text2 { background: linear-gradient(135deg, #100808 0%, #1e1212 60%, #100808); }
+
+/* stripe texture on phs */
+.ph-aot, .ph-jjk, .ph-frieren, .ph-dandadan, .ph-slone, .ph-blue, .ph-oshi, .ph-ping, .ph-chainsaw, .ph-text1, .ph-text2 {
+  position: relative;
+}
+.ph-aot::before, .ph-jjk::before, .ph-frieren::before, .ph-dandadan::before,
+.ph-slone::before, .ph-blue::before, .ph-oshi::before, .ph-ping::before, .ph-chainsaw::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    -52deg,
+    transparent, transparent 20px,
+    rgba(255,255,255,0.013) 20px, rgba(255,255,255,0.013) 21px
+  );
+}
+
+/* Comments drawer */
+.comments-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.comments-overlay.open { opacity: 1; pointer-events: all; }
+.comments-drawer { position: fixed; bottom: 0; left: var(--sidebar-w); right: 0; z-index: 101; height: 72vh; background: #0e0e0e; border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); border-radius: 0; }
+.comments-drawer.open { transform: translateY(0); }
+.drawer-handle { width: 36px; height: 3px; background: #333; border-radius: 2px; margin: 12px auto 0; flex-shrink: 0; cursor: pointer; }
+.comments-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px 10px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.comments-title { font-size: 14px; font-weight: 700; }
+.comments-count { font-size: 12px; color: var(--muted); margin-left: 6px; }
+.comments-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0; transition: color 0.15s; line-height: 1; }
+.comments-close:hover { color: var(--fg); }
+.comments-list { flex: 1; overflow-y: auto; padding: 0; }
+.comments-list::-webkit-scrollbar { width: 3px; }
+.comments-list::-webkit-scrollbar-thumb { background: #333; }
+.comment-item { display: flex; gap: 10px; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.c-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+.c-body { flex: 1; }
+.c-header { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+.c-name { font-size: 13px; font-weight: 700; }
+.c-time { font-size: 11px; color: var(--muted); }
+.c-text { font-size: 13px; color: #bbb; line-height: 1.5; }
+.c-actions { display: flex; gap: 12px; margin-top: 6px; }
+.c-action { display: flex; align-items: center; gap: 4px; background: none; border: none; color: var(--muted); font-family: inherit; font-size: 11px; cursor: pointer; padding: 0; transition: color 0.15s; }
+.c-action:hover { color: var(--fg); }
+.c-action.liked { color: var(--red); }
+.c-reply-tag { font-size: 11px; color: var(--red); margin-bottom: 2px; }
+.comments-composer { flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.06); padding: 10px 16px; display: flex; gap: 10px; align-items: flex-end; background: #0e0e0e; }
+.cc-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #e63946, #6930c3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.cc-input-wrap { flex: 1; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; }
+.cc-input { flex: 1; background: none; border: none; color: var(--fg); font-family: inherit; font-size: 13px; outline: none; resize: none; max-height: 80px; }
+.cc-input::placeholder { color: #444; }
+.cc-send { background: var(--red); border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: opacity 0.15s; }
+.cc-send:hover { opacity: 0.85; }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.25s; white-space: nowrap; z-index: 999; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="sb-logo"><span>a</span>nimely</div>
+  <div class="sb-search">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4.5" stroke="#555" stroke-width="1.2"/><path d="M9 9l3 3" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="Buscar...">
+  </div>
+  <nav>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 6.5L7.5 1 14 6.5V14H9.5V10h-4v4H1V6.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      Início
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Explorar
+    </div>
+    <div class="nav-item active" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="8" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="8" width="6" height="6" stroke="currentColor" stroke-width="1.3"/></svg>
+      Feed <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 2h13v10H9.5l-2 2-2-2H1V2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      Discussões
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1a5 5 0 0 1 5 5c0 2-1 4-2 5.5H4.5C3.5 10 2.5 8 2.5 6a5 5 0 0 1 5-5zM5.5 11.5h4M7.5 14v-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Notificações <div class="badge">3</div>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Minhas Listas</div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Assistindo <span class="nav-count">23</span>
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Concluídos <span class="nav-count">128</span>
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Favoritos <span class="nav-count">19</span>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Extras</div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="2" width="13" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 6h13M5 1v3M10 1v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Calendário
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1l1.8 4 4.2.6-3 3 .7 4.4-3.7-2-3.7 2 .7-4.4-3-3 4.2-.6L7.5 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      Top Rankings
+    </div>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">K</div>
+    <div class="sb-user-info">
+      <div class="sb-user-name">kurumi_fan</div>
+      <div class="sb-user-role">Pro · 847 eps</div>
+    </div>
+  </div>
+</aside>
+
+<!-- FEED STAGE -->
+<div class="feed-stage">
+
+  <!-- topbar -->
+  <div class="feed-topbar">
+    <div class="feed-filters">
+      <div class="feed-filter active" onclick="setFilter(this)">Para você</div>
+      <div class="feed-filter" onclick="setFilter(this)">Seguindo</div>
+      <div class="feed-filter" onclick="setFilter(this)">Trending</div>
+      <div class="feed-filter" onclick="setFilter(this)">Mangá</div>
+    </div>
+    <div class="feed-topbar-right">
+      <button class="compose-pill" onclick="toast('Criar post')">+ Postar</button>
+    </div>
+  </div>
+
+  <!-- slide counter -->
+  <div class="slide-counter" id="slide-counter">1 / 7</div>
+
+  <!-- scroll hint -->
+  <div class="scroll-hint">
+    <svg class="scroll-hint-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="scroll-hint-text">Scroll</span>
+  </div>
+
+  <!-- FEED SCROLL -->
+  <div class="feed-scroll" id="feed-scroll">
+
+    <!-- ━━━━ CARD 1: Cinematic scene ━━━━ -->
+    <div class="card" data-index="1">
+      <div class="card-bg">
+        <div class="bg-ph ph-aot" style="height:100%"></div>
+      </div>
+      <div class="card-scrim"></div>
+
+      <!-- info bottom -->
+      <div class="card-info">
+        <div class="card-series-row">
+          <div class="card-series-tag">Attack on Titan</div>
+          <div class="card-ep-tag">Ep. 87 · Final</div>
+        </div>
+        <div class="card-caption">Isayama entregou uma obra-prima do começo ao fim.</div>
+        <div class="card-meta">
+          <div class="card-avatar-mini" style="background:linear-gradient(135deg,#e63946,#6930c3)">O</div>
+          <span class="card-username">@otakumaster</span>
+          <span class="card-dot">·</span>
+          <span class="card-time">2h atrás</span>
+        </div>
+      </div>
+
+      <!-- actions -->
+      <div class="card-actions">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px">
+          <div class="series-avatar">
+            <div class="series-avatar-inner ph-aot">AoT</div>
+          </div>
+          <div class="series-avatar-plus">
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1v6M1 4h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <button class="action-btn liked" onclick="toggleLike(this)">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="currentColor"><path d="M14 25S3 18 3 10.5a7 7 0 0 1 11-5.74A7 7 0 0 1 25 10.5C25 18 14 25 14 25z"/></svg>
+          <span class="action-count">124</span>
+        </button>
+        <button class="action-btn" onclick="openComments()">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M3 3h22v18H16l-3 3.5L10 21H3V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">23</span>
+        </button>
+        <button class="action-btn" onclick="toast('Compartilhado')">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 18V10a4 4 0 0 1 4-4h9M19 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 18v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="action-count">12</span>
+        </button>
+        <button class="action-btn" onclick="toggleSave(this)">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 3h18v21l-9-5-9 5V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">Salvar</span>
+        </button>
+      </div>
+
+      <div class="card-progress"><div class="card-progress-bar" id="pb1"></div></div>
+    </div>
+
+    <!-- ━━━━ CARD 2: Manga panels ━━━━ -->
+    <div class="card" data-index="2">
+      <div class="card-bg" style="transform:none">
+        <div class="manga-grid layout-2x2">
+          <div class="manga-panel">
+            <div class="manga-panel-ph ph-jjk" style="height:100%"></div>
+            <div class="manga-panel-label">JJK Cap. 262</div>
+          </div>
+          <div class="manga-panel" style="grid-row:span 2">
+            <div class="manga-panel-ph ph-jjk" style="height:100%;filter:brightness(0.7)"></div>
+            <div class="manga-panel-label">gojo...</div>
+          </div>
+          <div class="manga-panel">
+            <div class="manga-panel-ph ph-jjk" style="height:100%;filter:brightness(0.5)"></div>
+            <div class="manga-panel-label">...</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-scrim"></div>
+      <div class="card-info">
+        <div class="card-series-row">
+          <div class="card-series-tag">Jujutsu Kaisen</div>
+          <div class="card-ep-tag">Cap. 262 · Mangá</div>
+        </div>
+        <div class="card-caption">Esse capítulo me deixou sem chão por 3 dias.</div>
+        <div class="card-meta">
+          <div class="card-avatar-mini" style="background:linear-gradient(135deg,#6930c3,#e63946)">M</div>
+          <span class="card-username">@miyamoto_rei</span>
+          <span class="card-dot">·</span>
+          <span class="card-time">5h atrás</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px">
+          <div class="series-avatar">
+            <div class="series-avatar-inner ph-jjk" style="font-size:11px;font-weight:800">JJK</div>
+          </div>
+          <div class="series-avatar-plus">
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1v6M1 4h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <button class="action-btn" onclick="toggleLike(this)">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 25S3 18 3 10.5a7 7 0 0 1 11-5.74A7 7 0 0 1 25 10.5C25 18 14 25 14 25z" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span class="action-count">341</span>
+        </button>
+        <button class="action-btn" onclick="openComments()">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M3 3h22v18H16l-3 3.5L10 21H3V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">58</span>
+        </button>
+        <button class="action-btn" onclick="toast('Compartilhado')">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 18V10a4 4 0 0 1 4-4h9M19 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 18v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="action-count">44</span>
+        </button>
+        <button class="action-btn" onclick="toggleSave(this)">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 3h18v21l-9-5-9 5V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">Salvar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ━━━━ CARD 3: Text / take ━━━━ -->
+    <div class="card" data-index="3">
+      <div class="card-bg" style="transform:none">
+        <div class="bg-ph ph-text1" style="height:100%"></div>
+        <!-- decorative vertical line -->
+        <div style="position:absolute;top:0;left:40%;bottom:0;width:1px;background:rgba(255,255,255,0.04)"></div>
+        <div style="position:absolute;top:30%;left:0;right:0;height:1px;background:rgba(255,255,255,0.04)"></div>
+      </div>
+      <div class="card-scrim" style="background:linear-gradient(to bottom,rgba(0,0,0,0.4) 0%,rgba(0,0,0,0.1) 30%,rgba(0,0,0,0.8) 80%,rgba(0,0,0,0.95) 100%)"></div>
+      <div class="text-card-content">
+        <div class="text-card-quote-mark">"</div>
+        <div class="text-card-body">Frieren não é um anime sobre magia. É sobre o tempo que não volta.</div>
+        <div class="text-card-sub">Frieren: Beyond Journey's End · Ep. 1</div>
+        <div class="text-card-score">
+          <span class="score-stars">★★★★★</span>
+          <span class="score-num">9.8</span>
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-meta">
+          <div class="card-avatar-mini" style="background:linear-gradient(135deg,#2d6a4f,#52b788)">Y</div>
+          <span class="card-username">@yuuna</span>
+          <span class="card-dot">·</span>
+          <span class="card-time">4h atrás</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px">
+          <div class="series-avatar">
+            <div class="series-avatar-inner ph-frieren" style="font-size:10px;font-weight:800">FRN</div>
+          </div>
+          <div class="series-avatar-plus">
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1v6M1 4h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <button class="action-btn liked" onclick="toggleLike(this)">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="currentColor"><path d="M14 25S3 18 3 10.5a7 7 0 0 1 11-5.74A7 7 0 0 1 25 10.5C25 18 14 25 14 25z"/></svg>
+          <span class="action-count">892</span>
+        </button>
+        <button class="action-btn" onclick="openComments()">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M3 3h22v18H16l-3 3.5L10 21H3V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">134</span>
+        </button>
+        <button class="action-btn" onclick="toast('Compartilhado')">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 18V10a4 4 0 0 1 4-4h9M19 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 18v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="action-count">201</span>
+        </button>
+        <button class="action-btn" onclick="toggleSave(this)">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 3h18v21l-9-5-9 5V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">Salvar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ━━━━ CARD 4: Episode drop ━━━━ -->
+    <div class="card" data-index="4">
+      <div class="card-bg">
+        <div class="bg-ph ph-slone" style="height:100%"></div>
+      </div>
+      <div class="card-scrim"></div>
+      <div class="ep-card-content">
+        <div class="ep-label"><div class="ep-label-dot"></div>Novo episódio</div>
+        <div class="ep-title">Solo Leveling S2</div>
+        <div class="ep-subtitle">Episódio 6 · "The Monarchs' War Begins" · 23min</div>
+        <button class="ep-watch-btn" onclick="toast('Abrindo episódio...')">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 2l9 5-9 5V2z" fill="white"/></svg>
+          Assistir agora
+        </button>
+      </div>
+      <div class="card-actions">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px">
+          <div class="series-avatar">
+            <div class="series-avatar-inner ph-slone" style="font-size:10px;font-weight:800">SL</div>
+          </div>
+          <div class="series-avatar-plus">
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1v6M1 4h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <button class="action-btn" onclick="toggleLike(this)">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 25S3 18 3 10.5a7 7 0 0 1 11-5.74A7 7 0 0 1 25 10.5C25 18 14 25 14 25z" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span class="action-count">2.4k</span>
+        </button>
+        <button class="action-btn" onclick="openComments()">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M3 3h22v18H16l-3 3.5L10 21H3V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">387</span>
+        </button>
+        <button class="action-btn" onclick="toast('Compartilhado')">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 18V10a4 4 0 0 1 4-4h9M19 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 18v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="action-count">512</span>
+        </button>
+        <button class="action-btn" onclick="toggleSave(this)">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 3h18v21l-9-5-9 5V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">Salvar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ━━━━ CARD 5: Spoiler card ━━━━ -->
+    <div class="card" data-index="5">
+      <div class="card-bg">
+        <div class="bg-ph ph-blue" style="height:100%"></div>
+      </div>
+      <div class="card-scrim"></div>
+      <div class="spoiler-veil" id="spoiler-veil">
+        <div class="spoiler-label">⚠ Contém spoiler — Blue Lock S2</div>
+        <button class="spoiler-reveal" onclick="revealSpoiler()">Mostrar conteúdo</button>
+      </div>
+      <div class="card-info">
+        <div class="card-series-row">
+          <div class="card-series-tag">Blue Lock S2</div>
+          <div class="card-ep-tag">Ep. 9 · Spoiler</div>
+        </div>
+        <div class="card-caption">Esse gol do Isagi é historicamente o mais importante da série.</div>
+        <div class="card-meta">
+          <div class="card-avatar-mini" style="background:linear-gradient(135deg,#001533,#0047ab)">N</div>
+          <span class="card-username">@natsumi_w</span>
+          <span class="card-dot">·</span>
+          <span class="card-time">6h atrás</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px">
+          <div class="series-avatar">
+            <div class="series-avatar-inner ph-blue" style="font-size:10px;font-weight:800">BL2</div>
+          </div>
+          <div class="series-avatar-plus">
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1v6M1 4h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <button class="action-btn liked" onclick="toggleLike(this)">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="currentColor"><path d="M14 25S3 18 3 10.5a7 7 0 0 1 11-5.74A7 7 0 0 1 25 10.5C25 18 14 25 14 25z"/></svg>
+          <span class="action-count">847</span>
+        </button>
+        <button class="action-btn" onclick="openComments()">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M3 3h22v18H16l-3 3.5L10 21H3V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">134</span>
+        </button>
+        <button class="action-btn" onclick="toast('Compartilhado')">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 18V10a4 4 0 0 1 4-4h9M19 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 18v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="action-count">92</span>
+        </button>
+        <button class="action-btn" onclick="toggleSave(this)">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 3h18v21l-9-5-9 5V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">Salvar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ━━━━ CARD 6: Manga strip ━━━━ -->
+    <div class="card" data-index="6">
+      <div class="card-bg" style="transform:none">
+        <div class="manga-grid layout-strip">
+          <div class="manga-panel">
+            <div class="manga-panel-ph ph-chainsaw" style="height:100%"></div>
+            <div class="manga-panel-label">Chainsaw Man · Cap. 155</div>
+          </div>
+          <div class="manga-panel">
+            <div class="manga-panel-ph ph-chainsaw" style="height:100%;filter:brightness(0.6)"></div>
+            <div class="manga-panel-label">Denji...</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-scrim"></div>
+      <div class="card-info">
+        <div class="card-series-row">
+          <div class="card-series-tag">Chainsaw Man</div>
+          <div class="card-ep-tag">Cap. 155 · Mangá</div>
+        </div>
+        <div class="card-caption">Fujimoto não tem freio. Nem alma. Obra-prima absoluta.</div>
+        <div class="card-meta">
+          <div class="card-avatar-mini" style="background:linear-gradient(135deg,#3a0000,#e63946)">L</div>
+          <span class="card-username">@luka_anime</span>
+          <span class="card-dot">·</span>
+          <span class="card-time">1d atrás</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px">
+          <div class="series-avatar">
+            <div class="series-avatar-inner ph-chainsaw" style="font-size:10px;font-weight:800">CSM</div>
+          </div>
+          <div class="series-avatar-plus">
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1v6M1 4h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <button class="action-btn" onclick="toggleLike(this)">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M14 25S3 18 3 10.5a7 7 0 0 1 11-5.74A7 7 0 0 1 25 10.5C25 18 14 25 14 25z" stroke="currentColor" stroke-width="1.8"/></svg>
+          <span class="action-count">1.2k</span>
+        </button>
+        <button class="action-btn" onclick="openComments()">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M3 3h22v18H16l-3 3.5L10 21H3V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">211</span>
+        </button>
+        <button class="action-btn" onclick="toast('Compartilhado')">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 18V10a4 4 0 0 1 4-4h9M19 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 18v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="action-count">88</span>
+        </button>
+        <button class="action-btn" onclick="toggleSave(this)">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 3h18v21l-9-5-9 5V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">Salvar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ━━━━ CARD 7: Reaction take ━━━━ -->
+    <div class="card" data-index="7">
+      <div class="card-bg" style="transform:none">
+        <div class="bg-ph ph-text2" style="height:100%"></div>
+        <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,0.012) 0px,rgba(255,255,255,0.012) 1px,transparent 1px,transparent 40px)"></div>
+      </div>
+      <div class="card-scrim" style="background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.85) 80%,rgba(0,0,0,0.97) 100%)"></div>
+      <div class="text-card-content">
+        <div class="text-card-quote-mark">"</div>
+        <div class="text-card-body reaction" style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.3px;line-height:1.4">
+          Top 3 animes de todos os tempos que eu indico pra qualquer pessoa, independente de gostar ou não do gênero:
+          <br><br>
+          <span style="color:var(--red)">01.</span> Frieren<br>
+          <span style="color:var(--red)">02.</span> Vinland Saga<br>
+          <span style="color:var(--red)">03.</span> Mushishi
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-meta">
+          <div class="card-avatar-mini" style="background:linear-gradient(135deg,#2d6a4f,#52b788)">R</div>
+          <span class="card-username">@rafaelomg</span>
+          <span class="card-dot">·</span>
+          <span class="card-time">8h atrás</span>
+        </div>
+      </div>
+      <div class="card-actions">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:4px">
+          <div class="series-avatar">
+            <div class="series-avatar-inner" style="background:linear-gradient(135deg,#2d6a4f,#1b4332);font-size:10px;font-weight:800">RAF</div>
+          </div>
+          <div class="series-avatar-plus">
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M4 1v6M1 4h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+        <button class="action-btn liked" onclick="toggleLike(this)">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="currentColor"><path d="M14 25S3 18 3 10.5a7 7 0 0 1 11-5.74A7 7 0 0 1 25 10.5C25 18 14 25 14 25z"/></svg>
+          <span class="action-count">3.1k</span>
+        </button>
+        <button class="action-btn" onclick="openComments()">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M3 3h22v18H16l-3 3.5L10 21H3V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">489</span>
+        </button>
+        <button class="action-btn" onclick="toast('Compartilhado')">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M5 18V10a4 4 0 0 1 4-4h9M19 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 18v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <span class="action-count">704</span>
+        </button>
+        <button class="action-btn" onclick="toggleSave(this)">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 3h18v21l-9-5-9 5V3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          <span class="action-count">Salvar</span>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /feed-scroll -->
+</div><!-- /feed-stage -->
+
+<!-- COMMENTS DRAWER (slides from bottom) -->
+<div class="comments-overlay" id="comments-overlay" onclick="closeComments()"></div>
+<div class="comments-drawer" id="comments-drawer">
+  <div class="drawer-handle" onclick="closeComments()"></div>
+  <div class="comments-header">
+    <div style="display:flex;align-items:center">
+      <span class="comments-title">Comentários</span>
+      <span class="comments-count">· 134</span>
+    </div>
+    <button class="comments-close" onclick="closeComments()">×</button>
+  </div>
+  <div class="comments-list" id="comments-list">
+    <div class="comment-item">
+      <div class="c-avatar" style="background:linear-gradient(135deg,#2d6a4f,#52b788)">Y</div>
+      <div class="c-body">
+        <div class="c-header"><span class="c-name">Yuna</span><span class="c-time">1h atrás</span></div>
+        <div class="c-text">Concordo demais! O arco final foi pesado mas fazia sentido pra história do Eren.</div>
+        <div class="c-actions">
+          <button class="c-action" onclick="this.classList.toggle('liked');this.querySelector('span').textContent=this.classList.contains('liked')?'13':'12'">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 11S1 7.5 1 4.5a3 3 0 0 1 5-.45A3 3 0 0 1 11 4.5C11 7.5 6 11 6 11z" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>12</span>
+          </button>
+          <button class="c-action" onclick="setReply('Yuna')">Responder</button>
+        </div>
+      </div>
+    </div>
+    <div class="comment-item">
+      <div class="c-avatar" style="background:linear-gradient(135deg,#6930c3,#e63946)">M</div>
+      <div class="c-body">
+        <div class="c-reply-tag">↩ respondendo @yuuna</div>
+        <div class="c-header"><span class="c-name">miyamoto_rei</span><span class="c-time">45min</span></div>
+        <div class="c-text">Exatamente. É um dos finais mais corajosos da história da mídia.</div>
+        <div class="c-actions">
+          <button class="c-action liked">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 11S1 7.5 1 4.5a3 3 0 0 1 5-.45A3 3 0 0 1 11 4.5C11 7.5 6 11 6 11z"/></svg>
+            <span>8</span>
+          </button>
+          <button class="c-action" onclick="setReply('miyamoto_rei')">Responder</button>
+        </div>
+      </div>
+    </div>
+    <div class="comment-item">
+      <div class="c-avatar" style="background:linear-gradient(135deg,#457b9d,#1d3557)">L</div>
+      <div class="c-body">
+        <div class="c-header"><span class="c-name">luka_anime</span><span class="c-time">30min</span></div>
+        <div class="c-text">Assisti 3 vezes e ainda choro no mesmo lugar. Obra.</div>
+        <div class="c-actions">
+          <button class="c-action" onclick="this.classList.toggle('liked')">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 11S1 7.5 1 4.5a3 3 0 0 1 5-.45A3 3 0 0 1 11 4.5C11 7.5 6 11 6 11z" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>5</span>
+          </button>
+          <button class="c-action" onclick="setReply('luka_anime')">Responder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="comments-composer">
+    <div class="cc-avatar">K</div>
+    <div class="cc-input-wrap">
+      <textarea class="cc-input" id="cc-input" placeholder="Comentar..." rows="1" oninput="autoResize(this)"></textarea>
+    </div>
+    <button class="cc-send" onclick="sendComment()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12 7L2 2l2.5 5L2 12l10-5z" fill="white"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const feedScroll = document.getElementById('feed-scroll');
+const cards = document.querySelectorAll('.card');
+const TOTAL = cards.length;
+
+// Slide counter
+function updateCounter() {
+  const scrollTop = feedScroll.scrollTop;
+  const h = feedScroll.clientHeight;
+  const idx = Math.round(scrollTop / h);
+  document.getElementById('slide-counter').textContent = (idx + 1) + ' / ' + TOTAL;
+}
+feedScroll.addEventListener('scroll', updateCounter, { passive: true });
+
+// Comments (slides up from bottom)
+function openComments() {
+  document.getElementById('comments-overlay').classList.add('open');
+  document.getElementById('comments-drawer').classList.add('open');
+  setTimeout(() => document.getElementById('cc-input').focus(), 400);
+}
+function closeComments() {
+  document.getElementById('comments-overlay').classList.remove('open');
+  document.getElementById('comments-drawer').classList.remove('open');
+}
+function setReply(user) {
+  const input = document.getElementById('cc-input');
+  input.value = '@' + user + ' ';
+  input.focus();
+}
+function sendComment() {
+  const input = document.getElementById('cc-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const list = document.getElementById('comments-list');
+  const item = document.createElement('div');
+  item.className = 'comment-item';
+  item.innerHTML = `
+    <div class="c-avatar" style="background:linear-gradient(135deg,#e63946,#6930c3)">K</div>
+    <div class="c-body">
+      <div class="c-header"><span class="c-name">kurumi_fan</span><span class="c-time">agora</span></div>
+      <div class="c-text">${text.replace(/</g,'&lt;')}</div>
+      <div class="c-actions">
+        <button class="c-action" onclick="this.classList.toggle('liked')">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 11S1 7.5 1 4.5a3 3 0 0 1 5-.45A3 3 0 0 1 11 4.5C11 7.5 6 11 6 11z" stroke="currentColor" stroke-width="1.2"/></svg>
+          <span>0</span>
+        </button>
+        <button class="c-action" onclick="setReply('kurumi_fan')">Responder</button>
+      </div>
+    </div>`;
+  list.appendChild(item);
+  input.value = ''; input.style.height = 'auto';
+  list.scrollTop = list.scrollHeight;
+}
+function autoResize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+
+function toggleLike(btn) {
+  const isLiked = btn.classList.toggle('liked');
+  const svg = btn.querySelector('svg');
+  const count = btn.querySelector('.action-count');
+  svg.setAttribute('fill', isLiked ? 'currentColor' : 'none');
+  if (isLiked) svg.removeAttribute('stroke'); else svg.setAttribute('stroke', 'currentColor');
+}
+function toggleSave(btn) {
+  const saved = btn.classList.toggle('liked');
+  btn.querySelector('.action-count').textContent = saved ? 'Salvo' : 'Salvar';
+  toast(saved ? 'Adicionado aos favoritos' : 'Removido dos favoritos');
+}
+function revealSpoiler() {
+  const veil = document.getElementById('spoiler-veil');
+  veil.style.opacity = '0';
+  veil.style.pointerEvents = 'none';
+}
+function setNav(el) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+function setFilter(el) {
+  document.querySelectorAll('.feed-filter').forEach(f => f.classList.remove('active'));
+  el.classList.add('active');
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeComments();
+  if (e.key === 'Enter' && !e.shiftKey && document.activeElement === document.getElementById('cc-input')) {
+    e.preventDefault(); sendComment();
+  }
+  if (e.key === 'ArrowDown') { feedScroll.scrollBy({ top: feedScroll.clientHeight, behavior: 'smooth' }); }
+  if (e.key === 'ArrowUp') { feedScroll.scrollBy({ top: -feedScroll.clientHeight, behavior: 'smooth' }); }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animely — Mangás</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red: #e63946;
+  --bg: #0a0a0a;
+  --bg2: #111;
+  --bg3: #161616;
+  --fg: #f0eeec;
+  --muted: #666;
+  --muted2: #3a3a3a;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --sidebar-w: 220px;
+}
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--fg); display: flex; }
+
+/* ── SIDEBAR ── */
+aside { width: var(--sidebar-w); height: 100vh; border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; background: var(--bg); }
+.sb-logo { padding: 20px 20px 16px; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; border-bottom: 1px solid var(--border); }
+.sb-logo span { color: var(--red); }
+.sb-search-wrap { margin: 12px 14px; display: flex; align-items: center; gap: 8px; background: var(--bg3); border: 1px solid var(--border); padding: 8px 12px; }
+.sb-search-wrap input { background: none; border: none; color: var(--fg); font-family: inherit; font-size: 12px; outline: none; width: 100%; }
+.sb-search-wrap input::placeholder { color: var(--muted); }
+.sb-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted2); padding: 14px 20px 6px; }
+nav { flex: 1; overflow-y: auto; }
+nav::-webkit-scrollbar { display: none; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 9px 20px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted); transition: color 0.15s, background 0.15s; border-left: 2px solid transparent; }
+.nav-item:hover { color: var(--fg); background: rgba(255,255,255,0.03); }
+.nav-item.active { color: var(--fg); border-left-color: var(--red); background: rgba(230,57,70,0.06); }
+.nav-item .nav-count { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--muted2); font-family: monospace; }
+.nav-item .badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; }
+.sb-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.sb-user { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.sb-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#e63946,#6930c3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.sb-user-info { flex: 1; }
+.sb-user-name { font-size: 13px; font-weight: 700; }
+.sb-user-role { font-size: 11px; color: var(--muted); }
+
+/* ── MAIN ── */
+main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); min-width: 0; }
+
+/* ═══════════════════════════════════
+   TOP BAR
+═══════════════════════════════════ */
+.topbar { flex-shrink: 0; background: var(--bg); border-bottom: 1px solid var(--border); }
+
+/* ── Media type tabs ── */
+.media-tabs {
+  display: flex; align-items: center;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  gap: 0;
+}
+.media-tab {
+  display: flex; align-items: center; gap: 7px;
+  padding: 0 18px; height: 44px;
+  font-size: 13px; font-weight: 700; letter-spacing: -0.1px;
+  color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap; flex-shrink: 0;
+  background: none; border-top: none; border-left: none; border-right: none;
+  font-family: inherit;
+}
+.media-tab:hover { color: var(--fg); }
+.media-tab.active { color: var(--fg); border-bottom-color: var(--red); }
+.media-tab-count {
+  font-size: 10px; font-family: monospace; font-weight: 600;
+  background: var(--bg3); color: var(--muted2);
+  padding: 1px 6px; border-radius: 2px;
+}
+.media-tab.active .media-tab-count { background: rgba(230,57,70,0.15); color: var(--red); }
+.media-tabs-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.view-btn {
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s;
+}
+.view-btn:hover, .view-btn.active { color: var(--fg); border-color: var(--border2); background: rgba(255,255,255,0.04); }
+
+/* ── Search + primary filters row ── */
+.filter-row-1 {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 24px;
+}
+
+/* Search */
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 8px 12px; flex: 1;
+  transition: border-color 0.15s;
+}
+.search-box:focus-within { border-color: var(--border2); }
+.search-box input { flex: 1; background: none; border: none; color: var(--fg); font-family: inherit; font-size: 13px; outline: none; min-width: 0; }
+.search-box input::placeholder { color: var(--muted); }
+.search-clear { background: none; border: none; color: var(--muted); cursor: pointer; padding: 0; font-size: 16px; line-height: 1; transition: color 0.15s; display: none; }
+.search-clear:hover { color: var(--fg); }
+.search-clear.visible { display: block; }
+.results-count { font-size: 11px; color: var(--muted2); font-family: monospace; white-space: nowrap; flex-shrink: 0; }
+
+/* ── Filter controls row ── */
+.filter-row-2 {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 24px 10px;
+  flex-wrap: nowrap; overflow-x: auto;
+}
+.filter-row-2::-webkit-scrollbar { display: none; }
+
+/* Generic filter button */
+.filter-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--border);
+  color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 6px 11px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: all 0.15s; position: relative;
+}
+.filter-btn:hover { color: var(--fg); border-color: var(--border2); }
+.filter-btn.active-filter { color: var(--fg); border-color: rgba(230,57,70,0.4); background: rgba(230,57,70,0.07); }
+.filter-btn-caret { transition: transform 0.2s; }
+.filter-btn.open .filter-btn-caret { transform: rotate(180deg); }
+.filter-badge {
+  background: var(--red); color: #fff;
+  font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 2px;
+  line-height: 1.4;
+}
+
+.filter-sep { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; margin: 0 2px; }
+
+/* Sort inline select */
+.sort-select {
+  background: none; border: 1px solid var(--border);
+  color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 6px 28px 6px 11px; cursor: pointer; outline: none;
+  transition: all 0.15s; appearance: none; flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%23666' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
+}
+.sort-select:hover, .sort-select:focus { color: var(--fg); border-color: var(--border2); }
+
+/* Avançado toggle */
+.adv-toggle {
+  display: flex; align-items: center; gap: 5px;
+  background: none; border: 1px solid var(--border);
+  color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 6px 11px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: all 0.15s; margin-left: auto;
+}
+.adv-toggle:hover { color: var(--fg); border-color: var(--border2); }
+.adv-toggle.open { color: var(--fg); border-color: var(--border2); background: rgba(255,255,255,0.04); }
+.adv-toggle .adv-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); display: none; }
+.adv-toggle.has-active .adv-dot { display: block; }
+
+/* ── Active filter tags strip ── */
+.active-filters {
+  display: none; align-items: center; gap: 6px;
+  padding: 0 24px 10px; flex-wrap: wrap;
+}
+.active-filters.visible { display: flex; }
+.active-filter-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); flex-shrink: 0; }
+.filter-tag {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--border2);
+  color: var(--fg); font-size: 11px; font-weight: 600;
+  padding: 3px 10px 3px 10px;
+}
+.filter-tag-remove {
+  background: none; border: none; color: rgba(255,255,255,0.35);
+  cursor: pointer; padding: 0; font-size: 14px; line-height: 1;
+  transition: color 0.1s; display: flex; align-items: center;
+}
+.filter-tag-remove:hover { color: var(--red); }
+.filter-tag.genre-tag { border-color: rgba(255,255,255,0.2); }
+.filter-tag.period-tag { border-color: rgba(100,180,255,0.3); color: #a0c8f0; }
+.filter-tag.adv-tag { border-color: rgba(180,130,255,0.3); color: #c4a0f0; }
+.clear-all {
+  background: none; border: none; color: var(--muted);
+  font-family: inherit; font-size: 11px; font-weight: 600;
+  cursor: pointer; padding: 3px 8px; transition: color 0.15s;
+  margin-left: 2px;
+}
+.clear-all:hover { color: var(--red); }
+
+/* ═══════════════════════════════════
+   DROPDOWNS
+═══════════════════════════════════ */
+.dropdown-overlay { position: fixed; inset: 0; z-index: 50; display: none; }
+.dropdown-overlay.open { display: block; }
+
+.dropdown-panel {
+  position: fixed; z-index: 60;
+  background: #141414; border: 1px solid var(--border2);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  min-width: 320px;
+  display: none;
+}
+.dropdown-panel.open { display: block; }
+
+/* ── Genre panel ── */
+.genre-panel { width: 420px; }
+.genre-search-wrap {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+}
+.genre-search-input {
+  flex: 1; background: none; border: none; color: var(--fg);
+  font-family: inherit; font-size: 13px; outline: none;
+}
+.genre-search-input::placeholder { color: var(--muted); }
+.genre-section-label {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted2); padding: 10px 14px 6px;
+}
+.genre-quick-chips {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  padding: 0 14px 10px; border-bottom: 1px solid var(--border);
+}
+.genre-chip {
+  font-size: 11px; font-weight: 600;
+  padding: 4px 11px; border: 1px solid var(--border);
+  color: var(--muted); cursor: pointer; background: none;
+  font-family: inherit; transition: all 0.12s;
+}
+.genre-chip:hover { color: var(--fg); border-color: var(--border2); }
+.genre-chip.selected { color: var(--fg); border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.07); }
+.genre-results {
+  max-height: 220px; overflow-y: auto; padding: 8px 0;
+}
+.genre-results::-webkit-scrollbar { width: 3px; }
+.genre-results::-webkit-scrollbar-thumb { background: var(--muted2); }
+.genre-result-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 14px; cursor: pointer; transition: background 0.1s;
+}
+.genre-result-item:hover { background: rgba(255,255,255,0.04); }
+.genre-result-item.selected { background: rgba(255,255,255,0.05); }
+.genre-result-check {
+  width: 14px; height: 14px; border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.genre-result-item.selected .genre-result-check { background: var(--red); border-color: var(--red); }
+.genre-result-name { font-size: 12px; font-weight: 600; color: var(--fg); }
+.genre-result-category { font-size: 10px; color: var(--muted2); margin-left: auto; }
+.genre-panel-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-top: 1px solid var(--border);
+}
+.genre-footer-count { font-size: 11px; color: var(--muted); }
+.genre-footer-clear {
+  background: none; border: none; color: var(--muted);
+  font-family: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
+  transition: color 0.15s;
+}
+.genre-footer-clear:hover { color: var(--red); }
+
+/* ── Period panel ── */
+.period-panel { width: 280px; }
+.period-options { padding: 8px 0; border-bottom: 1px solid var(--border); }
+.period-option {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; cursor: pointer; transition: background 0.1s;
+  font-size: 13px; font-weight: 500; color: var(--muted);
+}
+.period-option:hover { background: rgba(255,255,255,0.04); color: var(--fg); }
+.period-option.selected { color: var(--fg); }
+.period-option-check { color: var(--red); font-size: 11px; visibility: hidden; }
+.period-option.selected .period-option-check { visibility: visible; }
+.period-option-sub { font-size: 11px; color: var(--muted2); }
+.period-custom { padding: 12px 14px; }
+.period-custom-label { font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted2); margin-bottom: 8px; }
+.period-range { display: flex; align-items: center; gap: 8px; }
+.period-year-input {
+  width: 70px; background: var(--bg3); border: 1px solid var(--border);
+  color: var(--fg); font-family: monospace; font-size: 13px;
+  padding: 6px 8px; text-align: center; outline: none;
+  transition: border-color 0.15s;
+}
+.period-year-input:focus { border-color: var(--border2); }
+.period-range-sep { color: var(--muted2); font-size: 12px; }
+.period-apply {
+  margin-top: 10px; width: 100%;
+  background: var(--red); border: none; color: #fff;
+  font-family: inherit; font-size: 12px; font-weight: 700;
+  padding: 7px; cursor: pointer; transition: opacity 0.15s;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.period-apply:hover { opacity: 0.85; }
+
+/* ── Advanced panel ── */
+.adv-panel {
+  border-top: 1px solid var(--border);
+  padding: 16px 24px;
+  background: #0d0d0d;
+  display: none;
+}
+.adv-panel.open { display: block; }
+.adv-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.adv-field-label { font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted2); margin-bottom: 7px; }
+.adv-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.adv-chip {
+  font-size: 11px; font-weight: 600; padding: 3px 10px;
+  border: 1px solid var(--border); color: var(--muted);
+  cursor: pointer; background: none; font-family: inherit;
+  transition: all 0.12s;
+}
+.adv-chip:hover { color: var(--fg); border-color: var(--border2); }
+.adv-chip.selected { color: var(--fg); border-color: rgba(180,130,255,0.4); background: rgba(180,130,255,0.08); }
+.score-range { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.score-range-track { flex: 1; height: 2px; background: var(--border); position: relative; }
+.score-range-fill { position: absolute; left: 0; right: 0; height: 100%; background: var(--red); }
+.score-label { font-size: 11px; font-family: monospace; color: var(--fg); }
+.adv-input {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  color: var(--fg); font-family: inherit; font-size: 12px;
+  padding: 6px 10px; outline: none; transition: border-color 0.15s;
+}
+.adv-input:focus { border-color: var(--border2); }
+.adv-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.adv-reset { background: none; border: none; color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: color 0.15s; }
+.adv-reset:hover { color: var(--red); }
+.adv-apply-btn { background: var(--red); border: none; color: #fff; font-family: inherit; font-size: 12px; font-weight: 700; padding: 7px 20px; cursor: pointer; transition: opacity 0.15s; letter-spacing: 0.06em; text-transform: uppercase; }
+.adv-apply-btn:hover { opacity: 0.85; }
+
+/* ═══════════════════════════════════
+   CONTENT AREA
+═══════════════════════════════════ */
+.content-area { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 18px 24px 0; }
+.content-area::-webkit-scrollbar { width: 4px; }
+.content-area::-webkit-scrollbar-thumb { background: var(--muted2); }
+
+.no-results { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 12px; color: var(--muted); }
+.no-results.show { display: flex; }
+.no-results-text { font-size: 14px; font-weight: 600; }
+.no-results-sub { font-size: 12px; color: var(--muted2); }
+
+.manga-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px 14px; padding-bottom: 20px; }
+.manga-grid.list-view { grid-template-columns: 1fr; gap: 0; }
+
+.manga-card { cursor: pointer; display: flex; flex-direction: column; transition: transform 0.2s; }
+.manga-card:hover { transform: translateY(-3px); }
+.manga-card:hover .manga-cover { border-color: rgba(255,255,255,0.16); }
+.manga-card:hover .manga-cover-overlay { opacity: 1; }
+
+.manga-cover { width: 100%; aspect-ratio: 2/3; position: relative; overflow: hidden; border: 1px solid var(--border); flex-shrink: 0; box-shadow: -4px 0 0 rgba(0,0,0,0.6), -5px 0 0 rgba(255,255,255,0.03), 4px 4px 14px rgba(0,0,0,0.5); }
+.cover-bg { width: 100%; height: 100%; position: relative; }
+.cover-bg::after { content: ''; position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 50% 150%, rgba(255,255,255,0.018) 0deg, transparent 5deg, transparent 10deg); mix-blend-mode: overlay; }
+.manga-cover-overlay { position: absolute; inset: 0; background: rgba(230,57,70,0.12); opacity: 0; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; }
+.cover-quick-add { background: var(--red); border: none; color: #fff; font-family: inherit; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px; cursor: pointer; }
+.cover-status { position: absolute; top: 7px; left: 7px; font-size: 8px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; }
+.cover-status.ongoing { background: #52b788; color: #000; }
+.cover-status.completed { background: var(--muted2); color: rgba(255,255,255,0.6); }
+.cover-status.hiatus { background: #f4a261; color: #000; }
+.cover-score { position: absolute; bottom: 7px; right: 7px; font-size: 10px; font-weight: 800; font-family: monospace; background: rgba(0,0,0,0.82); color: #f4a261; padding: 2px 7px; border: 1px solid rgba(244,162,97,0.25); }
+.cover-title-embed { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px 8px 8px; background: linear-gradient(transparent, rgba(0,0,0,0.85)); font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.9); line-height: 1.2; }
+.manga-meta { padding: 8px 2px 0; flex: 1; }
+.manga-title { font-size: 12px; font-weight: 700; line-height: 1.3; margin-bottom: 3px; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.manga-sub { font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.manga-chapters { font-size: 10px; color: var(--muted2); font-family: monospace; margin-top: 2px; }
+
+/* List view */
+.manga-grid.list-view .manga-card { flex-direction: row; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); transform: none !important; }
+.manga-grid.list-view .manga-cover { width: 56px; aspect-ratio: auto; height: 80px; flex-shrink: 0; }
+.manga-grid.list-view .manga-meta { flex: 1; padding: 0; display: flex; flex-direction: column; justify-content: center; }
+.manga-grid.list-view .manga-title { font-size: 14px; white-space: normal; }
+.manga-grid.list-view .manga-sub { font-size: 11px; }
+.manga-grid.list-view .cover-title-embed { display: none; }
+.list-rank { font-size: 22px; font-weight: 800; font-family: monospace; color: var(--muted2); width: 36px; flex-shrink: 0; display: none; align-items: center; justify-content: center; align-self: center; }
+.manga-grid.list-view .list-rank { display: flex; }
+.list-extra { display: none; align-items: center; gap: 14px; margin-top: 5px; }
+.manga-grid.list-view .list-extra { display: flex; }
+.list-bar-wrap { flex: 1; max-width: 100px; height: 2px; background: var(--border); }
+.list-bar { height: 100%; background: var(--red); }
+.list-stat { font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+
+/* Pagination */
+.pagination-wrap { flex-shrink: 0; border-top: 1px solid var(--border); padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; background: var(--bg); }
+.pagination { display: flex; align-items: center; gap: 2px; }
+.page-btn { background: none; border: 1px solid transparent; color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; }
+.page-btn:hover { color: var(--fg); border-color: var(--border); }
+.page-btn.active { color: var(--fg); border-color: rgba(230,57,70,0.5); background: rgba(230,57,70,0.08); }
+.page-btn:disabled { color: var(--muted2); cursor: default; }
+.page-btn:disabled:hover { border-color: transparent; }
+.page-dots { color: var(--muted2); font-size: 12px; padding: 0 4px; }
+.per-page-info { font-size: 11px; color: var(--muted2); font-family: monospace; }
+.page-jump { display: flex; align-items: center; gap: 8px; }
+.page-jump-label { font-size: 11px; color: var(--muted); }
+.page-jump-input { width: 40px; background: var(--bg3); border: 1px solid var(--border); color: var(--fg); font-family: monospace; font-size: 12px; padding: 4px 6px; text-align: center; outline: none; }
+.page-jump-input:focus { border-color: var(--border2); }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a1a; border: 1px solid var(--border); padding: 10px 20px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.25s; white-space: nowrap; z-index: 999; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* cover palettes */
+.cov-1{background:linear-gradient(160deg,#1a0800,#4a1500 40%,#0d0400)}.cov-2{background:linear-gradient(160deg,#0a0a1f,#1a1a4a 40%,#050510)}.cov-3{background:linear-gradient(160deg,#100010,#300030 40%,#080008)}.cov-4{background:linear-gradient(160deg,#001510,#003328 40%,#000d08)}.cov-5{background:linear-gradient(160deg,#00111f,#002a44 40%,#000810)}.cov-6{background:linear-gradient(160deg,#1a1000,#3d2800 40%,#0d0800)}.cov-7{background:linear-gradient(160deg,#100010,#280028 40%,#0a000a)}.cov-8{background:linear-gradient(160deg,#0d0d00,#1e1e00 40%,#080800)}.cov-9{background:linear-gradient(160deg,#1a0a00,#3d2010 40%,#0d0500)}.cov-10{background:linear-gradient(160deg,#001a0d,#00331a 40%,#000d06)}.cov-11{background:linear-gradient(160deg,#0d001a,#200035 40%,#06000d)}.cov-12{background:linear-gradient(160deg,#1a0010,#350020 40%,#0d0008)}.cov-13{background:linear-gradient(160deg,#001533,#002866 40%,#000a1a)}.cov-14{background:linear-gradient(160deg,#151500,#2a2a00 40%,#0a0a00)}.cov-15{background:linear-gradient(160deg,#1a0500,#381000 40%,#0d0200)}.cov-16{background:linear-gradient(160deg,#001a1a,#003333 40%,#000d0d)}
+.cover-bg::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-52deg,transparent,transparent 20px,rgba(255,255,255,0.012) 20px,rgba(255,255,255,0.012) 21px)}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="sb-logo"><span>a</span>nimely</div>
+  <div class="sb-search-wrap">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4.5" stroke="#555" stroke-width="1.2"/><path d="M9 9l3 3" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="Buscar...">
+  </div>
+  <nav>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 6.5L7.5 1 14 6.5V14H9.5V10h-4v4H1V6.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Início</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Explorar</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 1v13M5 5h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Animes</div>
+    <div class="nav-item active" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 1h8l3 3v10H2V1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M10 1v3h3M5 6h5M5 9h5M5 12h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Mangás</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Personagens</div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Atividades</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="8" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="8" width="6" height="6" stroke="currentColor" stroke-width="1.3"/></svg>Feed</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1a5 5 0 0 1 5 5c0 2-1 4-2 5.5H4.5C3.5 10 2.5 8 2.5 6a5 5 0 0 1 5-5zM5.5 11.5h4M7.5 14v-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Notificações<div class="badge">3</div></div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Minhas Listas</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Lendo<span class="nav-count">12</span></div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Favoritos<span class="nav-count">34</span></div>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">K</div>
+    <div class="sb-user-info"><div class="sb-user-name">kurumi_fan</div><div class="sb-user-role">Pro · 847 eps</div></div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main>
+  <div class="topbar">
+
+    <!-- ① Media type tabs -->
+    <div class="media-tabs">
+      <button class="media-tab" onclick="setMediaTab(this,'anime')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 3.5l5 2.5-5 2.5V3.5z" fill="currentColor"/></svg>
+        Anime
+        <span class="media-tab-count">3.2k</span>
+      </button>
+      <button class="media-tab active" onclick="setMediaTab(this,'manga')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 1h6l3 3v7H2V1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M8 1v3h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Mangá
+        <span class="media-tab-count">8.4k</span>
+      </button>
+      <button class="media-tab" onclick="setMediaTab(this,'ln')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 4h5M3.5 6h5M3.5 8h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Light Novel
+        <span class="media-tab-count">1.1k</span>
+      </button>
+      <button class="media-tab" onclick="setMediaTab(this,'manhwa')">
+        Manhwa
+        <span class="media-tab-count">2.3k</span>
+      </button>
+
+      <div class="media-tabs-right">
+        <span class="results-count" id="results-count">156 títulos</span>
+        <button class="view-btn active" id="grid-btn" onclick="setView('grid')" title="Grade">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="4" height="4" stroke="currentColor" stroke-width="1.1"/><rect x="7" y="1" width="4" height="4" stroke="currentColor" stroke-width="1.1"/><rect x="1" y="7" width="4" height="4" stroke="currentColor" stroke-width="1.1"/><rect x="7" y="7" width="4" height="4" stroke="currentColor" stroke-width="1.1"/></svg>
+        </button>
+        <button class="view-btn" id="list-btn" onclick="setView('list')" title="Lista">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 3h10M1 6h10M1 9h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ② Search row -->
+    <div class="filter-row-1">
+      <div class="search-box">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="5" stroke="#555" stroke-width="1.3"/><path d="M10 10l3.5 3.5" stroke="#555" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <input type="text" id="search-input" placeholder="Buscar por título, autor, personagem..." oninput="handleSearch(this.value)">
+        <button class="search-clear" id="search-clear" onclick="clearSearch()">×</button>
+      </div>
+    </div>
+
+    <!-- ③ Filter controls -->
+    <div class="filter-row-2">
+
+      <!-- Genre picker -->
+      <button class="filter-btn" id="genre-btn" onclick="toggleDropdown('genre')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 2h10M2 5h8M3 8h6M4 11h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span id="genre-btn-label">Gênero</span>
+        <span class="filter-badge" id="genre-badge" style="display:none">0</span>
+        <svg class="filter-btn-caret" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </button>
+
+      <!-- Period picker -->
+      <button class="filter-btn" id="period-btn" onclick="toggleDropdown('period')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 5h10M4 1v2M8 1v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span id="period-btn-label">Período</span>
+        <svg class="filter-btn-caret" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </button>
+
+      <div class="filter-sep"></div>
+
+      <!-- Sort -->
+      <select class="sort-select" onchange="handleSort(this.value)">
+        <option value="popular">↓ Popularidade</option>
+        <option value="score">↓ Avaliação</option>
+        <option value="recent">↓ Mais recentes</option>
+        <option value="updated">↓ Atualizados</option>
+        <option value="az">↓ A → Z</option>
+      </select>
+
+      <!-- Advanced -->
+      <button class="adv-toggle" id="adv-toggle" onclick="toggleAdv()">
+        <div class="adv-dot"></div>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 3h10M3 6h6M5 9h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Mais filtros
+      </button>
+    </div>
+
+    <!-- ④ Active filters strip -->
+    <div class="active-filters" id="active-filters">
+      <span class="active-filter-label">Filtros:</span>
+      <div id="filter-tags"></div>
+      <button class="clear-all" onclick="clearAllFilters()">Limpar tudo</button>
+    </div>
+
+    <!-- ⑤ Advanced panel -->
+    <div class="adv-panel" id="adv-panel">
+      <div class="adv-grid">
+        <div>
+          <div class="adv-field-label">Status</div>
+          <div class="adv-chips">
+            <button class="adv-chip" onclick="toggleAdvChip(this,'status')">Em andamento</button>
+            <button class="adv-chip" onclick="toggleAdvChip(this,'status')">Concluído</button>
+            <button class="adv-chip" onclick="toggleAdvChip(this,'status')">Hiato</button>
+            <button class="adv-chip" onclick="toggleAdvChip(this,'status')">Cancelado</button>
+          </div>
+        </div>
+        <div>
+          <div class="adv-field-label">Classificação</div>
+          <div class="adv-chips">
+            <button class="adv-chip" onclick="toggleAdvChip(this,'rating')">Livre</button>
+            <button class="adv-chip" onclick="toggleAdvChip(this,'rating')">+10</button>
+            <button class="adv-chip" onclick="toggleAdvChip(this,'rating')">+14</button>
+            <button class="adv-chip" onclick="toggleAdvChip(this,'rating')">+18</button>
+          </div>
+        </div>
+        <div>
+          <div class="adv-field-label">Nota mínima</div>
+          <div class="score-range">
+            <span class="score-label" id="score-label">7.0</span>
+            <input type="range" min="0" max="10" step="0.5" value="7" style="flex:1;accent-color:var(--red)" oninput="document.getElementById('score-label').textContent=parseFloat(this.value).toFixed(1)">
+          </div>
+        </div>
+        <div>
+          <div class="adv-field-label">Autor / Estúdio</div>
+          <input class="adv-input" type="text" placeholder="Ex: Gege Akutami">
+        </div>
+      </div>
+      <div class="adv-actions">
+        <button class="adv-reset" onclick="resetAdv()">Resetar</button>
+        <button class="adv-apply-btn" onclick="applyAdv()">Aplicar</button>
+      </div>
+    </div>
+  </div><!-- /topbar -->
+
+  <!-- CONTENT -->
+  <div class="content-area" id="content-area">
+    <div class="no-results" id="no-results">
+      <div style="opacity:0.25"><svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M5 3h22l8 8v26H5V3z" stroke="#888" stroke-width="1.5" stroke-linejoin="round"/><path d="M27 3v8h8" stroke="#888" stroke-width="1.5" stroke-linecap="round"/><path d="M12 16h16M12 22h16M12 28h10" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="no-results-text">Nenhum título encontrado</div>
+      <div class="no-results-sub">Tente outros termos ou ajuste os filtros</div>
+    </div>
+    <div class="manga-grid" id="manga-grid"></div>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination-wrap">
+    <div class="per-page-info" id="per-page-info">Mostrando 1–24 de 156</div>
+    <div class="pagination" id="pagination"></div>
+    <div class="page-jump">
+      <span class="page-jump-label">Ir para</span>
+      <input class="page-jump-input" type="number" min="1" id="page-jump-input" value="1" onkeydown="if(event.key==='Enter')goPage(parseInt(this.value))">
+    </div>
+  </div>
+</main>
+
+<!-- Dropdown overlay -->
+<div class="dropdown-overlay" id="dropdown-overlay" onclick="closeAllDropdowns()"></div>
+
+<!-- Genre panel -->
+<div class="dropdown-panel genre-panel" id="genre-panel">
+  <div class="genre-search-wrap">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4.5" stroke="#555" stroke-width="1.2"/><path d="M9 9l3 3" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <input class="genre-search-input" id="genre-search-input" type="text" placeholder="Buscar entre 200+ gêneros e subgêneros..." oninput="filterGenres(this.value)">
+  </div>
+  <div class="genre-section-label">Principais</div>
+  <div class="genre-quick-chips" id="genre-quick-chips"></div>
+  <div class="genre-section-label" id="genre-results-label">Subgêneros</div>
+  <div class="genre-results" id="genre-results"></div>
+  <div class="genre-panel-footer">
+    <span class="genre-footer-count" id="genre-footer-count">0 selecionados</span>
+    <button class="genre-footer-clear" onclick="clearGenres()">Limpar gêneros</button>
+  </div>
+</div>
+
+<!-- Period panel -->
+<div class="dropdown-panel period-panel" id="period-panel">
+  <div class="period-options" id="period-options">
+    <div class="period-option selected" onclick="selectPeriod(this,'all','Todos os períodos')">
+      <span>Todos os períodos</span>
+      <span class="period-option-check">✓</span>
+    </div>
+    <div class="period-option" onclick="selectPeriod(this,'season','Esta temporada')">
+      <span>Esta temporada</span>
+      <span class="period-option-check">✓</span>
+    </div>
+    <div class="period-option" onclick="selectPeriod(this,'3m','Últimos 3 meses')">
+      <span>Últimos 3 meses</span>
+      <span class="period-option-check">✓</span>
+    </div>
+    <div class="period-option" onclick="selectPeriod(this,'year','Último ano')">
+      <span>Último ano</span>
+      <span class="period-option-check">✓</span>
+    </div>
+    <div class="period-option" onclick="selectPeriod(this,'2020s','Anos 2020')">
+      <span>Anos 2020</span>
+      <span class="period-option-sub">2020 – hoje</span>
+      <span class="period-option-check">✓</span>
+    </div>
+    <div class="period-option" onclick="selectPeriod(this,'2010s','Anos 2010')">
+      <span>Anos 2010</span>
+      <span class="period-option-sub">2010 – 2019</span>
+      <span class="period-option-check">✓</span>
+    </div>
+    <div class="period-option" onclick="selectPeriod(this,'classic','Clássicos')">
+      <span>Clássicos</span>
+      <span class="period-option-sub">Antes de 2010</span>
+      <span class="period-option-check">✓</span>
+    </div>
+  </div>
+  <div class="period-custom">
+    <div class="period-custom-label">Intervalo personalizado</div>
+    <div class="period-range">
+      <input class="period-year-input" type="number" min="1950" max="2025" placeholder="De" id="year-from">
+      <span class="period-range-sep">—</span>
+      <input class="period-year-input" type="number" min="1950" max="2025" placeholder="Até" id="year-to">
+    </div>
+    <button class="period-apply" onclick="applyCustomPeriod()">Aplicar intervalo</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── GENRE DATA ──
+const MAIN_GENRES = ['Ação','Aventura','Comédia','Drama','Fantasia','Horror','Mistério','Romance','Sci-Fi','Slice of Life'];
+const ALL_GENRES = [
+  // Main
+  'Ação','Aventura','Comédia','Drama','Fantasia','Horror','Mistério','Romance','Sci-Fi','Slice of Life',
+  // Subgêneros — Temáticas
+  'Artes Marciais','Culinária','Esporte','Escola','Jogo','Mecha','Militar','Música','Psicoló gico','Sobrenatural','Vampiro','Zumbi',
+  // Subgêneros — Públicos
+  'Josei','Seinen','Shoujo','Shounen','Kodomomuke',
+  // Subgêneros — Romance
+  'Harem','Isekai','Mahou Shoujo','Rom-com','Yaoi','Yuri',
+  // Subgêneros — Fantasia
+  'Ação RPG','Dark Fantasy','Dungeon','Espada e Feitiçaria','Isekai Reverso','Portal Fantasy',
+  // Subgêneros — Sci-Fi
+  'Apocalipse','Cyberpunk','Espaço','Ficção Científica','Pós-apocalipse','Robôs','Space Opera','Steampunk','Time Travel',
+  // Subgêneros — Horror
+  'Gore','Psicológico','Survival','Terror Sobrenatural',
+  // Subgêneros — Drama
+  'Familia','Médico','Policial','Tribunal','Vida Adulta',
+  // Subgêneros — Outros
+  'Adaptação de Webtoon','Antologia','Chibi','Colégio','Competição','Delinquente','Detective','Fantasia Urbana','Foodie','Genderbend','Hentai-adjacent','Histórico','Idol','Isekai Transportado','Mitologia','Ninja','Parasita','Pirata','Policial','Reencarnação','Samurai','Shounen Ai','Shoujo Ai','Slice of Fantasy','VRMMO','Viagem no Tempo','Yakuza',
+];
+
+// ── MANGA DATA ──
+const MANGA_DATA = [
+  {id:1, title:"Berserk",author:"Kentaro Miura",genres:["Ação","Aventura","Drama","Fantasia","Seinen"],status:"hiatus",score:9.4,chapters:364,year:1989,covClass:"cov-1"},
+  {id:2, title:"Vinland Saga",author:"Makoto Yukimura",genres:["Ação","Aventura","Drama","Seinen","Histórico"],status:"ongoing",score:9.1,chapters:210,year:2005,covClass:"cov-6"},
+  {id:3, title:"Jujutsu Kaisen",author:"Gege Akutami",genres:["Ação","Fantasia","Shounen","Sobrenatural"],status:"ongoing",score:8.7,chapters:265,year:2018,covClass:"cov-3"},
+  {id:4, title:"Chainsaw Man",author:"Tatsuki Fujimoto",genres:["Ação","Horror","Seinen"],status:"ongoing",score:8.9,chapters:168,year:2018,covClass:"cov-1"},
+  {id:5, title:"Frieren",author:"Kanehito Yamada",genres:["Aventura","Drama","Fantasia","Seinen"],status:"ongoing",score:9.2,chapters:118,year:2020,covClass:"cov-2"},
+  {id:6, title:"Vagabond",author:"Takehiko Inoue",genres:["Ação","Drama","Seinen","Histórico"],status:"hiatus",score:9.3,chapters:327,year:1998,covClass:"cov-6"},
+  {id:7, title:"Oyasumi Punpun",author:"Inio Asano",genres:["Drama","Romance","Slice of Life","Seinen","Psicológico"],status:"completed",score:9.1,chapters:147,year:2007,covClass:"cov-11"},
+  {id:8, title:"Dungeon Meshi",author:"Ryoko Kui",genres:["Aventura","Fantasia","Slice of Life","Seinen","Culinária"],status:"completed",score:9.0,chapters:97,year:2014,covClass:"cov-4"},
+  {id:9, title:"Blue Lock",author:"Muneyuki Kaneshiro",genres:["Esporte","Ação","Shounen"],status:"ongoing",score:8.6,chapters:255,year:2018,covClass:"cov-13"},
+  {id:10,title:"Dandadan",author:"Yukinobu Tatsu",genres:["Ação","Romance","Sci-Fi","Shounen","Sobrenatural"],status:"ongoing",score:8.8,chapters:162,year:2021,covClass:"cov-4"},
+  {id:11,title:"Mushishi",author:"Yuki Urushibara",genres:["Aventura","Mistério","Slice of Life","Seinen","Sobrenatural"],status:"completed",score:9.0,chapters:50,year:1999,covClass:"cov-10"},
+  {id:12,title:"Solo Leveling",author:"Chugong",genres:["Ação","Aventura","Fantasia","Dungeon"],status:"completed",score:8.5,chapters:179,year:2018,covClass:"cov-5"},
+  {id:13,title:"Oshi no Ko",author:"Aka Akasaka",genres:["Drama","Romance","Seinen","Idol"],status:"ongoing",score:8.7,chapters:145,year:2020,covClass:"cov-12"},
+  {id:14,title:"Tokyo Ghoul",author:"Sui Ishida",genres:["Ação","Horror","Drama","Seinen"],status:"completed",score:8.1,chapters:144,year:2011,covClass:"cov-3"},
+  {id:15,title:"One Piece",author:"Eiichiro Oda",genres:["Ação","Aventura","Fantasia","Shounen","Pirata"],status:"ongoing",score:9.0,chapters:1110,year:1997,covClass:"cov-9"},
+  {id:16,title:"Ping Pong",author:"Taiyo Matsumoto",genres:["Drama","Esporte","Seinen"],status:"completed",score:8.9,chapters:57,year:1996,covClass:"cov-8"},
+  {id:17,title:"20th Century Boys",author:"Naoki Urasawa",genres:["Drama","Mistério","Sci-Fi","Seinen"],status:"completed",score:9.0,chapters:249,year:1999,covClass:"cov-14"},
+  {id:18,title:"Attack on Titan",author:"Hajime Isayama",genres:["Ação","Drama","Fantasia","Shounen"],status:"completed",score:9.0,chapters:139,year:2009,covClass:"cov-1"},
+  {id:19,title:"Hunter x Hunter",author:"Yoshihiro Togashi",genres:["Ação","Aventura","Fantasia","Shounen"],status:"hiatus",score:9.0,chapters:400,year:1998,covClass:"cov-9"},
+  {id:20,title:"Nana",author:"Ai Yazawa",genres:["Drama","Romance","Slice of Life","Josei","Música"],status:"hiatus",score:8.8,chapters:84,year:2000,covClass:"cov-12"},
+  {id:21,title:"Pluto",author:"Naoki Urasawa",genres:["Drama","Mistério","Sci-Fi","Seinen","Robôs"],status:"completed",score:8.9,chapters:65,year:2003,covClass:"cov-5"},
+  {id:22,title:"Dorohedoro",author:"Q Hayashida",genres:["Ação","Fantasia","Horror","Seinen"],status:"completed",score:8.7,chapters:167,year:2000,covClass:"cov-7"},
+  {id:23,title:"Golden Kamuy",author:"Satoru Noda",genres:["Ação","Aventura","Seinen","Histórico"],status:"completed",score:8.7,chapters:314,year:2014,covClass:"cov-6"},
+  {id:24,title:"The Promised Neverland",author:"Kaiu Shirai",genres:["Ação","Drama","Horror","Shounen","Survival"],status:"completed",score:8.4,chapters:181,year:2016,covClass:"cov-15"},
+  {id:25,title:"Spy x Family",author:"Tatsuya Endo",genres:["Ação","Comédia","Romance","Shounen"],status:"ongoing",score:8.5,chapters:110,year:2019,covClass:"cov-16"},
+  {id:26,title:"Kaguya-sama",author:"Aka Akasaka",genres:["Comédia","Romance","Seinen","Escola"],status:"completed",score:8.7,chapters:281,year:2015,covClass:"cov-12"},
+  {id:27,title:"Fullmetal Alchemist",author:"Hiromu Arakawa",genres:["Ação","Aventura","Drama","Shounen","Militar"],status:"completed",score:9.1,chapters:116,year:2001,covClass:"cov-9"},
+  {id:28,title:"Death Note",author:"Tsugumi Ohba",genres:["Drama","Mistério","Shounen","Psicoló gico","Sobrenatural"],status:"completed",score:8.8,chapters:108,year:2003,covClass:"cov-11"},
+  {id:29,title:"Demon Slayer",author:"Koyoharu Gotouge",genres:["Ação","Aventura","Fantasia","Shounen","Histórico"],status:"completed",score:8.5,chapters:205,year:2016,covClass:"cov-1"},
+  {id:30,title:"Kingdom",author:"Yasuhisa Hara",genres:["Ação","Drama","Seinen","Histórico","Militar"],status:"ongoing",score:8.7,chapters:770,year:2006,covClass:"cov-6"},
+  {id:31,title:"Re:Zero",author:"Tappei Nagatsuki",genres:["Ação","Drama","Fantasia","Isekai"],status:"ongoing",score:8.5,chapters:102,year:2014,covClass:"cov-2"},
+  {id:32,title:"Dr. Stone",author:"Riichiro Inagaki",genres:["Ação","Aventura","Sci-Fi","Shounen"],status:"completed",score:8.3,chapters:232,year:2017,covClass:"cov-8"},
+  {id:33,title:"Naruto",author:"Masashi Kishimoto",genres:["Ação","Aventura","Fantasia","Shounen","Ninja"],status:"completed",score:8.0,chapters:700,year:1999,covClass:"cov-9"},
+  {id:34,title:"My Hero Academia",author:"Kohei Horikoshi",genres:["Ação","Fantasia","Shounen","Escola"],status:"completed",score:8.1,chapters:430,year:2014,covClass:"cov-13"},
+  {id:35,title:"Goodnight Punpun",author:"Inio Asano",genres:["Drama","Slice of Life","Seinen"],status:"completed",score:8.8,chapters:147,year:2007,covClass:"cov-11"},
+  {id:36,title:"Black Clover",author:"Yuki Tabata",genres:["Ação","Fantasia","Shounen"],status:"ongoing",score:7.9,chapters:380,year:2015,covClass:"cov-4"},
+];
+
+// ── STATE ──
+const PER_PAGE = 24;
+let currentPage = 1;
+let currentView = 'grid';
+let filteredData = [...MANGA_DATA];
+let searchQuery = '';
+let selectedGenres = new Set();
+let selectedPeriod = { key:'all', label:null, from:null, to:null };
+let advFilters = { status: new Set(), rating: new Set(), score: 0, author: '' };
+let currentSort = 'popular';
+let openDropdown = null;
+
+// ── GENRE PANEL ──
+function initGenrePanel() {
+  const qc = document.getElementById('genre-quick-chips');
+  qc.innerHTML = MAIN_GENRES.map(g => `
+    <button class="genre-chip ${selectedGenres.has(g)?'selected':''}" onclick="toggleQuickGenre('${g}')">${g}</button>
+  `).join('');
+  filterGenres('');
+}
+
+function filterGenres(q) {
+  const sub = ALL_GENRES.filter(g => !MAIN_GENRES.includes(g) && (!q || g.toLowerCase().includes(q.toLowerCase())));
+  const main = q ? ALL_GENRES.filter(g => g.toLowerCase().includes(q.toLowerCase())) : [];
+  const toShow = q ? [...new Set([...main,...sub])] : sub;
+  const label = document.getElementById('genre-results-label');
+  label.textContent = q ? 'Resultados' : 'Subgêneros';
+  document.getElementById('genre-results').innerHTML = toShow.map(g => `
+    <div class="genre-result-item ${selectedGenres.has(g)?'selected':''}" onclick="toggleResultGenre('${g}')">
+      <div class="genre-result-check">
+        ${selectedGenres.has(g)?'<svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 4.5l2.5 2.5 3.5-4" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}
+      </div>
+      <span class="genre-result-name">${g}</span>
+      <span class="genre-result-category">${MAIN_GENRES.includes(g)?'Principal':'Sub'}</span>
+    </div>`).join('') || `<div style="padding:14px;font-size:12px;color:var(--muted);text-align:center">Nenhum gênero encontrado</div>`;
+  updateGenreCount();
+}
+
+function toggleQuickGenre(g) {
+  if (selectedGenres.has(g)) selectedGenres.delete(g); else selectedGenres.add(g);
+  initGenrePanel();
+  updateGenreFilterBtn();
+  applyFilters();
+}
+function toggleResultGenre(g) {
+  if (selectedGenres.has(g)) selectedGenres.delete(g); else selectedGenres.add(g);
+  filterGenres(document.getElementById('genre-search-input').value);
+  updateGenreFilterBtn();
+  applyFilters();
+}
+function clearGenres() {
+  selectedGenres.clear();
+  initGenrePanel();
+  updateGenreFilterBtn();
+  applyFilters();
+}
+function updateGenreCount() {
+  document.getElementById('genre-footer-count').textContent = selectedGenres.size + ' selecionados';
+}
+function updateGenreFilterBtn() {
+  const btn = document.getElementById('genre-btn');
+  const badge = document.getElementById('genre-badge');
+  const label = document.getElementById('genre-btn-label');
+  if (selectedGenres.size === 0) {
+    btn.classList.remove('active-filter');
+    badge.style.display = 'none';
+    label.textContent = 'Gênero';
+  } else {
+    btn.classList.add('active-filter');
+    badge.style.display = 'inline';
+    badge.textContent = selectedGenres.size;
+    label.textContent = selectedGenres.size === 1 ? [...selectedGenres][0] : `${[...selectedGenres][0]} +${selectedGenres.size-1}`;
+  }
+  updateActiveTags();
+}
+
+// ── PERIOD ──
+function selectPeriod(el, key, label) {
+  document.querySelectorAll('.period-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  if (key === 'all') { selectedPeriod = { key:'all', label:null }; }
+  else { selectedPeriod = { key, label, from:null, to:null }; }
+  updatePeriodBtn();
+  applyFilters();
+}
+function applyCustomPeriod() {
+  const from = parseInt(document.getElementById('year-from').value);
+  const to = parseInt(document.getElementById('year-to').value);
+  if (!from && !to) return;
+  const label = `${from||'?'}–${to||'?'}`;
+  selectedPeriod = { key:'custom', label, from: from||0, to: to||9999 };
+  document.querySelectorAll('.period-option').forEach(o => o.classList.remove('selected'));
+  updatePeriodBtn();
+  applyFilters();
+  closeAllDropdowns();
+}
+function updatePeriodBtn() {
+  const btn = document.getElementById('period-btn');
+  const label = document.getElementById('period-btn-label');
+  if (!selectedPeriod.label) {
+    btn.classList.remove('active-filter');
+    label.textContent = 'Período';
+  } else {
+    btn.classList.add('active-filter');
+    label.textContent = selectedPeriod.label;
+  }
+  updateActiveTags();
+}
+
+// ── ACTIVE TAGS STRIP ──
+function updateActiveTags() {
+  const strip = document.getElementById('active-filters');
+  const container = document.getElementById('filter-tags');
+  const tags = [];
+
+  selectedGenres.forEach(g => {
+    tags.push(`<div class="filter-tag genre-tag">${g}<button class="filter-tag-remove" onclick="removeGenreTag('${g}')">×</button></div>`);
+  });
+  if (selectedPeriod.label) {
+    tags.push(`<div class="filter-tag period-tag">${selectedPeriod.label}<button class="filter-tag-remove" onclick="removePeriod()">×</button></div>`);
+  }
+  advFilters.status.forEach(s => {
+    tags.push(`<div class="filter-tag adv-tag">Status: ${s}<button class="filter-tag-remove" onclick="removeAdvTag('status','${s}')">×</button></div>`);
+  });
+  advFilters.rating.forEach(r => {
+    tags.push(`<div class="filter-tag adv-tag">${r}<button class="filter-tag-remove" onclick="removeAdvTag('rating','${r}')">×</button></div>`);
+  });
+
+  container.innerHTML = tags.join('');
+  strip.classList.toggle('visible', tags.length > 0);
+  document.getElementById('adv-toggle').classList.toggle('has-active', advFilters.status.size > 0 || advFilters.rating.size > 0);
+}
+function removeGenreTag(g) { selectedGenres.delete(g); updateGenreFilterBtn(); initGenrePanel(); applyFilters(); }
+function removePeriod() { selectedPeriod = {key:'all',label:null}; updatePeriodBtn(); document.querySelectorAll('.period-option').forEach((o,i)=>{ if(i===0) o.classList.add('selected'); else o.classList.remove('selected'); }); applyFilters(); }
+function removeAdvTag(type, val) { advFilters[type].delete(val); document.querySelectorAll(`.adv-chip[data-adv="${val}"]`).forEach(c=>c.classList.remove('selected')); updateActiveTags(); applyFilters(); }
+function clearAllFilters() {
+  selectedGenres.clear();
+  selectedPeriod = {key:'all',label:null};
+  advFilters = {status:new Set(), rating:new Set(), score:0, author:''};
+  searchQuery = '';
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-clear').classList.remove('visible');
+  document.querySelectorAll('.period-option').forEach((o,i)=>{ o.classList.toggle('selected',i===0); });
+  document.querySelectorAll('.adv-chip').forEach(c=>c.classList.remove('selected'));
+  updateGenreFilterBtn(); updatePeriodBtn(); initGenrePanel(); applyFilters();
+}
+
+// ── ADVANCED ──
+function toggleAdvChip(el, type) {
+  const val = el.textContent.trim();
+  el.setAttribute('data-adv', val);
+  if (advFilters[type].has(val)) { advFilters[type].delete(val); el.classList.remove('selected'); }
+  else { advFilters[type].add(val); el.classList.add('selected'); }
+}
+function toggleAdv() {
+  const panel = document.getElementById('adv-panel');
+  const btn = document.getElementById('adv-toggle');
+  const open = panel.classList.toggle('open');
+  btn.classList.toggle('open', open);
+}
+function resetAdv() { advFilters = {status:new Set(), rating:new Set(), score:0, author:''}; document.querySelectorAll('.adv-chip').forEach(c=>c.classList.remove('selected')); updateActiveTags(); applyFilters(); }
+function applyAdv() { updateActiveTags(); applyFilters(); toast('Filtros aplicados'); }
+
+// ── DROPDOWNS ──
+function toggleDropdown(name) {
+  const panelId = name + '-panel';
+  const btnId = name + '-btn';
+  if (openDropdown === name) { closeAllDropdowns(); return; }
+  closeAllDropdowns();
+  openDropdown = name;
+  const btn = document.getElementById(btnId);
+  const panel = document.getElementById(panelId);
+  const rect = btn.getBoundingClientRect();
+  panel.style.top = (rect.bottom + 4) + 'px';
+  panel.style.left = rect.left + 'px';
+  panel.classList.add('open');
+  btn.classList.add('open');
+  document.getElementById('dropdown-overlay').classList.add('open');
+  if (name === 'genre') { document.getElementById('genre-search-input').value = ''; initGenrePanel(); setTimeout(()=>document.getElementById('genre-search-input').focus(),50); }
+}
+function closeAllDropdowns() {
+  openDropdown = null;
+  document.querySelectorAll('.dropdown-panel').forEach(p=>p.classList.remove('open'));
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('open'));
+  document.getElementById('dropdown-overlay').classList.remove('open');
+}
+
+// ── FILTERS + RENDER ──
+function applyFilters() {
+  const now = 2025;
+  const periodRanges = { all:[0,9999], season:[2024,2025], '3m':[2024,2025], year:[2024,2025], '2020s':[2020,2025], '2010s':[2010,2019], classic:[0,2009] };
+  const [pFrom, pTo] = selectedPeriod.key==='custom' ? [selectedPeriod.from,selectedPeriod.to] : (periodRanges[selectedPeriod.key]||[0,9999]);
+  const statusMap = {'Em andamento':'ongoing','Concluído':'completed','Hiato':'hiatus','Cancelado':'cancelled'};
+
+  filteredData = MANGA_DATA.filter(m => {
+    const q = searchQuery.toLowerCase();
+    if (q && !m.title.toLowerCase().includes(q) && !m.author.toLowerCase().includes(q) && !m.genres.some(g=>g.toLowerCase().includes(q))) return false;
+    if (m.year < pFrom || m.year > pTo) return false;
+    if (selectedGenres.size > 0 && ![...selectedGenres].every(g=>m.genres.includes(g))) return false;
+    if (advFilters.status.size > 0 && ![...advFilters.status].some(s=>m.status===statusMap[s])) return false;
+    return true;
+  });
+
+  // sort
+  const sorts = {
+    popular:(a,b)=>(b.score*1000+b.chapters)-(a.score*1000+a.chapters),
+    score:(a,b)=>b.score-a.score,
+    recent:(a,b)=>b.id-a.id,
+    updated:(a,b)=>b.chapters-a.chapters,
+    az:(a,b)=>a.title.localeCompare(b.title)
+  };
+  filteredData.sort(sorts[currentSort]);
+  currentPage = 1;
+  renderGrid();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('manga-grid');
+  const noResults = document.getElementById('no-results');
+  const start = (currentPage-1)*PER_PAGE;
+  const end = start+PER_PAGE;
+  const page = filteredData.slice(start,end);
+  const isListView = currentView === 'list';
+
+  if (!filteredData.length) {
+    grid.innerHTML = ''; noResults.classList.add('show');
+    document.getElementById('results-count').textContent = '0 títulos';
+    document.getElementById('per-page-info').textContent = 'Nenhum resultado';
+    renderPagination(); return;
+  }
+
+  noResults.classList.remove('show');
+  document.getElementById('results-count').textContent = filteredData.length + ' títulos';
+  document.getElementById('per-page-info').textContent = `Mostrando ${start+1}–${Math.min(end,filteredData.length)} de ${filteredData.length}`;
+
+  grid.innerHTML = page.map((m,i) => {
+    const statusLabel = {ongoing:'Em andamento',completed:'Concluído',hiatus:'Hiato'}[m.status];
+    const rank = start+i+1;
+    const bar = Math.round((m.score/10)*100);
+    return `<div class="manga-card" onclick="toast('${m.title.replace(/'/g,"\\'")}')">
+      ${isListView?`<div class="list-rank">${rank}</div>`:''}
+      <div class="manga-cover">
+        <div class="cover-bg ${m.covClass}"></div>
+        <div class="cover-status ${m.status}">${statusLabel}</div>
+        <div class="cover-score">★ ${m.score.toFixed(1)}</div>
+        ${!isListView?`<div class="cover-title-embed">${m.title}</div>`:''}
+        <div class="manga-cover-overlay"><button class="cover-quick-add" onclick="event.stopPropagation();toast('${m.title.replace(/'/g,"\\'")} adicionado!')">+ Lista</button></div>
+      </div>
+      <div class="manga-meta">
+        <div class="manga-title">${m.title}</div>
+        <div class="manga-sub"><span>${m.author}</span><span style="color:var(--muted2)">·</span><span>${m.genres[0]}</span><span style="color:var(--muted2)">·</span><span style="font-family:monospace">${m.year}</span></div>
+        <div class="manga-chapters">${m.chapters} cap.</div>
+        <div class="list-extra">
+          <div class="list-bar-wrap"><div class="list-bar" style="width:${bar}%"></div></div>
+          <div class="list-stat"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1l1 2.8 2.9.4-2.1 2 .6 2.9L5 8l-2.4 1.1.6-2.9L1 4.2l2.9-.4L5 1z" stroke="#f4a261" stroke-width="1"/></svg>${m.score.toFixed(1)}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  renderPagination();
+  document.getElementById('content-area').scrollTop = 0;
+  document.getElementById('page-jump-input').value = currentPage;
+}
+
+function renderPagination() {
+  const total = Math.ceil(filteredData.length/PER_PAGE);
+  const pg = document.getElementById('pagination');
+  if (total <= 1) { pg.innerHTML=''; return; }
+  const range = total<=7 ? Array.from({length:total},(_,i)=>i+1)
+    : currentPage<=4 ? [1,2,3,4,5,'...',total]
+    : currentPage>=total-3 ? [1,'...',total-4,total-3,total-2,total-1,total]
+    : [1,'...',currentPage-1,currentPage,currentPage+1,'...',total];
+  pg.innerHTML =
+    `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M7 2L4 5.5 7 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` +
+    range.map(p => p==='...' ? `<span class="page-dots">…</span>` : `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`).join('') +
+    `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M4 2l3 3.5L4 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filteredData.length/PER_PAGE);
+  if (p<1||p>total) return;
+  currentPage = p; renderGrid();
+}
+
+function handleSearch(val) {
+  searchQuery = val;
+  document.getElementById('search-clear').classList.toggle('visible', val.length>0);
+  applyFilters();
+}
+function clearSearch() { document.getElementById('search-input').value=''; handleSearch(''); document.getElementById('search-input').focus(); }
+function handleSort(val) { currentSort = val; applyFilters(); }
+function setView(v) {
+  currentView = v;
+  document.getElementById('manga-grid').classList.toggle('list-view', v==='list');
+  document.getElementById('grid-btn').classList.toggle('active', v==='grid');
+  document.getElementById('list-btn').classList.toggle('active', v==='list');
+  renderGrid();
+}
+function setMediaTab(el, type) {
+  document.querySelectorAll('.media-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  clearAllFilters();
+  toast('Filtrando: ' + el.textContent.trim().split('\n')[0].trim());
+}
+function setNav(el) { document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeAllDropdowns(); });
+
+// Init
+applyFilters();
+</script>
+</body>
+</html>

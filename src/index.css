@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────────────────────
+   Animely design system — black & red, single-theme.
+   Palette in HSL. All colors MUST be HSL.
+   ───────────────────────────────────────────────────────────── */
+
+@layer base {
+  :root,
+  .dark {
+    --background: 0 0% 5%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 0 78% 50%;
+    --primary-foreground: 0 0% 98%;
+    --primary-soft: 0 52% 58%;     /* decorative / secondary accents */
+
+    --secondary: 0 4% 11%;
+    --secondary-foreground: 0 0% 85%;
+
+    --muted: 0 4% 11%;
+    --muted-foreground: 0 0% 50%;
+
+    --accent: 0 78% 50%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62% 38%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 4% 16%;
+    --input: 0 4% 16%;
+    --ring: 0 78% 50%;
+
+    --radius: 0.25rem;
+
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 0 78% 50%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 4% 11%;
+    --sidebar-accent-foreground: 0 0% 85%;
+    --sidebar-border: 0 4% 16%;
+    --sidebar-ring: 0 78% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Space Grotesk', 'Manrope', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'rlig' 1, 'calt' 1, 'ss01' 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight;
+  }
+}
+
+/* ─── Custom scrollbar ─────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.6);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+/* ─── Custom utilities ─────────────────────────────── */
+@layer utilities {
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .h-hero {
+    height: clamp(520px, 76vh, 720px);
+  }
+
+  .section-label {
+    @apply text-[11px] font-semibold tracking-[0.18em] uppercase text-muted-foreground;
+  }
+}
+
+@keyframes loader-fade {
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes loader-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}

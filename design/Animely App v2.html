@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animely — Descobrir</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red: #e63946;
+  --bg: #0a0a0a;
+  --bg2: #111;
+  --bg3: #161616;
+  --fg: #f0eeec;
+  --muted: #666;
+  --muted2: #3a3a3a;
+  --border: rgba(255,255,255,0.07);
+  --sidebar-w: 220px;
+  --gutter: 3px;
+}
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  display: flex;
+}
+
+/* ── SIDEBAR ── */
+aside {
+  width: var(--sidebar-w);
+  height: 100vh;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background: var(--bg);
+  overflow: hidden;
+}
+.sb-logo {
+  padding: 20px 20px 16px;
+  font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sb-logo span { color: var(--red); }
+.sb-search {
+  margin: 12px 14px;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 8px 12px; flex-shrink: 0;
+}
+.sb-search input {
+  background: none; border: none; color: var(--fg);
+  font-family: inherit; font-size: 12px; outline: none; width: 100%;
+}
+.sb-search input::placeholder { color: var(--muted); }
+.sb-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--muted2);
+  padding: 14px 20px 6px;
+}
+nav { flex: 1; overflow-y: auto; }
+nav::-webkit-scrollbar { display: none; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 20px; cursor: pointer;
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  transition: color 0.15s, background 0.15s;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: var(--fg); background: rgba(255,255,255,0.03); }
+.nav-item.active { color: var(--fg); border-left-color: var(--red); background: rgba(230,57,70,0.06); }
+.nav-item .nav-count { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--muted2); font-family: monospace; }
+.nav-item .badge { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; min-width: 18px; text-align: center; }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); margin-left: auto; animation: blink 2s ease infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.sb-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.sb-user { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.15s; }
+.sb-user:hover { background: rgba(255,255,255,0.03); }
+.sb-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #e63946, #6930c3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.sb-user-info { flex: 1; min-width: 0; }
+.sb-user-name { font-size: 13px; font-weight: 700; }
+.sb-user-role { font-size: 11px; color: var(--muted); }
+.sb-lang { padding: 10px 16px; border-top: 1px solid var(--border); position: relative; }
+.lang-btn { display: flex; align-items: center; gap: 8px; width: 100%; background: none; border: 1px solid var(--border); color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 12px; cursor: pointer; border-radius: 6px; transition: all 0.15s; justify-content: space-between; }
+.lang-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--fg); }
+.lang-left { display: flex; align-items: center; gap: 8px; }
+
+/* ── MAIN ── */
+main { flex: 1; display: flex; overflow: hidden; }
+
+/* ── FEED ── */
+.feed-wrap {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  background: #050505;
+}
+.feed-wrap::-webkit-scrollbar { width: 3px; }
+.feed-wrap::-webkit-scrollbar-thumb { background: #222; }
+
+/* Feed header — minimal tabs */
+.feed-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky; top: 0; z-index: 10;
+}
+.feed-tabs { display: flex; }
+.feed-tab {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted);
+  padding: 0 14px; height: 42px;
+  display: flex; align-items: center;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.feed-tab.active { color: var(--fg); border-bottom-color: var(--red); }
+.feed-tab:hover { color: var(--fg); }
+.feed-header-right { display: flex; align-items: center; gap: 12px; }
+.compose-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--border);
+  color: var(--muted); font-family: inherit; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 5px 12px; cursor: pointer; transition: all 0.15s;
+}
+.compose-btn:hover { color: var(--fg); border-color: rgba(255,255,255,0.2); }
+
+/* ── PANEL GRID ── */
+.panel-grid {
+  display: flex; flex-direction: column;
+  gap: var(--gutter);
+  background: #000;
+  padding-bottom: 48px;
+}
+
+/* A "row" can contain 1–3 panels side by side */
+.panel-row {
+  display: flex;
+  gap: var(--gutter);
+}
+
+/* Base card */
+.card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+  background: #111;
+}
+.card:hover .card-overlay { opacity: 1; }
+.card:hover .card-img { transform: scale(1.03); }
+
+/* image / placeholder */
+.card-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.25,0,0,1);
+  display: block;
+}
+.card-ph {
+  width: 100%; height: 100%;
+  transition: transform 0.5s cubic-bezier(0.25,0,0,1);
+}
+
+/* gradient scrim */
+.card-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 30%,
+    rgba(0,0,0,0.2) 55%,
+    rgba(0,0,0,0.85) 100%
+  );
+  pointer-events: none;
+}
+/* Top-left scrim for username */
+.card-scrim-top {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(0,0,0,0.55) 0%,
+    transparent 35%
+  );
+  pointer-events: none;
+}
+
+/* hover overlay */
+.card-overlay {
+  position: absolute; inset: 0;
+  background: rgba(230,57,70,0.08);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+/* user tag — tiny, top-left */
+.card-user {
+  position: absolute; top: 10px; left: 10px;
+  display: flex; align-items: center; gap: 5px;
+  z-index: 5;
+}
+.card-avatar {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 800;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  flex-shrink: 0;
+}
+.card-username {
+  font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.7);
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+/* content area — bottom */
+.card-content {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 12px 14px 14px;
+  z-index: 5;
+}
+.card-series {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--red);
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.card-series-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.card-caption {
+  font-size: 13px; font-weight: 600; line-height: 1.35;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.9);
+  text-wrap: pretty;
+}
+.card-caption.big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 0.04em; line-height: 1.1;
+  font-weight: 400;
+}
+.card-actions {
+  display: flex; align-items: center; gap: 14px;
+  margin-top: 8px;
+}
+.card-action {
+  display: flex; align-items: center; gap: 4px;
+  background: none; border: none; color: rgba(255,255,255,0.5);
+  font-family: inherit; font-size: 11px; cursor: pointer;
+  padding: 0; transition: color 0.15s;
+}
+.card-action:hover { color: rgba(255,255,255,0.9); }
+.card-action.liked { color: var(--red); }
+.card-action svg { transition: transform 0.15s; }
+.card-action:hover svg { transform: scale(1.15); }
+
+/* tag badges on cards */
+.card-badge {
+  position: absolute; top: 10px; right: 10px;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; z-index: 5;
+}
+.card-badge.new { background: var(--red); color: #fff; }
+.card-badge.ep { background: rgba(0,0,0,0.7); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.15); }
+.card-badge.score { background: rgba(0,0,0,0.7); color: #f4a261; border: 1px solid rgba(244,162,97,0.3); font-family: monospace; }
+
+/* panel-specific sizes */
+.card.hero { height: 420px; width: 100%; }
+.card.tall { height: 380px; }
+.card.mid { height: 240px; }
+.card.sq { height: 280px; }
+.card.wide { height: 220px; width: 100%; }
+.card.thin { height: 180px; }
+
+/* width helpers */
+.w-60 { flex: 0 0 60%; }
+.w-40 { flex: 0 0 calc(40% - var(--gutter)); }
+.w-50 { flex: 0 0 calc(50% - var(--gutter) / 2); }
+.w-35 { flex: 0 0 calc(35% - var(--gutter)); }
+.w-65 { flex: 0 0 65%; }
+.w-33 { flex: 1; }
+.w-full { flex: 0 0 100%; }
+
+/* Divider label */
+.feed-divider {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted2);
+  padding: 18px 16px 10px;
+  display: flex; align-items: center; gap: 12px;
+  background: #050505;
+}
+.feed-divider::after { content: ''; flex: 1; height: 1px; background: var(--muted2); opacity: 0.3; }
+
+/* Spoiler reveal */
+.card-spoiler-veil {
+  position: absolute; inset: 0; z-index: 6;
+  background: rgba(0,0,0,0.82);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 8px;
+  transition: opacity 0.25s;
+  backdrop-filter: blur(12px);
+}
+.card-spoiler-label {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+  color: #555;
+}
+.card-spoiler-btn {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  border: 1px solid #333; color: rgba(255,255,255,0.5);
+  background: none; padding: 5px 16px; cursor: pointer; font-family: inherit;
+  transition: all 0.15s;
+}
+.card-spoiler-btn:hover { border-color: #555; color: var(--fg); }
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  width: 260px; flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  overflow-y: auto; overflow-x: hidden;
+  background: var(--bg);
+}
+.right-panel::-webkit-scrollbar { display: none; }
+.rp-section { border-bottom: 1px solid var(--border); padding: 16px; }
+.rp-title { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted2); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.rp-title a { color: var(--red); cursor: pointer; text-decoration: none; font-size: 9px; }
+.mini-rank { display: flex; flex-direction: column; }
+.mr-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+.mr-item:last-child { border-bottom: none; }
+.mr-n { font-size: 11px; font-weight: 800; font-family: monospace; color: var(--muted2); width: 16px; flex-shrink: 0; }
+.mr-n.t { color: var(--red); }
+.mr-name { font-size: 12px; font-weight: 600; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mr-score { font-size: 11px; font-family: monospace; color: var(--muted); flex-shrink: 0; }
+.live-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.live-item:last-child { margin-bottom: 0; }
+.live-avatar { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; }
+.live-info { flex: 1; min-width: 0; }
+.live-user { font-size: 12px; font-weight: 700; }
+.live-show { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rp-act-time { font-size: 10px; color: var(--muted2); font-family: monospace; flex-shrink: 0; }
+.rp-news-item { padding: 9px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+.rp-news-item:last-child { border-bottom: none; }
+.rp-news-source { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-bottom: 3px; }
+.rp-news-title { font-size: 12px; font-weight: 600; line-height: 1.4; color: var(--fg); transition: color 0.15s; }
+.rp-news-item:hover .rp-news-title { color: #aaa; }
+.rp-news-time { font-size: 10px; color: var(--muted2); margin-top: 3px; font-family: monospace; }
+.rp-rec-item { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+.rp-rec-item:last-child { border-bottom: none; }
+.rp-rec-thumb { width: 36px; height: 50px; background: repeating-linear-gradient(-45deg,#151515 0,#151515 5px,#111 5px,#111 10px); flex-shrink: 0; }
+.rp-rec-info { flex: 1; min-width: 0; }
+.rp-rec-name { font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rp-rec-genre { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.rp-rec-score { font-size: 11px; color: #f4a261; font-weight: 700; margin-top: 4px; font-family: monospace; }
+
+/* ── COMMENTS DRAWER ── */
+.comments-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.comments-overlay.open { opacity: 1; pointer-events: all; }
+.comments-drawer { position: fixed; top: 0; right: 0; bottom: 0; z-index: 301; width: 400px; background: #0f0f0f; border-left: 1px solid var(--border); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+.comments-drawer.open { transform: translateX(0); }
+.comments-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.comments-title { font-size: 15px; font-weight: 700; }
+.comments-count { font-size: 13px; color: var(--muted); margin-left: 8px; }
+.comments-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0; transition: color 0.15s; line-height: 1; }
+.comments-close:hover { color: var(--fg); }
+.comments-post-preview { padding: 14px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: #111; }
+.cpp-series { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 6px; }
+.cpp-caption { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--fg); margin-bottom: 8px; }
+.cpp-user { display: flex; align-items: center; gap: 6px; }
+.cpp-username { font-size: 11px; color: var(--muted); }
+.comments-list { flex: 1; overflow-y: auto; padding: 0; }
+.comments-list::-webkit-scrollbar { width: 3px; }
+.comments-list::-webkit-scrollbar-thumb { background: var(--muted2); }
+.comment-item { display: flex; gap: 10px; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.c-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; }
+.c-body { flex: 1; min-width: 0; }
+.c-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.c-name { font-size: 13px; font-weight: 700; }
+.c-time { font-size: 11px; color: var(--muted); }
+.c-text { font-size: 13px; color: #bbb; line-height: 1.55; }
+.c-actions { display: flex; align-items: center; gap: 14px; margin-top: 8px; }
+.c-action { display: flex; align-items: center; gap: 4px; background: none; border: none; color: var(--muted); font-family: inherit; font-size: 11px; cursor: pointer; padding: 0; transition: color 0.15s; }
+.c-action:hover { color: var(--fg); }
+.c-action.liked { color: var(--red); }
+.c-reply-tag { font-size: 11px; color: var(--red); margin-bottom: 3px; }
+.comments-composer { flex-shrink: 0; border-top: 1px solid var(--border); padding: 12px 16px; display: flex; gap: 10px; align-items: flex-end; background: #0f0f0f; }
+.cc-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #e63946, #6930c3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.cc-input-wrap { flex: 1; background: #1a1a1a; border: 1px solid var(--border); border-radius: 20px; padding: 8px 14px; display: flex; align-items: center; gap: 8px; }
+.cc-input { flex: 1; background: none; border: none; color: var(--fg); font-family: inherit; font-size: 13px; outline: none; resize: none; max-height: 80px; }
+.cc-input::placeholder { color: #444; }
+.cc-send { background: var(--red); border: none; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: opacity 0.15s; }
+.cc-send:hover { opacity: 0.85; }
+
+/* Toast */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1a1a1a; border: 1px solid var(--border); padding: 10px 20px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.25s; white-space: nowrap; z-index: 999; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Placeholder art styles for each series */
+.ph-aot { background: linear-gradient(160deg, #1a0800 0%, #3d1500 50%, #0d0d0d 100%); }
+.ph-frieren { background: linear-gradient(160deg, #0d0d1f 0%, #1a1a3d 50%, #08080f 100%); }
+.ph-jjk { background: linear-gradient(160deg, #100010 0%, #2a002a 50%, #0a000a 100%); }
+.ph-dandadan { background: linear-gradient(160deg, #001a10 0%, #003320 50%, #00100a 100%); }
+.ph-slone { background: linear-gradient(160deg, #001a2a 0%, #003355 50%, #000d1a 100%); }
+.ph-blue { background: linear-gradient(160deg, #001533 0%, #002966 50%, #000a1a 100%); }
+.ph-vinland { background: linear-gradient(160deg, #1a1000 0%, #332000 50%, #0d0800 100%); }
+.ph-oshi { background: linear-gradient(160deg, #1a0010 0%, #330020 50%, #0d0008 100%); }
+.ph-ping { background: linear-gradient(160deg, #0d0d00 0%, #1a1a00 50%, #080800 100%); }
+.ph-mush { background: linear-gradient(160deg, #001a0d 0%, #003319 50%, #000d06 100%); }
+
+/* diagonal line texture on placeholders */
+.ph-aot::after, .ph-frieren::after, .ph-jjk::after, .ph-dandadan::after, .ph-slone::after,
+.ph-blue::after, .ph-vinland::after, .ph-oshi::after, .ph-ping::after, .ph-mush::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    -55deg,
+    transparent,
+    transparent 18px,
+    rgba(255,255,255,0.012) 18px,
+    rgba(255,255,255,0.012) 19px
+  );
+}
+.card-ph { position: relative; }
+
+/* ph label */
+.ph-label {
+  position: absolute; bottom: 50px; left: 14px;
+  font-size: 9px; font-family: monospace; color: rgba(255,255,255,0.12);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="sb-logo"><span>a</span>nimely</div>
+  <div class="sb-search">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4.5" stroke="#555" stroke-width="1.2"/><path d="M9 9l3 3" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="Buscar anime, mangá...">
+  </div>
+  <nav>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 6.5L7.5 1 14 6.5V14H9.5V10h-4v4H1V6.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      Início
+    </div>
+    <div class="nav-item active" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Explorar
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 1v13M5 5h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Animes
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 1h8l3 3v10H2V1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M10 1v3h3M5 6h5M5 9h5M5 12h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Mangás
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Personagens
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Atividades</div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="8" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="8" width="6" height="6" stroke="currentColor" stroke-width="1.3"/></svg>
+      Feed <div class="nav-dot"></div>
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 2h13v10H9.5l-2 2-2-2H1V2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      Discussões
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1a5 5 0 0 1 5 5c0 2-1 4-2 5.5H4.5C3.5 10 2.5 8 2.5 6a5 5 0 0 1 5-5zM5.5 11.5h4M7.5 14v-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Notificações <div class="badge">3</div>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Minhas Listas</div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Assistindo <span class="nav-count">23</span>
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Quero Assistir <span class="nav-count">57</span>
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Concluídos <span class="nav-count">128</span>
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Favoritos <span class="nav-count">19</span>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Extras</div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="2" width="13" height="12" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1 6h13M5 1v3M10 1v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      Calendário
+    </div>
+    <div class="nav-item" onclick="setNav(this)">
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1l1.8 4 4.2.6-3 3 .7 4.4-3.7-2-3.7 2 .7-4.4-3-3 4.2-.6L7.5 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      Top Rankings
+    </div>
+  </nav>
+  <div class="sb-lang">
+    <button class="lang-btn" onclick="toast('Idioma')">
+      <div class="lang-left"><span>🇧🇷</span><span>Português (BR)</span></div>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 8l4-4 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar">K</div>
+    <div class="sb-user-info">
+      <div class="sb-user-name">kurumi_fan</div>
+      <div class="sb-user-role">Pro · 847 eps</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main>
+  <div class="feed-wrap">
+
+    <!-- MINIMAL HEADER -->
+    <div class="feed-header">
+      <div class="feed-tabs">
+        <div class="feed-tab active" onclick="setTab(this)">Para você</div>
+        <div class="feed-tab" onclick="setTab(this)">Seguindo</div>
+        <div class="feed-tab" onclick="setTab(this)">Trending</div>
+        <div class="feed-tab" onclick="setTab(this)">Novidades</div>
+      </div>
+      <div class="feed-header-right">
+        <button class="compose-btn" onclick="toast('Criar post')">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Postar
+        </button>
+      </div>
+    </div>
+
+    <!-- PANEL GRID -->
+    <div class="panel-grid">
+
+      <!-- ROW 1: Hero + tall side -->
+      <div class="panel-row">
+        <!-- Hero card -->
+        <div class="card hero w-65" onclick="openComments(this)">
+          <div class="card-ph ph-aot" style="height:100%"></div>
+          <div class="card-ph-label ph-label">Attack on Titan · Ep. 87 · Final</div>
+          <div class="card-scrim-top"></div>
+          <div class="card-scrim"></div>
+          <div class="card-user">
+            <div class="card-avatar" style="background:linear-gradient(135deg,#e63946,#6930c3)">O</div>
+            <span class="card-username">@otakumaster</span>
+          </div>
+          <div class="card-badge new">Novo</div>
+          <div class="card-content">
+            <div class="card-series"><div class="card-series-dot"></div>Attack on Titan</div>
+            <div class="card-caption big">Isayama entregou uma obra-prima do começo ao fim.</div>
+            <div class="card-actions">
+              <button class="card-action liked" onclick="toggleLike(event,this)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z"/></svg>
+                <span>124</span>
+              </button>
+              <button class="card-action" onclick="openComments(this.closest('.card'))">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>23</span>
+              </button>
+              <button class="card-action" onclick="toggleBookmark(event,this)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 1.5h8v10l-4-2.5-4 2.5v-10z" stroke="currentColor" stroke-width="1.2"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="card-overlay"></div>
+        </div>
+
+        <!-- Tall side — 2 stacked -->
+        <div style="flex:0 0 calc(35% - 3px);display:flex;flex-direction:column;gap:var(--gutter);">
+          <div class="card" style="flex:1" onclick="openComments(this)">
+            <div class="card-ph ph-frieren" style="height:100%"></div>
+            <div class="ph-label">Frieren: Beyond Journey's End · Ep.28</div>
+            <div class="card-scrim-top"></div>
+            <div class="card-scrim"></div>
+            <div class="card-user">
+              <div class="card-avatar" style="background:linear-gradient(135deg,#2d6a4f,#52b788)">Y</div>
+              <span class="card-username">@yuuna</span>
+            </div>
+            <div class="card-badge score">9.42</div>
+            <div class="card-content">
+              <div class="card-series"><div class="card-series-dot"></div>Frieren</div>
+              <div class="card-caption">Eu nunca pensei que magia poderia ser tão filosófica.</div>
+              <div class="card-actions">
+                <button class="card-action" onclick="toggleLike(event,this)">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z" stroke="currentColor" stroke-width="1.2"/></svg>
+                  <span>87</span>
+                </button>
+                <button class="card-action" onclick="openComments(this.closest('.card'))">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                  <span>14</span>
+                </button>
+              </div>
+            </div>
+            <div class="card-overlay"></div>
+          </div>
+
+          <div class="card" style="flex:1" onclick="openComments(this)">
+            <div class="card-ph ph-jjk" style="height:100%"></div>
+            <div class="ph-label">Jujutsu Kaisen · S3 · Ep.11</div>
+            <div class="card-scrim-top"></div>
+            <div class="card-scrim"></div>
+            <div class="card-user">
+              <div class="card-avatar" style="background:linear-gradient(135deg,#6930c3,#e63946)">M</div>
+              <span class="card-username">@miyamoto_rei</span>
+            </div>
+            <div class="card-badge new">Ep. 11</div>
+            <div class="card-content">
+              <div class="card-series"><div class="card-series-dot"></div>Jujutsu Kaisen S3</div>
+              <div class="card-caption">Gege destruindo corações desde 2018.</div>
+              <div class="card-actions">
+                <button class="card-action" onclick="toggleLike(event,this)">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z" stroke="currentColor" stroke-width="1.2"/></svg>
+                  <span>341</span>
+                </button>
+                <button class="card-action" onclick="openComments(this.closest('.card'))">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                  <span>58</span>
+                </button>
+              </div>
+            </div>
+            <div class="card-overlay"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2: 3 equal -->
+      <div class="panel-row">
+        <div class="card sq w-33" onclick="openComments(this)">
+          <div class="card-ph ph-dandadan" style="height:100%"></div>
+          <div class="ph-label">Dandadan · Ep. 13</div>
+          <div class="card-scrim-top"></div>
+          <div class="card-scrim"></div>
+          <div class="card-user">
+            <div class="card-avatar" style="background:linear-gradient(135deg,#001a10,#52b788)">T</div>
+            <span class="card-username">@tanaka_drops</span>
+          </div>
+          <div class="card-badge ep">Ep. 13</div>
+          <div class="card-content">
+            <div class="card-series"><div class="card-series-dot"></div>Dandadan</div>
+            <div class="card-caption">Alien karate vs fantasma yokai — isso é arte.</div>
+            <div class="card-actions">
+              <button class="card-action" onclick="toggleLike(event,this)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>62</span>
+              </button>
+              <button class="card-action" onclick="openComments(this.closest('.card'))">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>9</span>
+              </button>
+            </div>
+          </div>
+          <div class="card-overlay"></div>
+        </div>
+
+        <div class="card sq w-33" onclick="openComments(this)">
+          <div class="card-ph ph-slone" style="height:100%"></div>
+          <div class="ph-label">Solo Leveling S2 · Ep. 6</div>
+          <div class="card-scrim-top"></div>
+          <div class="card-scrim"></div>
+          <div class="card-user">
+            <div class="card-avatar" style="background:linear-gradient(135deg,#0d1b2a,#457b9d)">L</div>
+            <span class="card-username">@luka_anime</span>
+          </div>
+          <div class="card-badge new">Novo</div>
+          <div class="card-content">
+            <div class="card-series"><div class="card-series-dot"></div>Solo Leveling S2</div>
+            <div class="card-caption">Sung Jinwoo sempre foi o cara mais overpowered. E ainda vai ficar mais.</div>
+            <div class="card-actions">
+              <button class="card-action liked" onclick="toggleLike(event,this)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z"/></svg>
+                <span>219</span>
+              </button>
+              <button class="card-action" onclick="openComments(this.closest('.card'))">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>37</span>
+              </button>
+            </div>
+          </div>
+          <div class="card-overlay"></div>
+        </div>
+
+        <!-- Spoiler card -->
+        <div class="card sq w-33" onclick="openComments(this)">
+          <div class="card-ph ph-blue" style="height:100%"></div>
+          <div class="ph-label">Blue Lock S2 · Ep. 9</div>
+          <div class="card-scrim-top"></div>
+          <div class="card-scrim"></div>
+          <div class="card-user">
+            <div class="card-avatar" style="background:linear-gradient(135deg,#001533,#0047ab)">N</div>
+            <span class="card-username">@natsumi_w</span>
+          </div>
+          <div class="card-spoiler-veil id="sv1"">
+            <div class="card-spoiler-label">⚠ Contém Spoiler</div>
+            <button class="card-spoiler-btn" onclick="revealSpoiler(event,'sv1')">Mostrar</button>
+          </div>
+          <div class="card-content">
+            <div class="card-series"><div class="card-series-dot"></div>Blue Lock S2</div>
+            <div class="card-caption">Esse gol do Isagi mudou tudo. Isagi > Rin provado.</div>
+            <div class="card-actions">
+              <button class="card-action" onclick="toggleLike(event,this)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>847</span>
+              </button>
+              <button class="card-action" onclick="openComments(this.closest('.card'))">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>134</span>
+              </button>
+            </div>
+          </div>
+          <div class="card-overlay"></div>
+        </div>
+      </div>
+
+      <div class="feed-divider">Recomendado para você</div>
+
+      <!-- ROW 3: wide + narrow -->
+      <div class="panel-row">
+        <div class="card tall w-40" onclick="openComments(this)">
+          <div class="card-ph ph-vinland" style="height:100%"></div>
+          <div class="ph-label">Vinland Saga S2</div>
+          <div class="card-scrim-top"></div>
+          <div class="card-scrim"></div>
+          <div class="card-user">
+            <div class="card-avatar" style="background:linear-gradient(135deg,#1a1000,#5c3d00)">R</div>
+            <span class="card-username">@rafaelomg</span>
+          </div>
+          <div class="card-badge score">★ 9.1</div>
+          <div class="card-content">
+            <div class="card-series"><div class="card-series-dot"></div>Vinland Saga</div>
+            <div class="card-caption big">Thorfinn e a busca por um mundo sem guerra.</div>
+            <div class="card-actions">
+              <button class="card-action" onclick="toggleLike(event,this)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>503</span>
+              </button>
+              <button class="card-action" onclick="openComments(this.closest('.card'))">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                <span>76</span>
+              </button>
+              <button class="card-action" onclick="toggleBookmark(event,this)">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 1.5h8v10l-4-2.5-4 2.5v-10z" stroke="currentColor" stroke-width="1.2"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="card-overlay"></div>
+        </div>
+
+        <div style="flex:0 0 calc(60% - 3px);display:flex;flex-direction:column;gap:var(--gutter);">
+          <div class="panel-row" style="gap:var(--gutter);flex:1">
+            <div class="card w-50" style="flex:1" onclick="openComments(this)">
+              <div class="card-ph ph-oshi" style="height:100%"></div>
+              <div class="ph-label">Oshi no Ko S2</div>
+              <div class="card-scrim-top"></div>
+              <div class="card-scrim"></div>
+              <div class="card-user">
+                <div class="card-avatar" style="background:linear-gradient(135deg,#1a0010,#c9184a)">S</div>
+                <span class="card-username">@sakura_drop</span>
+              </div>
+              <div class="card-content">
+                <div class="card-series"><div class="card-series-dot"></div>Oshi no Ko S2</div>
+                <div class="card-caption">A realidade do show business é perturbadora.</div>
+                <div class="card-actions">
+                  <button class="card-action" onclick="toggleLike(event,this)">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z" stroke="currentColor" stroke-width="1.2"/></svg>
+                    <span>178</span>
+                  </button>
+                  <button class="card-action" onclick="openComments(this.closest('.card'))">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                    <span>31</span>
+                  </button>
+                </div>
+              </div>
+              <div class="card-overlay"></div>
+            </div>
+
+            <div class="card w-50" style="flex:1" onclick="openComments(this)">
+              <div class="card-ph ph-ping" style="height:100%"></div>
+              <div class="ph-label">Ping Pong the Animation</div>
+              <div class="card-scrim-top"></div>
+              <div class="card-scrim"></div>
+              <div class="card-user">
+                <div class="card-avatar" style="background:linear-gradient(135deg,#1a1a00,#555500)">K</div>
+                <span class="card-username">@kurumi_fan</span>
+              </div>
+              <div class="card-badge score">★ 8.8</div>
+              <div class="card-content">
+                <div class="card-series"><div class="card-series-dot"></div>Ping Pong</div>
+                <div class="card-caption">Animação mais honesta sobre talento e esforço que já vi.</div>
+                <div class="card-actions">
+                  <button class="card-action liked" onclick="toggleLike(event,this)">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z"/></svg>
+                    <span>92</span>
+                  </button>
+                  <button class="card-action" onclick="openComments(this.closest('.card'))">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                    <span>12</span>
+                  </button>
+                </div>
+              </div>
+              <div class="card-overlay"></div>
+            </div>
+          </div>
+
+          <div class="card wide" style="flex:0 0 160px" onclick="openComments(this)">
+            <div class="card-ph ph-mush" style="height:100%"></div>
+            <div class="ph-label">Mushishi · temporada completa</div>
+            <div class="card-scrim-top"></div>
+            <div class="card-scrim"></div>
+            <div class="card-user">
+              <div class="card-avatar" style="background:linear-gradient(135deg,#001a0d,#2d6a4f)">R</div>
+              <span class="card-username">@rafaelomg</span>
+            </div>
+            <div class="card-badge score">★ 9.0</div>
+            <div class="card-content">
+              <div class="card-series"><div class="card-series-dot"></div>Mushishi</div>
+              <div class="card-caption big">O anime mais próximo de um haiku que existe.</div>
+              <div class="card-actions">
+                <button class="card-action" onclick="toggleLike(event,this)">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 12S1 8.5 1 4.5a4 4 0 0 1 5.5-.45A4 4 0 0 1 12 4.5C12 8.5 6.5 12 6.5 12z" stroke="currentColor" stroke-width="1.2"/></svg>
+                  <span>441</span>
+                </button>
+                <button class="card-action" onclick="openComments(this.closest('.card'))">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 1.5h10v8H8l-1.5 2L5 9.5H1.5v-8z" stroke="currentColor" stroke-width="1.2"/></svg>
+                  <span>49</span>
+                </button>
+                <button class="card-action" onclick="toggleBookmark(event,this)">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 1.5h8v10l-4-2.5-4 2.5v-10z" stroke="currentColor" stroke-width="1.2"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="card-overlay"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-grid -->
+  </div><!-- /feed-wrap -->
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="rp-section">
+      <div class="rp-title">Top Semana <a>Ver ranking</a></div>
+      <div class="mini-rank">
+        <div class="mr-item"><div class="mr-n t">1</div><div class="mr-name">Frieren: BtJE</div><div class="mr-score">9.42</div></div>
+        <div class="mr-item"><div class="mr-n t">2</div><div class="mr-name">Solo Leveling S2</div><div class="mr-score">9.11</div></div>
+        <div class="mr-item"><div class="mr-n">3</div><div class="mr-name">Dandadan</div><div class="mr-score">8.97</div></div>
+        <div class="mr-item"><div class="mr-n">4</div><div class="mr-name">Blue Lock S2</div><div class="mr-score">8.84</div></div>
+        <div class="mr-item"><div class="mr-n">5</div><div class="mr-name">Oshi no Ko S2</div><div class="mr-score">8.79</div></div>
+      </div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-title">Atividade de amigos <a>Ver tudo</a></div>
+      <div class="rp-activity">
+        <div class="live-item">
+          <div class="live-avatar" style="background:linear-gradient(135deg,#2d6a4f,#1b4332)">R</div>
+          <div class="live-info"><div class="live-user">rafaelomg</div><div class="live-show">Terminou Vinland Saga S2 · ★10</div></div>
+          <div class="rp-act-time">5m</div>
+        </div>
+        <div class="live-item">
+          <div class="live-avatar" style="background:linear-gradient(135deg,#6930c3,#1d3557)">S</div>
+          <div class="live-info"><div class="live-user">sakura_drop</div><div class="live-show">Adicionou Re:Zero S3</div></div>
+          <div class="rp-act-time">18m</div>
+        </div>
+        <div class="live-item">
+          <div class="live-avatar" style="background:linear-gradient(135deg,#457b9d,#1d3557)">L</div>
+          <div class="live-info"><div class="live-user">luka_anime</div><div class="live-show">Assistindo AoT Final Ep.87</div></div>
+          <div class="rp-act-time">31m</div>
+        </div>
+        <div class="live-item">
+          <div class="live-avatar" style="background:linear-gradient(135deg,#e63946,#c1121f)">N</div>
+          <div class="live-info"><div class="live-user">natsumi_w</div><div class="live-show">Avaliou JJK S3 com 8.5</div></div>
+          <div class="rp-act-time">45m</div>
+        </div>
+      </div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-title">Notícias <a>Ver todas</a></div>
+      <div>
+        <div class="rp-news-item"><div class="rp-news-source">Crunchyroll</div><div class="rp-news-title">Frieren confirma 2ª temporada para 2026</div><div class="rp-news-time">3h atrás</div></div>
+        <div class="rp-news-item"><div class="rp-news-source">ANN</div><div class="rp-news-title">MAPPA divulga visual de projeto original inédito</div><div class="rp-news-time">5h atrás</div></div>
+        <div class="rp-news-item"><div class="rp-news-source">Anime News</div><div class="rp-news-title">Solo Leveling S2 confirma 13 episódios</div><div class="rp-news-time">8h atrás</div></div>
+      </div>
+    </div>
+    <div class="rp-section">
+      <div class="rp-title">Recomendado</div>
+      <div>
+        <div class="rp-rec-item"><div class="rp-rec-thumb"></div><div class="rp-rec-info"><div class="rp-rec-name">Vinland Saga</div><div class="rp-rec-genre">Histórico · Seinen</div><div class="rp-rec-score">★ 9.1</div></div></div>
+        <div class="rp-rec-item"><div class="rp-rec-thumb"></div><div class="rp-rec-info"><div class="rp-rec-name">Mushishi</div><div class="rp-rec-genre">Mistério · SoL</div><div class="rp-rec-score">★ 9.0</div></div></div>
+        <div class="rp-rec-item"><div class="rp-rec-thumb"></div><div class="rp-rec-info"><div class="rp-rec-name">Ping Pong</div><div class="rp-rec-genre">Esporte · Drama</div><div class="rp-rec-score">★ 8.8</div></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- COMMENTS OVERLAY -->
+<div class="comments-overlay" id="comments-overlay" onclick="closeComments()"></div>
+
+<!-- COMMENTS DRAWER -->
+<div class="comments-drawer" id="comments-drawer">
+  <div class="comments-header">
+    <div style="display:flex;align-items:center">
+      <span class="comments-title">Comentários</span>
+      <span class="comments-count" id="comments-count">23</span>
+    </div>
+    <button class="comments-close" onclick="closeComments()">×</button>
+  </div>
+  <div class="comments-post-preview" id="comments-post-preview">
+    <div class="cpp-series" id="cpp-series">Attack on Titan</div>
+    <div class="cpp-caption" id="cpp-caption">Isayama entregou uma obra-prima do começo ao fim.</div>
+    <div class="cpp-user">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4.5" stroke="#444"/></svg>
+      <span class="cpp-username" id="cpp-username">@otakumaster</span>
+    </div>
+  </div>
+  <div class="comments-list" id="comments-list">
+    <div class="comment-item">
+      <div class="c-avatar" style="background:linear-gradient(135deg,#2d6a4f,#52b788)">Y</div>
+      <div class="c-body">
+        <div class="c-header"><span class="c-name">Yuna</span><span class="c-time">1h atrás</span></div>
+        <div class="c-text">Concordo demais! O arco final foi pesado mas fazia sentido pra história do Eren.</div>
+        <div class="c-actions">
+          <button class="c-action" onclick="this.classList.toggle('liked');this.querySelector('span').textContent=this.classList.contains('liked')?'13':'12'">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 11S1 7.5 1 4.5a3 3 0 0 1 5-.45A3 3 0 0 1 11 4.5C11 7.5 6 11 6 11z" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>12</span>
+          </button>
+          <button class="c-action" onclick="setReply('Yuna')">Responder</button>
+        </div>
+      </div>
+    </div>
+    <div class="comment-item">
+      <div class="c-avatar" style="background:linear-gradient(135deg,#457b9d,#1d3557)">T</div>
+      <div class="c-body">
+        <div class="c-reply-tag">↩ respondendo @otakumaster</div>
+        <div class="c-header"><span class="c-name">tanaka_drops</span><span class="c-time">45min</span></div>
+        <div class="c-text">Isayama é um gênio mesmo. Conseguiu fazer o vilão ser o protagonista desde o início.</div>
+        <div class="c-actions">
+          <button class="c-action liked" onclick="this.classList.toggle('liked');this.querySelector('span').textContent=this.classList.contains('liked')?'8':'7'">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M6 11S1 7.5 1 4.5a3 3 0 0 1 5-.45A3 3 0 0 1 11 4.5C11 7.5 6 11 6 11z"/></svg>
+            <span>8</span>
+          </button>
+          <button class="c-action" onclick="setReply('tanaka_drops')">Responder</button>
+        </div>
+      </div>
+    </div>
+    <div class="comment-item">
+      <div class="c-avatar" style="background:linear-gradient(135deg,#6930c3,#e63946)">M</div>
+      <div class="c-body">
+        <div class="c-header"><span class="c-name">miyamoto_rei</span><span class="c-time">30min</span></div>
+        <div class="c-text">Final controverso mas necessário. Nunca tinha visto uma série fazer isso com o protagonista.</div>
+        <div class="c-actions">
+          <button class="c-action" onclick="this.classList.toggle('liked');this.querySelector('span').textContent=this.classList.contains('liked')?'6':'5'">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 11S1 7.5 1 4.5a3 3 0 0 1 5-.45A3 3 0 0 1 11 4.5C11 7.5 6 11 6 11z" stroke="currentColor" stroke-width="1.2"/></svg>
+            <span>5</span>
+          </button>
+          <button class="c-action" onclick="setReply('miyamoto_rei')">Responder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="comments-composer">
+    <div class="cc-avatar">K</div>
+    <div class="cc-input-wrap">
+      <textarea class="cc-input" id="cc-input" placeholder="Adicionar comentário..." rows="1" oninput="autoResize(this)"></textarea>
+    </div>
+    <button class="cc-send" onclick="sendComment()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12 7L2 2l2.5 5L2 12l10-5z" fill="white"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function openComments(card) {
+  const series = card.querySelector('.card-series')?.textContent?.trim() || '';
+  const caption = card.querySelector('.card-caption')?.textContent?.trim() || '';
+  const username = card.querySelector('.card-username')?.textContent?.trim() || '';
+  const count = card.querySelector('.card-action:nth-child(2) span')?.textContent || '0';
+
+  document.getElementById('cpp-series').textContent = series;
+  document.getElementById('cpp-caption').textContent = caption;
+  document.getElementById('cpp-username').textContent = username;
+  document.getElementById('comments-count').textContent = count;
+
+  document.getElementById('comments-overlay').classList.add('open');
+  document.getElementById('comments-drawer').classList.add('open');
+  setTimeout(() => document.getElementById('cc-input').focus(), 350);
+}
+function closeComments() {
+  document.getElementById('comments-overlay').classList.remove('open');
+  document.getElementById('comments-drawer').classList.remove('open');
+}
+function setReply(user) {
+  const input = document.getElementById('cc-input');
+  input.value = '@' + user + ' ';
+  input.focus();
+}
+function sendComment() {
+  const input = document.getElementById('cc-input');
+  const text = input.value.trim();
+  if (!text) return;
+  const list = document.getElementById('comments-list');
+  const item = document.createElement('div');
+  item.className = 'comment-item';
+  item.innerHTML = `
+    <div class="c-avatar" style="background:linear-gradient(135deg,#e63946,#6930c3)">K</div>
+    <div class="c-body">
+      <div class="c-header"><span class="c-name">kurumi_fan</span><span class="c-time">agora</span></div>
+      <div class="c-text">${text.replace(/</g,'&lt;')}</div>
+      <div class="c-actions">
+        <button class="c-action" onclick="this.classList.toggle('liked')">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 11S1 7.5 1 4.5a3 3 0 0 1 5-.45A3 3 0 0 1 11 4.5C11 7.5 6 11 6 11z" stroke="currentColor" stroke-width="1.2"/></svg>
+          <span>0</span>
+        </button>
+        <button class="c-action" onclick="setReply('kurumi_fan')">Responder</button>
+      </div>
+    </div>`;
+  list.appendChild(item);
+  input.value = ''; input.style.height = 'auto';
+  list.scrollTop = list.scrollHeight;
+  const count = document.getElementById('comments-count');
+  count.textContent = parseInt(count.textContent || 0) + 1;
+}
+function autoResize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+
+function toggleLike(e, btn) {
+  e.stopPropagation();
+  const isLiked = btn.classList.toggle('liked');
+  const svg = btn.querySelector('svg');
+  const span = btn.querySelector('span');
+  const n = parseInt(span.textContent) || 0;
+  svg.setAttribute('fill', isLiked ? 'currentColor' : 'none');
+  if (!isLiked) svg.setAttribute('stroke', 'currentColor');
+  span.textContent = isLiked ? n + 1 : n - 1;
+}
+function toggleBookmark(e, btn) {
+  e.stopPropagation();
+  const saved = btn.classList.toggle('liked');
+  toast(saved ? 'Salvo nos favoritos' : 'Removido dos favoritos');
+}
+function revealSpoiler(e, id) {
+  e.stopPropagation();
+  const veil = e.target.closest('.card-spoiler-veil');
+  veil.style.opacity = '0';
+  veil.style.pointerEvents = 'none';
+}
+function setNav(el) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+function setTab(el) {
+  document.querySelectorAll('.feed-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeComments();
+  if (e.key === 'Enter' && !e.shiftKey && document.activeElement === document.getElementById('cc-input')) {
+    e.preventDefault(); sendComment();
+  }
+});
+</script>
+</body>
+</html>
