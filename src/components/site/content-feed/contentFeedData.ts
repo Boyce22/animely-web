@@ -1,4 +1,4 @@
-import type { ContentCardData } from "@/components/site/ContentCard"
+import type { ContentCardData } from "@/components/site/content-card/contentCardTypes"
 
 const PLACEHOLDERS = {
   aot: "linear-gradient(160deg, #1a0800 0%, #3d1500 50%, #0d0d0d 100%)",
