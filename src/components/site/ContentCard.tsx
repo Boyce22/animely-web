@@ -53,10 +53,10 @@ export function ContentCard({ data, height, className, style }: Props) {
       onClick={openContent}
       onKeyDown={handleKeyDown}
       className={cn(
-        "relative overflow-hidden cursor-pointer group flex-shrink-0 bg-[#111] outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "relative overflow-hidden h-full cursor-pointer group flex-shrink-0 bg-[#111] outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         className,
       )}
-      style={{ height: height ?? "100%", ...style }}
+      style={height ? { height, ...style } : style}
     >
       <ContentCardBackground gradient={data.phGradient} />
       <ContentCardUserBadge user={data.user} badge={data.badge} />

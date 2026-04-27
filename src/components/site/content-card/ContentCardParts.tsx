@@ -36,16 +36,16 @@ export function ContentCardBackground({ gradient }: { gradient: string }) {
 export function ContentCardUserBadge({ user, badge }: { user: ContentCardData["user"]; badge?: ContentCardData["badge"] }) {
   return (
     <>
-      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-[5]">
+      <div className="absolute top-5 left-5 flex items-center gap-3 z-[5]">
         <div
-          className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black border border-white/20 flex-shrink-0 text-white"
+          className="w-10 h-10 rounded-full flex items-center justify-center text-[15px] font-black border-2 border-white/20 flex-shrink-0 text-white"
           style={{ background: user.gradient }}
         >
           {user.initial}
         </div>
         <span
-          className="text-[10px] font-semibold text-white/70 tracking-[0.04em]"
-          style={{ textShadow: "0 1px 4px rgba(0,0,0,0.8)" }}
+          className="text-[15px] font-bold text-white/80 tracking-[0.04em]"
+          style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
         >
           @{user.username}
         </span>
@@ -54,12 +54,12 @@ export function ContentCardUserBadge({ user, badge }: { user: ContentCardData["u
       {badge && (
         <div
           className={cn(
-            "absolute top-2.5 right-2.5 text-[9px] font-black tracking-[0.1em] uppercase px-2 py-0.5 z-[5]",
+            "absolute top-5 right-5 text-[14px] font-black tracking-widest uppercase px-4 py-1.5 rounded-md z-[5]",
             badge.type === "new" && "bg-primary text-white",
             badge.type === "ep" &&
-              "bg-black/70 text-white/80 border border-white/15",
+            "bg-black/70 text-white/80 border border-white/15",
             badge.type === "score" &&
-              "bg-black/70 text-[#f4a261] border border-[#f4a261]/30 font-mono",
+            "bg-black/70 text-[#f4a261] border border-[#f4a261]/30 font-mono",
           )}
         >
           {badge.text}
@@ -80,10 +80,10 @@ interface ContentCardBottomContentProps {
 
 export function ContentCardBottomContent({ data, liked, likeCount, saved, onLike, onBookmark }: ContentCardBottomContentProps) {
   return (
-    <div className="absolute bottom-0 left-0 right-0 px-3.5 pb-3.5 pt-3 z-[5]">
-      <div className="flex items-center gap-1.5 mb-1">
-        <div className="w-1 h-1 rounded-full bg-primary flex-shrink-0" />
-        <span className="text-[9px] font-black tracking-[0.14em] uppercase text-primary">
+    <div className="absolute bottom-0 left-0 right-0 px-6 pb-6 pt-5 z-[5]">
+      <div className="flex items-center gap-2.5 mb-2.5">
+        <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+        <span className="text-[14px] font-black tracking-widest uppercase text-primary">
           {data.series}
         </span>
       </div>
@@ -92,8 +92,8 @@ export function ContentCardBottomContent({ data, liked, likeCount, saved, onLike
         className={cn(
           "text-white/95",
           data.bigCaption
-            ? "text-[22px] leading-[1.1] tracking-[0.04em]"
-            : "text-[13px] font-semibold leading-[1.35]",
+            ? "text-[36px] leading-[1.1] tracking-[0.04em]"
+            : "text-[22px] font-bold leading-[1.3]",
         )}
         style={{
           fontFamily: data.bigCaption ? "'Bebas Neue', sans-serif" : undefined,
@@ -103,24 +103,24 @@ export function ContentCardBottomContent({ data, liked, likeCount, saved, onLike
         {data.caption}
       </p>
 
-      <div className="flex items-center gap-3.5 mt-2">
+      <div className="flex items-center gap-5 mt-4">
         <button
           onClick={onLike}
           className={cn(
-            "flex items-center gap-1 text-[11px] transition-colors bg-transparent border-none p-0 cursor-pointer",
+            "flex items-center gap-2 text-[15px] font-bold transition-colors bg-transparent border-none p-0 cursor-pointer",
             liked ? "text-primary" : "text-white/50 hover:text-white/90",
           )}
         >
           <Heart
-            className="w-3 h-3"
+            className="w-5 h-5"
             fill={liked ? "currentColor" : "none"}
             strokeWidth={1.2}
           />
           <span>{likeCount}</span>
         </button>
 
-        <button className="flex items-center gap-1 text-[11px] text-white/50 hover:text-white/90 transition-colors bg-transparent border-none p-0 cursor-pointer">
-          <MessageCircle className="w-3 h-3" strokeWidth={1.2} />
+        <button className="flex items-center gap-2 text-[15px] font-bold text-white/50 hover:text-white/90 transition-colors bg-transparent border-none p-0 cursor-pointer">
+          <MessageCircle className="w-5 h-5" strokeWidth={1.2} />
           <span>{data.comments}</span>
         </button>
 
@@ -128,12 +128,12 @@ export function ContentCardBottomContent({ data, liked, likeCount, saved, onLike
           <button
             onClick={onBookmark}
             className={cn(
-              "flex items-center gap-1 text-[11px] transition-colors bg-transparent border-none p-0 cursor-pointer",
+              "flex items-center gap-2 text-[15px] font-bold transition-colors bg-transparent border-none p-0 cursor-pointer",
               saved ? "text-primary" : "text-white/50 hover:text-white/90",
             )}
           >
             <Bookmark
-              className="w-3 h-3"
+              className="w-5 h-5"
               fill={saved ? "currentColor" : "none"}
               strokeWidth={1.2}
             />
@@ -152,7 +152,7 @@ export function ContentCardSpoilerOverlay({ onReveal }: { onReveal: () => void }
       className="absolute inset-0 z-[6] flex flex-col items-center justify-center gap-2 transition-opacity duration-200"
       style={{ background: "rgba(0,0,0,0.82)", backdropFilter: "blur(12px)" }}
     >
-      <span className="text-[9px] font-black tracking-[0.14em] uppercase text-white/30">
+      <span className="text-[12px] font-black tracking-widest uppercase text-white/40">
         {t("explore.spoiler_label")}
       </span>
       <button
@@ -160,7 +160,7 @@ export function ContentCardSpoilerOverlay({ onReveal }: { onReveal: () => void }
           e.stopPropagation()
           onReveal()
         }}
-        className="text-[11px] font-bold tracking-[0.06em] uppercase border border-white/20 text-white/50 hover:border-white/40 hover:text-white bg-transparent cursor-pointer px-4 py-1.5 transition-colors"
+        className="text-[14px] font-bold tracking-widest uppercase border-2 rounded-md border-white/20 text-white/60 hover:border-white/50 hover:text-white bg-transparent cursor-pointer px-6 py-2 transition-all"
       >
         {t("explore.spoiler_reveal")}
       </button>

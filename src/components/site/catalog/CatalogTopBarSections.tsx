@@ -41,40 +41,40 @@ export function CatalogMediaTabs({ value, onSet, resultsCount }: CatalogMediaTab
           key={key}
           onClick={() => onSet("mediaType", key)}
           className={cn(
-            "flex items-center gap-1.5 px-4 h-11 text-[13px] font-bold transition-colors border-b-2 flex-shrink-0",
+            "flex items-center gap-2 px-5 h-12 text-[15px] font-bold transition-colors border-b-[3px] flex-shrink-0",
             value.mediaType === key
               ? "text-foreground border-primary"
               : "text-muted-foreground border-transparent hover:text-foreground",
           )}
         >
-          <Icon className="w-3 h-3" />
+          <Icon className="w-4 h-4" />
           {t(`catalog.tab_${key.replace("-", "_")}`)}
           <span className={cn(
-            "text-[10px] font-mono px-1.5 py-px rounded-sm",
-            value.mediaType === key ? "bg-primary/15 text-primary" : "bg-secondary text-white/25",
+            "text-[12px] font-black font-mono px-2 py-0.5 rounded-md",
+            value.mediaType === key ? "bg-primary/15 text-primary" : "bg-secondary text-white/30",
           )}>
             {count}
           </span>
         </button>
       ))}
 
-      <div className="ml-auto flex items-center gap-2">
-        <span className="text-[11px] text-white/25 font-mono whitespace-nowrap">
+      <div className="ml-auto flex items-center gap-3">
+        <span className="text-[13px] font-bold text-white/30 font-mono whitespace-nowrap mr-2">
           {t("catalog.titles", { count: resultsCount })}
         </span>
         <button
           onClick={() => onSet("view", "grid")}
-          className={cn("w-7 h-7 flex items-center justify-center border transition-all", value.view === "grid" ? "border-white/20 text-foreground bg-white/[0.04]" : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20")}
+          className={cn("w-9 h-9 rounded-md flex items-center justify-center border transition-all", value.view === "grid" ? "border-white/20 text-foreground bg-white/[0.04]" : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20")}
           title={t("catalog.view_grid")}
         >
-          <Squares2X2Icon className="w-3 h-3" />
+          <Squares2X2Icon className="w-4 h-4" />
         </button>
         <button
           onClick={() => onSet("view", "list")}
-          className={cn("w-7 h-7 flex items-center justify-center border transition-all", value.view === "list" ? "border-white/20 text-foreground bg-white/[0.04]" : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20")}
+          className={cn("w-9 h-9 rounded-md flex items-center justify-center border transition-all", value.view === "list" ? "border-white/20 text-foreground bg-white/[0.04]" : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20")}
           title={t("catalog.view_list")}
         >
-          <QueueListIcon className="w-3 h-3" />
+          <QueueListIcon className="w-4 h-4" />
         </button>
       </div>
     </div>
@@ -85,22 +85,22 @@ export function CatalogSearchRow({ value, onChange }: { value: string; onChange:
   const { t } = useTranslation()
 
   return (
-    <div className="flex items-center gap-2 px-6 py-2.5 border-b border-white/[0.07]">
-      <div className="flex-1 flex items-center gap-2.5 bg-secondary border border-white/[0.07] px-3 py-2 focus-within:border-white/20 transition-colors">
-        <MagnifyingGlassIcon className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+    <div className="flex items-center gap-2 px-6 py-3 border-b border-white/[0.07]">
+      <div className="flex-1 flex items-center gap-3 bg-secondary rounded-lg border border-white/[0.07] px-4 py-2.5 focus-within:border-white/20 transition-colors">
+        <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground/60 flex-shrink-0" />
         <input
           type="text"
           value={value}
           onChange={e => onChange(e.target.value)}
           placeholder={t("catalog.search_placeholder")}
-          className="flex-1 bg-transparent border-none text-[13px] text-foreground placeholder:text-muted-foreground/40 outline-none min-w-0"
+          className="flex-1 bg-transparent border-none text-[15px] font-medium text-foreground placeholder:text-muted-foreground/50 outline-none min-w-0"
         />
         {value && (
           <button
             onClick={() => onChange("")}
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            <XMarkIcon className="w-4 h-4" />
+            <XMarkIcon className="w-5 h-5" />
           </button>
         )}
       </div>
@@ -132,28 +132,28 @@ export function CatalogFilterControls({
   const { t } = useTranslation()
 
   return (
-    <div className="flex items-center gap-1.5 px-6 py-2 overflow-x-auto scrollbar-hide">
+    <div className="flex items-center gap-2 px-6 py-3 overflow-x-auto scrollbar-hide">
       <Popover open={genreOpen} onOpenChange={onGenreOpenChange}>
         <PopoverTrigger asChild>
           <button className={cn(
-            "flex items-center gap-1.5 border text-[12px] font-semibold px-2.5 py-1.5 whitespace-nowrap flex-shrink-0 transition-all",
+            "flex items-center gap-2 rounded-md border text-[14px] font-bold px-3.5 py-2 whitespace-nowrap flex-shrink-0 transition-all",
             value.genres.length > 0
               ? "border-primary/40 bg-primary/[0.07] text-foreground"
               : genreOpen
-                ? "border-white/20 text-foreground"
-                : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20",
+                ? "border-white/20 text-foreground bg-white/[0.04]"
+                : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20 hover:bg-white/[0.02]",
           )}>
-            <FunnelIcon className="w-3 h-3" />
+            <FunnelIcon className="w-4 h-4" />
             {t("catalog.filter_genre")}
             {value.genres.length > 0 && (
-              <span className="bg-primary text-white text-[9px] font-bold px-1.5 py-px rounded-sm">
+              <span className="bg-primary text-white text-[11px] font-black px-2 py-0.5 rounded-sm">
                 {value.genres.length}
               </span>
             )}
-            <ChevronDownIcon className={cn("w-2.5 h-2.5 transition-transform", genreOpen && "rotate-180")} />
+            <ChevronDownIcon className={cn("w-3 h-3 transition-transform ml-1", genreOpen && "rotate-180")} />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 border-white/[0.12] bg-card" align="start">
+        <PopoverContent className="p-0 border-white/[0.12] bg-[#111] shadow-2xl rounded-xl" align="start">
           <CatalogGenrePanel selected={value.genres} onChange={g => onSet("genres", g)} />
         </PopoverContent>
       </Popover>
@@ -161,19 +161,19 @@ export function CatalogFilterControls({
       <Popover open={periodOpen} onOpenChange={onPeriodOpenChange}>
         <PopoverTrigger asChild>
           <button className={cn(
-            "flex items-center gap-1.5 border text-[12px] font-semibold px-2.5 py-1.5 whitespace-nowrap flex-shrink-0 transition-all",
+            "flex items-center gap-2 rounded-md border text-[14px] font-bold px-3.5 py-2 whitespace-nowrap flex-shrink-0 transition-all",
             value.period.label
               ? "border-primary/40 bg-primary/[0.07] text-foreground"
               : periodOpen
-                ? "border-white/20 text-foreground"
-                : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20",
+                ? "border-white/20 text-foreground bg-white/[0.04]"
+                : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20 hover:bg-white/[0.02]",
           )}>
-            <CalendarDaysIcon className="w-3 h-3" />
+            <CalendarDaysIcon className="w-4 h-4" />
             {value.period.label ?? t("catalog.filter_period")}
-            <ChevronDownIcon className={cn("w-2.5 h-2.5 transition-transform", periodOpen && "rotate-180")} />
+            <ChevronDownIcon className={cn("w-3 h-3 transition-transform ml-1", periodOpen && "rotate-180")} />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 border-white/[0.12] bg-card" align="start">
+        <PopoverContent className="p-0 border-white/[0.12] bg-[#111] shadow-2xl rounded-xl" align="start">
           <CatalogPeriodPanel
             value={value.period}
             onChange={p => onSet("period", p)}
@@ -182,22 +182,22 @@ export function CatalogFilterControls({
         </PopoverContent>
       </Popover>
 
-      <div className="w-px h-5 bg-white/[0.07] flex-shrink-0 mx-0.5" />
+      <div className="w-px h-6 bg-white/[0.07] flex-shrink-0 mx-2" />
 
       <select
         value={value.sort}
         onChange={e => onSet("sort", e.target.value as SortKey)}
-        className="bg-transparent border border-white/[0.07] text-muted-foreground text-[12px] font-semibold px-2.5 py-1.5 outline-none hover:border-white/20 hover:text-foreground transition-all cursor-pointer flex-shrink-0"
+        className="bg-secondary border rounded-md border-white/[0.07] text-muted-foreground text-[14px] font-bold px-4 py-2 outline-none hover:border-white/20 hover:text-foreground hover:bg-white/[0.04] transition-all cursor-pointer flex-shrink-0"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%23666' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`,
           backgroundRepeat: "no-repeat",
-          backgroundPosition: "right 8px center",
-          paddingRight: "28px",
+          backgroundPosition: "right 14px center",
+          paddingRight: "40px",
           appearance: "none",
         }}
       >
         {SORT_OPTIONS.map(({ key, tKey }) => (
-          <option key={key} value={key} className="bg-card text-foreground">
+          <option key={key} value={key} className="bg-[#111] text-white">
             {t(tKey)}
           </option>
         ))}
@@ -206,14 +206,14 @@ export function CatalogFilterControls({
       <button
         onClick={() => onAdvOpenChange(v => !v)}
         className={cn(
-          "ml-auto flex items-center gap-1.5 border text-[12px] font-semibold px-2.5 py-1.5 whitespace-nowrap flex-shrink-0 transition-all",
+          "ml-auto flex items-center gap-2 rounded-md border text-[14px] font-bold px-3.5 py-2 whitespace-nowrap flex-shrink-0 transition-all",
           advOpen || hasAdv
             ? "border-white/20 text-foreground bg-white/[0.04]"
-            : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20",
+            : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20 hover:bg-white/[0.02]",
         )}
       >
-        {hasAdv && <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />}
-        <AdjustmentsHorizontalIcon className="w-3 h-3" />
+        {hasAdv && <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mr-1" />}
+        <AdjustmentsHorizontalIcon className="w-4 h-4" />
         {t("catalog.filter_more")}
       </button>
     </div>
@@ -224,27 +224,27 @@ export function CatalogActiveFilterTags({ tags, onClearAll }: { tags: ActiveCata
   const { t } = useTranslation()
 
   return (
-    <div className="flex items-center flex-wrap gap-1.5 px-6 pb-2.5">
-      <span className="text-[10px] font-bold tracking-[0.08em] uppercase text-white/20 flex-shrink-0">
+    <div className="flex items-center flex-wrap gap-2 px-6 pb-3">
+      <span className="text-[12px] font-black tracking-widest uppercase text-white/30 flex-shrink-0 mr-1">
         {t("catalog.active_filters")}
       </span>
       {tags.map(tag => (
         <span
           key={tag.id}
-          className="inline-flex items-center gap-1.5 bg-white/[0.06] border border-white/[0.12] text-[11px] font-semibold text-foreground px-2.5 py-0.5"
+          className="inline-flex items-center gap-2 rounded-md bg-white/[0.04] border border-white/[0.12] text-[13px] font-bold text-foreground px-3 py-1"
         >
           {tag.label}
           <button
             onClick={tag.onRemove}
-            className="text-white/30 hover:text-primary transition-colors"
+            className="text-white/40 hover:text-primary transition-colors"
           >
-            <XMarkIcon className="w-3 h-3" />
+            <XMarkIcon className="w-4 h-4" />
           </button>
         </span>
       ))}
       <button
         onClick={onClearAll}
-        className="text-[11px] font-semibold text-muted-foreground hover:text-primary transition-colors ml-1"
+        className="text-[13px] font-bold text-muted-foreground hover:text-primary transition-colors ml-2"
       >
         {t("catalog.clear_all")}
       </button>

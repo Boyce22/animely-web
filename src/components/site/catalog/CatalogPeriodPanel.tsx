@@ -25,20 +25,20 @@ export function CatalogPeriodPanel({ value, onChange, onClose }: CatalogPeriodPa
     const from = parseInt(fromRef.current?.value ?? "")
     const to   = parseInt(toRef.current?.value ?? "")
     if (!from && !to) return
-    const label = `${from || "?"}â€“${to || "?"}`
+    const label = `${from || "?"}–${to || "?"}`
     onChange({ key: "custom", label, from: from || 0, to: to || 9999 })
     onClose()
   }
 
   return (
-    <div className="w-[260px]">
+    <div className="w-[320px] bg-[#111] rounded-xl overflow-hidden flex flex-col">
       <div className="border-b border-white/[0.07]">
         {PERIOD_PRESETS.map(preset => (
           <button
             key={preset.key}
             onClick={() => select(preset)}
             className={cn(
-              "w-full flex items-center justify-between px-3.5 py-2 text-[13px] font-medium transition-colors text-left",
+              "w-full flex items-center justify-between px-4 py-3 text-[15px] font-bold transition-colors text-left",
               value.key === preset.key
                 ? "text-foreground"
                 : "text-muted-foreground hover:text-foreground hover:bg-white/[0.03]",
@@ -47,18 +47,18 @@ export function CatalogPeriodPanel({ value, onChange, onClose }: CatalogPeriodPa
             <div>
               <span>{t(preset.tKey)}</span>
               {preset.sub && (
-                <span className="block text-[11px] text-white/25">{preset.sub}</span>
+                <span className="block text-[12px] font-medium text-white/30">{preset.sub}</span>
               )}
             </div>
             {value.key === preset.key && (
-              <CheckIcon className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+              <CheckIcon className="w-5 h-5 text-primary flex-shrink-0" />
             )}
           </button>
         ))}
       </div>
 
-      <div className="px-3.5 py-3">
-        <p className="text-[9px] font-bold tracking-[0.14em] uppercase text-white/20 mb-2">
+      <div className="px-4 py-4">
+        <p className="text-[11px] font-black tracking-widest uppercase text-white/30 mb-3">
           {t("catalog.period_custom")}
         </p>
         <div className="flex items-center gap-2">
@@ -68,21 +68,21 @@ export function CatalogPeriodPanel({ value, onChange, onClose }: CatalogPeriodPa
             min={1950}
             max={2030}
             placeholder={t("catalog.period_from")}
-            className="w-[76px] bg-secondary border border-white/[0.07] text-foreground font-mono text-[13px] px-2 py-1.5 text-center outline-none focus:border-white/20 transition-colors [appearance:textfield]"
+            className="w-[100px] bg-secondary border rounded-md border-white/[0.07] text-foreground font-mono font-bold text-[15px] px-3 py-2 text-center outline-none focus:border-white/20 transition-colors [appearance:textfield]"
           />
-          <span className="text-white/25 text-[12px]">â€”</span>
+          <span className="text-white/30 font-bold text-[14px]">—</span>
           <input
             ref={toRef}
             type="number"
             min={1950}
             max={2030}
             placeholder={t("catalog.period_to")}
-            className="w-[76px] bg-secondary border border-white/[0.07] text-foreground font-mono text-[13px] px-2 py-1.5 text-center outline-none focus:border-white/20 transition-colors [appearance:textfield]"
+            className="w-[100px] bg-secondary border rounded-md border-white/[0.07] text-foreground font-mono font-bold text-[15px] px-3 py-2 text-center outline-none focus:border-white/20 transition-colors [appearance:textfield]"
           />
         </div>
         <button
           onClick={applyCustom}
-          className="mt-2.5 w-full bg-primary text-white text-[12px] font-bold py-1.5 tracking-[0.06em] uppercase hover:opacity-85 transition-opacity"
+          className="mt-4 w-full bg-primary rounded-md text-white text-[14px] font-black py-2 tracking-widest uppercase hover:opacity-85 transition-opacity"
         >
           {t("catalog.period_apply")}
         </button>

@@ -21,30 +21,30 @@ export function CatalogGenrePanel({ selected, onChange }: CatalogGenrePanelProps
     : SUB_GENRES
 
   return (
-    <div className="w-[400px]">
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-white/[0.07]">
-        <MagnifyingGlassIcon className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+    <div className="w-[480px] bg-[#111] rounded-xl overflow-hidden flex flex-col">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.07]">
+        <MagnifyingGlassIcon className="w-5 h-5 text-muted-foreground/50 flex-shrink-0" />
         <input
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder={t("catalog.genre_search_placeholder")}
-          className="flex-1 bg-transparent border-none text-[13px] text-foreground placeholder:text-muted-foreground/40 outline-none"
+          className="flex-1 bg-transparent border-none text-[15px] font-medium text-foreground placeholder:text-muted-foreground/40 outline-none"
         />
       </div>
 
       {!query && (
         <>
-          <p className="text-[9px] font-bold tracking-[0.14em] uppercase text-white/20 px-3 pt-2.5 pb-1.5">
+          <p className="text-[11px] font-black tracking-widest uppercase text-white/30 px-4 pt-4 pb-2">
             {t("catalog.genre_main")}
           </p>
-          <div className="flex flex-wrap gap-1 px-3 pb-2.5 border-b border-white/[0.07]">
+          <div className="flex flex-wrap gap-2 px-4 pb-4 border-b border-white/[0.07]">
             {MAIN_GENRES.map(g => (
               <button
                 key={g}
                 onClick={() => toggle(g)}
                 className={cn(
-                  "text-[11px] font-600 px-2.5 py-1 border transition-all",
+                  "text-[13px] font-bold px-3.5 py-1.5 border rounded-md transition-all",
                   selected.includes(g)
                     ? "border-white/30 bg-white/[0.07] text-foreground"
                     : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20",
@@ -57,12 +57,12 @@ export function CatalogGenrePanel({ selected, onChange }: CatalogGenrePanelProps
         </>
       )}
 
-      <p className="text-[9px] font-bold tracking-[0.14em] uppercase text-white/20 px-3 pt-2.5 pb-1">
+      <p className="text-[11px] font-black tracking-widest uppercase text-white/30 px-4 pt-4 pb-2">
         {query ? t("catalog.genre_results") : t("catalog.genre_sub")}
       </p>
-      <div className="max-h-[200px] overflow-y-auto scrollbar-hide pb-1">
+      <div className="max-h-[280px] overflow-y-auto scrollbar-hide pb-2">
         {visible.length === 0 ? (
-          <p className="text-[12px] text-muted-foreground/40 text-center py-4">{t("catalog.genre_no_results")}</p>
+          <p className="text-[14px] font-medium text-muted-foreground/40 text-center py-6">{t("catalog.genre_no_results")}</p>
         ) : visible.map(g => {
           const checked = selected.includes(g)
           return (
@@ -70,30 +70,30 @@ export function CatalogGenrePanel({ selected, onChange }: CatalogGenrePanelProps
               key={g}
               onClick={() => toggle(g)}
               className={cn(
-                "w-full flex items-center gap-2.5 px-3 py-[7px] text-left transition-colors",
+                "w-full flex items-center gap-3 px-4 py-2 text-left transition-colors",
                 checked ? "bg-white/[0.05]" : "hover:bg-white/[0.03]",
               )}
             >
               <span className={cn(
-                "w-3.5 h-3.5 flex-shrink-0 border flex items-center justify-center transition-colors",
+                "w-4 h-4 flex-shrink-0 border rounded-sm flex items-center justify-center transition-colors",
                 checked ? "bg-primary border-primary" : "border-white/20",
               )}>
-                {checked && <CheckIcon className="w-2.5 h-2.5 text-white" />}
+                {checked && <CheckIcon className="w-3 h-3 text-white" />}
               </span>
-              <span className="text-[12px] font-medium text-foreground flex-1">{g}</span>
-              <span className="text-[10px] text-white/20">{MAIN_GENRES.includes(g) ? "Main" : "Sub"}</span>
+              <span className="text-[14px] font-bold text-foreground flex-1">{g}</span>
+              <span className="text-[12px] font-bold text-white/20">{MAIN_GENRES.includes(g) ? "Main" : "Sub"}</span>
             </button>
           )
         })}
       </div>
 
-      <div className="flex items-center justify-between px-3 py-2 border-t border-white/[0.07]">
-        <span className="text-[11px] text-muted-foreground">
+      <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.07]">
+        <span className="text-[13px] font-bold text-muted-foreground">
           {t("catalog.genre_selected", { count: selected.length })}
         </span>
         <button
           onClick={() => onChange([])}
-          className="text-[11px] font-semibold text-muted-foreground hover:text-primary transition-colors"
+          className="text-[13px] font-bold text-muted-foreground hover:text-primary transition-colors"
         >
           {t("catalog.genre_clear")}
         </button>

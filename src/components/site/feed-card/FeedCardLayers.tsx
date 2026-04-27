@@ -46,7 +46,7 @@ function MangaGrid({ layout, panels }: { layout: string; panels: FeedMangaPanel[
               style={{ background: `rgba(0,0,0,${1 - panel.brightness})` }}
             />
           )}
-          <span className="absolute bottom-2 left-2.5 text-[8px] font-mono text-white/15 tracking-[0.06em] uppercase pointer-events-none">
+          <span className="absolute bottom-3 left-3 text-[10px] font-bold font-mono text-white/30 tracking-widest uppercase pointer-events-none">
             {panel.label}
           </span>
         </div>
@@ -85,9 +85,8 @@ export function FeedCardTextContent({ data }: { data: FeedCardData }) {
     <div className="absolute inset-0 flex flex-col justify-center px-8 z-[5]"
       style={{ paddingTop: 60, paddingBottom: 160 }}
     >
-      <div
-        className="leading-[0.8] mb-4 text-white/[0.06] tracking-[-4px]"
-        style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 100 }}
+        className="leading-[0.8] mb-6 text-white/[0.08] tracking-[-4px]"
+        style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 130 }}
       >
         "
       </div>
@@ -96,9 +95,9 @@ export function FeedCardTextContent({ data }: { data: FeedCardData }) {
           fontFamily: data.quoteBodyBebas === false
             ? "'Space Grotesk', sans-serif"
             : "'Bebas Neue', sans-serif",
-          fontSize: data.quoteBodyBebas === false ? 22 : 42,
+          fontSize: data.quoteBodyBebas === false ? 26 : 56,
           fontWeight: data.quoteBodyBebas === false ? 700 : 400,
-          lineHeight: data.quoteBodyBebas === false ? 1.4 : 1.05,
+          lineHeight: data.quoteBodyBebas === false ? 1.5 : 1.05,
           letterSpacing: data.quoteBodyBebas === false ? "-0.3px" : "0.04em",
           color: "rgba(255,255,255,0.95)",
         }}
@@ -106,14 +105,14 @@ export function FeedCardTextContent({ data }: { data: FeedCardData }) {
         {data.quoteBody}
       </div>
       {data.quoteSub && (
-        <p className="mt-3.5 text-[13px] font-medium text-white/35 leading-[1.55]">
+        <p className="mt-4 text-[16px] font-bold text-white/40 leading-[1.6]">
           {data.quoteSub}
         </p>
       )}
       {data.quoteScore !== undefined && (
         <div className="mt-5 flex items-center gap-2">
-          <span className="text-[#f4a261] text-sm tracking-[2px]">â˜…â˜…â˜…â˜…â˜…</span>
-          <span className="font-mono text-lg font-black text-[#f4a261]">
+          <span className="text-[#f4a261] text-base tracking-[3px]">★★★★★</span>
+          <span className="font-mono text-2xl font-black text-[#f4a261]">
             {data.quoteScore.toFixed(1)}
           </span>
         </div>
@@ -134,18 +133,18 @@ export function FeedCardEpisodeContent({ data }: { data: FeedCardData }) {
           className="w-[5px] h-[5px] rounded-full bg-primary"
           style={{ animation: "blink 1.4s ease infinite" }}
         />
-        <span className="text-[10px] font-black tracking-[0.16em] uppercase text-primary">
+        <span className="text-[12px] font-black tracking-widest uppercase text-primary">
           {t("feed.new_episode")}
         </span>
       </div>
       <div
-        className="text-white leading-none mb-1.5"
-        style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 46, letterSpacing: "0.03em" }}
+        className="text-white leading-none mb-2"
+        style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 58, letterSpacing: "0.04em" }}
       >
         {data.epTitle}
       </div>
-      <p className="text-sm text-white/50 font-medium mb-5">{data.epSubtitle}</p>
-      <button className="inline-flex items-center gap-2 bg-primary text-white font-black text-[12px] tracking-[0.08em] uppercase px-[22px] py-[10px] border-none cursor-pointer hover:opacity-85 hover:scale-[1.02] transition-all">
+      <p className="text-lg text-white/60 font-medium mb-6">{data.epSubtitle}</p>
+      <button className="inline-flex items-center gap-3 bg-primary rounded-md text-white font-black text-[14px] tracking-widest uppercase px-[28px] py-[14px] border-none cursor-pointer hover:opacity-85 hover:scale-[1.02] transition-all">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M4 2l9 5-9 5V2z" fill="white" />
         </svg>
@@ -163,14 +162,14 @@ export function FeedCardSpoilerVeil({ data, onReveal }: { data: FeedCardData; on
       className="absolute inset-0 z-[15] flex flex-col items-center justify-center gap-3 transition-opacity duration-300"
       style={{ background: "rgba(0,0,0,0.88)", backdropFilter: "blur(20px)" }}
     >
-      <span className="text-[10px] font-black tracking-[0.16em] uppercase text-white/25">
+      <span className="text-[12px] font-black tracking-widest uppercase text-white/40">
         {data.spoilerSeriesLabel
-          ? `${t("feed.spoiler_label")} â€” ${data.spoilerSeriesLabel}`
+          ? `${t("feed.spoiler_label")} — ${data.spoilerSeriesLabel}`
           : t("feed.spoiler_label")}
       </span>
       <button
         onClick={onReveal}
-        className="border border-white/20 text-white/45 bg-transparent font-bold text-[12px] tracking-[0.1em] uppercase px-6 py-2 cursor-pointer hover:border-white/40 hover:text-white transition-all"
+        className="border-2 rounded-md border-white/20 text-white/60 bg-transparent font-bold text-[14px] tracking-widest uppercase px-8 py-3 cursor-pointer hover:border-white/50 hover:text-white transition-all"
       >
         {t("feed.spoiler_reveal")}
       </button>
@@ -184,12 +183,12 @@ export function FeedCardBottomInfo({ data }: { data: FeedCardData }) {
       {(data.seriesTag || data.epTag) && (
         <div className="flex items-center gap-2 mb-2">
           {data.seriesTag && (
-            <span className="text-[10px] font-black tracking-[0.12em] uppercase text-primary bg-primary/[0.12] border border-primary/35 px-2.5 py-[3px]">
+            <span className="text-[12px] font-black tracking-widest uppercase text-primary bg-primary/[0.12] border border-primary/35 px-3 py-1 rounded-sm">
               {data.seriesTag}
             </span>
           )}
           {data.epTag && (
-            <span className="text-[10px] font-bold tracking-[0.06em] uppercase text-white/45 border border-white/12 px-2.5 py-[3px]">
+            <span className="text-[12px] font-bold tracking-widest uppercase text-white/60 border border-white/15 px-3 py-1 rounded-sm">
               {data.epTag}
             </span>
           )}
@@ -201,9 +200,9 @@ export function FeedCardBottomInfo({ data }: { data: FeedCardData }) {
           className="text-white mb-2.5"
           style={{
             fontFamily: "'Bebas Neue', sans-serif",
-            fontSize: 28,
-            letterSpacing: "0.04em",
-            lineHeight: 1.05,
+            fontSize: 38,
+            letterSpacing: "0.05em",
+            lineHeight: 1.1,
             textShadow: "0 2px 12px rgba(0,0,0,0.8)",
           }}
         >
@@ -213,14 +212,14 @@ export function FeedCardBottomInfo({ data }: { data: FeedCardData }) {
 
       <div className="flex items-center gap-2">
         <div
-          className="w-[22px] h-[22px] rounded-full flex-shrink-0 flex items-center justify-center text-[9px] font-black border border-white/25 text-white"
+          className="w-[28px] h-[28px] rounded-full flex-shrink-0 flex items-center justify-center text-[11px] font-black border border-white/25 text-white"
           style={{ background: data.user.gradient }}
         >
           {data.user.initial}
         </div>
-        <span className="text-[12px] font-semibold text-white/60">@{data.user.username}</span>
-        <span className="text-white/20 text-[10px]">Â·</span>
-        <span className="text-[11px] text-white/35 font-mono">{data.timeAgo}</span>
+        <span className="text-[14px] font-bold text-white/80">@{data.user.username}</span>
+        <span className="text-white/30 text-[12px]">·</span>
+        <span className="text-[13px] text-white/50 font-mono font-medium">{data.timeAgo}</span>
       </div>
     </div>
   )

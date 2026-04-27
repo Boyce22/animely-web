@@ -20,7 +20,7 @@ export function RecommendedSection({ items, title }: RecommendedSectionProps) {
             <div className="flex-1 min-w-0">
               <p className="text-[14px] font-bold truncate text-foreground/90">{item.title}</p>
               <p className="text-[12px] font-medium text-muted-foreground/70 mt-1">{item.genre}</p>
-              <p className="text-[13px] text-[#f4a261] font-black mt-1 font-mono">â˜… {item.score}</p>
+              <p className="text-[13px] text-[#f4a261] font-black mt-1 font-mono">★ {item.score}</p>
             </div>
           </div>
         ))}
