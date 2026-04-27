@@ -28,8 +28,8 @@ export function CatalogGrid({ items, view, page, perPage, totalItems, totalPages
           </div>
         ) : view === "grid" ? (
           <div
-            className="grid gap-4 pb-4"
-            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))" }}
+            className="grid gap-6 pb-6"
+            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))" }}
           >
             {items.map(item => <CatalogMangaCard key={item.id} item={item} />)}
           </div>

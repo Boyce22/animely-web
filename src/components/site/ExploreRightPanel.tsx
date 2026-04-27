@@ -10,7 +10,7 @@ export function ExploreRightPanel() {
 
   return (
     <aside
-      className="w-[260px] flex-shrink-0 border-l border-white/[0.07] overflow-y-auto overflow-x-hidden bg-background scrollbar-hide"
+      className="w-[320px] flex-shrink-0 border-l border-white/[0.07] overflow-y-auto overflow-x-hidden bg-background scrollbar-hide"
     >
       <TopWeekSection
         items={TOP_WEEK}

@@ -25,8 +25,8 @@ export function ExploreSidebar() {
   )
 
   return (
-    <div className="group/sidebar relative z-50 h-screen w-[52px] flex-shrink-0">
-      <aside className="absolute left-0 top-0 flex h-full w-[52px] flex-col overflow-hidden border-r border-white/[0.07] bg-background transition-[width] duration-200 group-hover/sidebar:w-[220px]">
+    <div className="group/sidebar relative z-50 h-screen w-[64px] flex-shrink-0">
+      <aside className="absolute left-0 top-0 flex h-full w-[64px] flex-col overflow-hidden border-r border-white/[0.07] bg-background transition-[width] duration-200 group-hover/sidebar:w-[260px]">
         <SidebarBrand />
         <SidebarSearch placeholder={t("header.search_placeholder")} />
 
