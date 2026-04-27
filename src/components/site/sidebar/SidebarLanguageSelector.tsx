@@ -29,43 +29,43 @@ export function SidebarLanguageSelector() {
       <button
         onClick={() => setLangOpen(open => !open)}
         className={cn(
-          "flex w-full items-center justify-between rounded-md border bg-transparent px-2.5 py-[7px] text-[12px] font-semibold transition-all",
+          "flex w-full items-center justify-between rounded-lg border bg-transparent px-3 py-2.5 text-[13px] font-bold transition-all",
           langOpen
-            ? "border-white/20 text-foreground"
-            : "border-white/[0.07] text-muted-foreground hover:border-white/20 hover:text-foreground",
+            ? "border-white/20 text-foreground bg-white/[0.04]"
+            : "border-white/[0.07] text-muted-foreground hover:border-white/20 hover:text-foreground hover:bg-white/[0.02]",
         )}
       >
-        <div className="flex items-center gap-2">
-          <span className="flex-shrink-0">{currentLang.flag}</span>
+        <div className="flex items-center gap-2.5">
+          <span className="flex-shrink-0 text-[16px] leading-none">{currentLang.flag}</span>
           <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 delay-75 group-hover/sidebar:max-w-[80px] group-hover/sidebar:opacity-100">
             {currentLang.native}
           </span>
         </div>
         <ChevronDownIcon
           className={cn(
-            "h-3 w-3 max-w-0 flex-shrink-0 overflow-hidden opacity-0 transition-all duration-200 group-hover/sidebar:max-w-[12px] group-hover/sidebar:opacity-100",
+            "h-4 w-4 max-w-0 flex-shrink-0 overflow-hidden opacity-0 transition-all duration-200 group-hover/sidebar:max-w-[16px] group-hover/sidebar:opacity-100",
             langOpen && "rotate-180",
           )}
         />
       </button>
 
       {langOpen && (
-        <div className="absolute bottom-full left-3 right-3 z-50 mb-1.5 overflow-hidden rounded-sm border border-border bg-card shadow-2xl shadow-black/60">
+        <div className="absolute bottom-full left-3 right-3 z-50 mb-2 overflow-hidden rounded-xl border border-white/10 bg-[#111] shadow-2xl">
           {LANGUAGES.map(lang => (
             <button
               key={lang.code}
               onClick={() => { changeLang(lang.code); setLangOpen(false) }}
               className={cn(
-                "flex w-full items-center gap-2.5 px-3 py-2 text-xs transition-colors",
+                "flex w-full items-center gap-3 px-4 py-3 text-[13px] font-bold transition-colors",
                 i18n.language === lang.code
-                  ? "bg-primary/10 font-semibold text-primary"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                  ? "bg-primary/10 text-primary"
+                  : "text-white/50 hover:bg-white/[0.04] hover:text-white",
               )}
             >
-              <span>{lang.flag}</span>
+              <span className="text-[16px] leading-none">{lang.flag}</span>
               <span>{lang.native}</span>
               {i18n.language === lang.code && (
-                <span className="ml-auto text-[9px] font-black text-primary">OK</span>
+                <span className="ml-auto text-[10px] font-black text-primary uppercase">OK</span>
               )}
             </button>
           ))}

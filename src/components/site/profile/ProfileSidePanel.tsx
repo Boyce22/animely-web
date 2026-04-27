@@ -75,7 +75,7 @@ function ReadingStatsPanel({ profile }: { profile: ProfileData }) {
 
         <div>
           <div className="flex justify-between text-[13px] mb-2 font-bold">
-            <span className="text-gray-400">Completed Series</span>
+            <span className="text-gray-400"></span>
             <span className="text-white">18/42</span>
           </div>
           <div className="h-2 bg-black/50 rounded-full overflow-hidden border border-white/5">
@@ -88,7 +88,7 @@ function ReadingStatsPanel({ profile }: { profile: ProfileData }) {
         <h3 className="text-[11px] font-black uppercase tracking-widest text-gray-500 mb-4">Favorite Genres</h3>
         <div className="flex flex-wrap gap-2">
           {["Action", "Fantasy", "Romance", "Adventure"].map(genre => (
-            <span key={genre} className="bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-[12px] font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
+            <span key={genre} className="bg-white/5 border border-white/10 px-4 py-1.5 rounded-md text-[12px] font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
               {genre}
             </span>
           ))}

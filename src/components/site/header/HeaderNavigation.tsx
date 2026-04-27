@@ -22,7 +22,7 @@ export function HeaderDesktopNav({ isTransparent, t }: HeaderNavigationProps) {
           key={href}
           to={href}
           className={cn(
-            "relative text-sm font-medium tracking-wide transition-colors duration-200",
+            "relative text-[14px] font-bold tracking-wide transition-colors duration-200",
             "after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full",
             isTransparent
               ? "text-white/70 hover:text-white"

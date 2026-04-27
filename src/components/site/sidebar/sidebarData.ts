@@ -25,7 +25,7 @@ export const BASE_NAV = [
   { icon: HomeIcon, key: "feed", href: "/feed", tKey: "home.sidebar_home" },
   { icon: NewspaperIcon, key: "posts", href: "/posts", tKey: "explore.nav_posts" },
   { icon: GlobeAltIcon, key: "explore", href: "/catalog?type=anime", tKey: "home.sidebar_explore" },
-  { icon: BookmarkIcon, key: "my_lists", href: "/profile", tKey: "explore.nav_my_lists" },
+  { icon: BookmarkIcon, key: "my_lists", href: "/", tKey: "explore.nav_my_lists" },
 ] as const
 
 export const LISTS_SUBNAV = [

@@ -47,7 +47,7 @@ export default function Catalog() {
 
   const filtered = useMemo(() => filterCatalogItems(CATALOG_DATA, filters), [filters])
   const totalPages = getCatalogTotalPages(filtered.length, CATALOG_PER_PAGE)
-  const pageItems  = getCatalogPageItems(filtered, page, CATALOG_PER_PAGE)
+  const pageItems  = filtered.slice(0, page * CATALOG_PER_PAGE)
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">

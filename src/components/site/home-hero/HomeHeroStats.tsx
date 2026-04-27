@@ -10,16 +10,16 @@ export function HomeHeroStats() {
 
   return (
     <div
-      className="absolute bottom-0 left-0 right-0 z-[2] flex items-center gap-12 px-10 lg:px-16 py-5 border-t border-white/[0.08]"
+      className="absolute bottom-0 left-0 right-0 z-[2] flex items-center gap-12 px-10 lg:px-16 py-6 border-t border-white/[0.08]"
       style={{ background: "rgba(10,10,10,0.6)", backdropFilter: "blur(4px)" }}
     >
       {stats.map(({ num, suffix, labelKey }) => (
         <div key={labelKey}>
-          <div className="text-[22px] font-extrabold text-white">
+          <div className="text-[28px] font-black text-white leading-none mb-1.5">
             {num}
             {suffix && <span className="text-primary">{suffix}</span>}
           </div>
-          <div className="text-[10px] font-semibold tracking-[0.1em] uppercase text-[#888] mt-0.5">
+          <div className="text-[11px] font-black tracking-[0.12em] uppercase text-[#888]">
             {t(`home.hero_stat_${labelKey}`)}
           </div>
         </div>

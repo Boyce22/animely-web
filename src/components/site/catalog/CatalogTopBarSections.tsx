@@ -1,3 +1,4 @@
+import { useState } from "react"
 import {
   AdjustmentsHorizontalIcon,
   CalendarDaysIcon,
@@ -130,6 +131,7 @@ export function CatalogFilterControls({
   onPeriodOpenChange,
 }: CatalogFilterControlsProps) {
   const { t } = useTranslation()
+  const [sortOpen, setSortOpen] = useState(false)
 
   return (
     <div className="flex items-center gap-2 px-6 py-3 overflow-x-auto scrollbar-hide">
@@ -169,7 +171,12 @@ export function CatalogFilterControls({
                 : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20 hover:bg-white/[0.02]",
           )}>
             <CalendarDaysIcon className="w-4 h-4" />
-            {value.period.label ?? t("catalog.filter_period")}
+            {t("catalog.filter_period")}
+            {value.period.label && (
+              <span className="bg-primary text-white text-[11px] font-black px-2 py-0.5 rounded-sm">
+                {value.period.label}
+              </span>
+            )}
             <ChevronDownIcon className={cn("w-3 h-3 transition-transform ml-1", periodOpen && "rotate-180")} />
           </button>
         </PopoverTrigger>
@@ -184,24 +191,40 @@ export function CatalogFilterControls({
 
       <div className="w-px h-6 bg-white/[0.07] flex-shrink-0 mx-2" />
 
-      <select
-        value={value.sort}
-        onChange={e => onSet("sort", e.target.value as SortKey)}
-        className="bg-secondary border rounded-md border-white/[0.07] text-muted-foreground text-[14px] font-bold px-4 py-2 outline-none hover:border-white/20 hover:text-foreground hover:bg-white/[0.04] transition-all cursor-pointer flex-shrink-0"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "right 14px center",
-          paddingRight: "40px",
-          appearance: "none",
-        }}
-      >
-        {SORT_OPTIONS.map(({ key, tKey }) => (
-          <option key={key} value={key} className="bg-[#111] text-white">
-            {t(tKey)}
-          </option>
-        ))}
-      </select>
+      <Popover open={sortOpen} onOpenChange={setSortOpen}>
+        <PopoverTrigger asChild>
+          <button className={cn(
+            "flex items-center gap-2 rounded-md border text-[14px] font-bold px-3.5 py-2 whitespace-nowrap flex-shrink-0 transition-all",
+            sortOpen
+              ? "border-white/20 text-foreground bg-white/[0.04]"
+              : "border-white/[0.07] text-muted-foreground hover:text-foreground hover:border-white/20 hover:bg-white/[0.02]"
+          )}>
+            {t(SORT_OPTIONS.find(o => o.key === value.sort)?.tKey || "catalog.sort_popularity")}
+            <ChevronDownIcon className={cn("w-3 h-3 transition-transform ml-1", sortOpen && "rotate-180")} />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="p-1.5 w-48 border-white/[0.12] bg-[#111] shadow-2xl rounded-xl" align="start">
+          <div className="flex flex-col gap-0.5">
+            {SORT_OPTIONS.map(({ key, tKey }) => (
+              <button
+                key={key}
+                onClick={() => {
+                  onSet("sort", key as SortKey)
+                  setSortOpen(false)
+                }}
+                className={cn(
+                  "flex items-center w-full px-3 py-2.5 text-[13px] font-bold rounded-lg transition-colors text-left",
+                  value.sort === key
+                    ? "bg-primary/15 text-primary"
+                    : "text-white/50 hover:text-white hover:bg-white/[0.04]"
+                )}
+              >
+                {t(tKey)}
+              </button>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
 
       <button
         onClick={() => onAdvOpenChange(v => !v)}

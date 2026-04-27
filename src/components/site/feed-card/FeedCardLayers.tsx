@@ -85,6 +85,7 @@ export function FeedCardTextContent({ data }: { data: FeedCardData }) {
     <div className="absolute inset-0 flex flex-col justify-center px-8 z-[5]"
       style={{ paddingTop: 60, paddingBottom: 160 }}
     >
+      <div
         className="leading-[0.8] mb-6 text-white/[0.08] tracking-[-4px]"
         style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 130 }}
       >
