@@ -188,32 +188,61 @@ const sectionNav = [
     icon: DocumentTextIcon,
   },
 ]
+const SECTION_IDS = sectionNav.map(({ id }) => id)
+
 export default function Changelog() {
   const [activeSection, setActiveSection] = useState('features')
+  const scrollContainerRef = useRef<HTMLElement>(null)
   const isClickScrolling = useRef(false)
+
   useEffect(() => {
-    const sectionIds = ['features', 'fixes', 'roadmap', 'changelog']
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (isClickScrolling.current) return
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id)
-            break
-          }
+    const scrollContainer = scrollContainerRef.current
+    if (!scrollContainer) return
+
+    let frame = 0
+
+    const updateActiveSection = () => {
+      if (isClickScrolling.current) return
+
+      const remainingScroll =
+        scrollContainer.scrollHeight - scrollContainer.clientHeight - scrollContainer.scrollTop
+
+      if (remainingScroll <= 12) {
+        setActiveSection('changelog')
+        return
+      }
+
+      const marker = scrollContainer.getBoundingClientRect().top + 150
+      let nextSection = SECTION_IDS[0]
+
+      for (const id of SECTION_IDS) {
+        const section = document.getElementById(id)
+        if (!section) continue
+
+        if (section.getBoundingClientRect().top <= marker) {
+          nextSection = id
         }
-      },
-      {
-        rootMargin: '-20% 0px -60% 0px',
-        threshold: 0,
-      },
-    )
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
-    })
-    return () => observer.disconnect()
+      }
+
+      setActiveSection(nextSection)
+    }
+
+    const handleScroll = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(updateActiveSection)
+    }
+
+    updateActiveSection()
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', handleScroll)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      scrollContainer.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleScroll)
+    }
   }, [])
+
   const scrollToSection = (id: string) => {
     setActiveSection(id)
     isClickScrolling.current = true
@@ -228,11 +257,12 @@ export default function Changelog() {
       isClickScrolling.current = false
     }, 800)
   }
+
   return (
     <div className="flex h-screen overflow-hidden bg-surface text-foreground">
       <ExploreSidebar />
 
-      <main className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-surface">
+      <main ref={scrollContainerRef} className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-surface">
       {/* ─── Hero (kept) ─── */}
       <div className="relative h-[420px] w-full overflow-hidden">
         <img
