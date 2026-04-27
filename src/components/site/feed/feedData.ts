@@ -1,5 +1,5 @@
 import { Fragment, createElement } from "react"
-import type { FeedCardData } from "@/components/site/FeedCard"
+import type { FeedCardData } from "@/components/site/feed-card/feedCardTypes"
 
 export const FEED_CARDS: FeedCardData[] = [
   {

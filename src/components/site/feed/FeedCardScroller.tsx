@@ -1,5 +1,6 @@
 import type { RefObject } from "react"
-import { FeedCard, type FeedCardData } from "@/components/site/FeedCard"
+import { FeedCard } from "@/components/site/FeedCard"
+import type { FeedCardData } from "@/components/site/feed-card/feedCardTypes"
 
 interface FeedCardScrollerProps {
   cards: FeedCardData[]
