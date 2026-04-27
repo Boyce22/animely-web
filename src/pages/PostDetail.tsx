@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { ArrowLeft, Bookmark, Heart, MessageCircle, Share2 } from "lucide-react"
 import { ExploreSidebar } from "@/components/site/ExploreSidebar"
-import { CONTENT_FEED_ITEMS } from "@/components/site/ContentFeedGrid"
+import { CONTENT_FEED_ITEMS } from "@/components/site/content-feed/contentFeedData"
 
 export default function PostDetail() {
   const navigate = useNavigate()
