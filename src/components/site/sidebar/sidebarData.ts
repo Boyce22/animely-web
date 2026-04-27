@@ -14,9 +14,9 @@ import {
 } from "@heroicons/react/24/outline"
 
 export const LANGUAGES = [
-  { code: "en", native: "English", flag: "ðŸ‡ºðŸ‡¸" },
-  { code: "pt", native: "PortuguÃªs", flag: "ðŸ‡§ðŸ‡·" },
-  { code: "es", native: "EspaÃ±ol", flag: "ðŸ‡ªðŸ‡¸" },
+  { code: "en", native: "English", flag: "\u{1F1FA}\u{1F1F8}" },
+  { code: "pt", native: "Portugu\u00EAs", flag: "\u{1F1E7}\u{1F1F7}" },
+  { code: "es", native: "Espa\u00F1ol", flag: "\u{1F1EA}\u{1F1F8}" },
 ] as const
 
 export type LangCode = (typeof LANGUAGES)[number]["code"]
