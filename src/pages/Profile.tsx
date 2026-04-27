@@ -9,7 +9,6 @@ import { PROFILE_ACTIVITY, PROFILE_COLLECTIONS, PROFILE_TABS, DEFAULT_PROFILE } 
 import { ProfileHero } from "@/components/site/profile/ProfileHero"
 import { ProfileLibraryPanel } from "@/components/site/profile/ProfileLibraryPanel"
 import { ProfileSidePanel } from "@/components/site/profile/ProfileSidePanel"
-import { ProfileStatsGrid } from "@/components/site/profile/ProfileStatsGrid"
 import { ProfileTabs } from "@/components/site/profile/ProfileTabs"
 import type { ProfileData, ProfileTab } from "@/components/site/profile/profileTypes"
 import { applyEditProfileData, toEditProfileData } from "@/components/site/profile/profileUtils"
@@ -23,20 +22,16 @@ export default function Profile() {
   const editProfileData = useMemo(() => toEditProfileData(profile), [profile])
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-foreground">
+    <div className="flex h-screen overflow-hidden bg-[#0a0a0a] text-gray-200">
       <ExploreSidebar />
 
       <main className="flex min-w-0 flex-1 overflow-hidden">
-        <div className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-background">
-          <div className="mx-auto w-full max-w-[1440px]">
-            <ProfileHero profile={profile} onEdit={() => setEditOpen(true)} t={t} />
+        <div className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
+          <ProfileHero profile={profile} onEdit={() => setEditOpen(true)} t={t} />
 
-            <div className="px-4 py-3 sm:px-5 sm:py-4">
-              <ProfileStatsGrid profile={profile} t={t} />
-            </div>
-
-            <div className="grid gap-4 px-4 pb-8 sm:px-5 xl:grid-cols-[280px_minmax(0,1fr)]">
-              <ProfileSidePanel profile={profile} t={t} className="hidden xl:block" />
+          <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-8 lg:px-12 pb-12">
+            <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]">
+              <ProfileSidePanel profile={profile} t={t} className="hidden lg:block" />
 
               <div className="min-w-0">
                 <ProfileTabs
@@ -47,11 +42,13 @@ export default function Profile() {
                   t={t}
                 />
 
-                {activeTab === "activity" && <ProfileActivityPanel items={PROFILE_ACTIVITY} t={t} />}
-                {activeTab === "library" && <ProfileLibraryPanel collections={PROFILE_COLLECTIONS} t={t} />}
-                {activeTab === "comments" && <ProfileCommentsPanel commentsCount={profile.commentsCount} t={t} />}
+                <div className="mt-6">
+                  {activeTab === "activity" && <ProfileActivityPanel items={PROFILE_ACTIVITY} t={t} />}
+                  {activeTab === "library" && <ProfileLibraryPanel collections={PROFILE_COLLECTIONS} t={t} />}
+                  {activeTab === "comments" && <ProfileCommentsPanel commentsCount={profile.commentsCount} t={t} />}
+                </div>
 
-                <ProfileSidePanel profile={profile} t={t} className="mt-4 xl:hidden" />
+                <ProfileSidePanel profile={profile} t={t} className="mt-8 lg:hidden" />
               </div>
             </div>
           </div>

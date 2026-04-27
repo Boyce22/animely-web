@@ -1,9 +1,7 @@
 import type { ReactNode } from "react"
 import type { TFunction } from "i18next"
-import { Activity, Ban, Bookmark, Calendar, Clock, Globe2, Mail, MapPin } from "lucide-react"
+import { Calendar, Clock, Mail } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ProfileBadge } from "./ProfileBadge"
-import { ProfileMetaLabel, ProfilePanel } from "./ProfilePanel"
 import type { ProfileData } from "./profileTypes"
 import { formatProfileDate } from "./profileUtils"
 
@@ -15,30 +13,13 @@ interface ProfileSidePanelProps {
 
 function InfoRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-2.5 text-[12px] text-muted-foreground">
-      <span className="shrink-0 text-muted-foreground">{icon}</span>
-      <span className="min-w-0">
-        <span className="mr-1 text-muted-foreground">{label}:</span>
-        <span className="break-words text-foreground">{value}</span>
-      </span>
-    </div>
-  )
-}
-
-function PreferenceRow({ icon, label, enabled }: { icon: ReactNode; label: string; enabled: boolean }) {
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-border py-2.5 last:border-b-0">
-      <div className="flex min-w-0 items-center gap-2.5">
-        <span className="shrink-0 text-muted-foreground">{icon}</span>
-        <span className="truncate text-[12px] font-semibold text-foreground">{label}</span>
+    <div className="flex items-center gap-3 text-[14px] text-gray-400">
+      <div className="shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/5">
+        {icon}
       </div>
-      <span
-        className={cn(
-          "inline-flex h-5 w-9 shrink-0 items-center border px-0.5 transition-colors",
-          enabled ? "justify-end border-primary/30 bg-primary/20" : "justify-start border-border bg-secondary",
-        )}
-      >
-        <span className={cn("h-3.5 w-3.5 rounded-full", enabled ? "bg-primary" : "bg-muted-foreground")} />
+      <span className="min-w-0 flex flex-col justify-center">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">{label}</span>
+        <span className="text-gray-200 font-medium">{value}</span>
       </span>
     </div>
   )
@@ -46,51 +27,82 @@ function PreferenceRow({ icon, label, enabled }: { icon: ReactNode; label: strin
 
 function AboutPanel({ profile, t }: { profile: ProfileData; t: TFunction }) {
   return (
-    <ProfilePanel className="p-4">
-      <ProfileMetaLabel>{t("profile.about")}</ProfileMetaLabel>
-      <div className="mt-3 space-y-2.5">
-        <InfoRow icon={<Mail className="h-3.5 w-3.5" />} label={t("profile.email")} value={profile.email} />
-        <InfoRow icon={<Calendar className="h-3.5 w-3.5" />} label={t("profile.birth_date")} value={formatProfileDate(profile.birthDate)} />
-        <InfoRow icon={<Clock className="h-3.5 w-3.5" />} label={t("profile.last_active")} value={formatProfileDate(profile.lastLoginAt)} />
-        <InfoRow icon={<MapPin className="h-3.5 w-3.5" />} label="Location" value={profile.address} />
+    <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#111]/80 backdrop-blur-xl p-6 shadow-2xl">
+      <h2 className="text-xl font-black text-white mb-4 flex items-center gap-2">
+        <span className="w-1 h-5 bg-red-600 rounded-full" />
+        About
+      </h2>
+      <p className="text-[14px] text-gray-300 leading-relaxed mb-6 font-medium">
+        {profile.biography}
+      </p>
+      <div className="space-y-4">
+        <InfoRow icon={<Mail className="h-4 w-4 text-red-500" />} label="Email" value={profile.email} />
+        <InfoRow icon={<Calendar className="h-4 w-4 text-red-500" />} label="Birth Date" value={formatProfileDate(profile.birthDate)} />
+        <InfoRow icon={<Clock className="h-4 w-4 text-red-500" />} label="Last Active" value={formatProfileDate(profile.lastLoginAt)} />
       </div>
-    </ProfilePanel>
+    </div>
   )
 }
 
-function AccountPanel({ profile }: { profile: ProfileData }) {
+function ReadingStatsPanel({ profile }: { profile: ProfileData }) {
   return (
-    <ProfilePanel className="p-4">
-      <ProfileMetaLabel>Account</ProfileMetaLabel>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <ProfileBadge label="Role" value={profile.role} />
-        <ProfileBadge label="Plan" value={profile.subscriptionTier} tone="primary" />
-        <ProfileBadge label="Theme" value={profile.theme} />
-        <ProfileBadge label="Lang" value={profile.preferredLanguage.slice(0, 2)} />
-      </div>
-    </ProfilePanel>
-  )
-}
+    <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#111]/80 backdrop-blur-xl p-6 shadow-2xl">
+      <h2 className="text-xl font-black text-white mb-6 flex items-center gap-2">
+        <span className="w-1 h-5 bg-red-600 rounded-full" />
+        Reading Stats
+      </h2>
+      
+      <div className="space-y-6">
+        <div>
+          <div className="flex justify-between text-[13px] mb-2 font-bold">
+            <span className="text-gray-400">Total Chapters</span>
+            <span className="text-white">1247</span>
+          </div>
+          <div className="h-2 bg-black/50 rounded-full overflow-hidden border border-white/5">
+            <div className="h-full bg-gradient-to-r from-red-700 to-red-500 rounded-full" style={{ width: '80%' }} />
+          </div>
+        </div>
 
-function VisibilityPanel({ profile }: { profile: ProfileData }) {
-  return (
-    <ProfilePanel className="p-4">
-      <ProfileMetaLabel>Visibility</ProfileMetaLabel>
-      <p className="mb-2 mt-1 text-[11px] text-muted-foreground">{profile.timeZone}</p>
-      <PreferenceRow icon={<Globe2 className="h-3.5 w-3.5" />} label="Public profile" enabled={profile.isProfilePublic} />
-      <PreferenceRow icon={<Activity className="h-3.5 w-3.5" />} label="Show activity" enabled={profile.showActivity} />
-      <PreferenceRow icon={<Bookmark className="h-3.5 w-3.5" />} label="Show collections" enabled={profile.showCollections} />
-      <PreferenceRow icon={<Ban className="h-3.5 w-3.5" />} label="Mature content" enabled={profile.showMatureContent} />
-    </ProfilePanel>
+        <div>
+          <div className="flex justify-between text-[13px] mb-2 font-bold">
+            <span className="text-gray-400">Reading Time</span>
+            <span className="text-white">438h 15m</span>
+          </div>
+          <div className="h-2 bg-black/50 rounded-full overflow-hidden border border-white/5">
+            <div className="h-full bg-gradient-to-r from-red-700 to-red-500 rounded-full" style={{ width: '45%' }} />
+          </div>
+        </div>
+
+        <div>
+          <div className="flex justify-between text-[13px] mb-2 font-bold">
+            <span className="text-gray-400">Completed Series</span>
+            <span className="text-white">18/42</span>
+          </div>
+          <div className="h-2 bg-black/50 rounded-full overflow-hidden border border-white/5">
+            <div className="h-full bg-gradient-to-r from-red-700 to-red-500 rounded-full" style={{ width: '35%' }} />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8">
+        <h3 className="text-[11px] font-black uppercase tracking-widest text-gray-500 mb-4">Favorite Genres</h3>
+        <div className="flex flex-wrap gap-2">
+          {["Action", "Fantasy", "Romance", "Adventure"].map(genre => (
+            <span key={genre} className="bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-[12px] font-bold text-gray-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
+              {genre}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
 
 export function ProfileSidePanel({ profile, t, className }: ProfileSidePanelProps) {
   return (
-    <aside className={cn("space-y-3", className)}>
+    <aside className={cn("space-y-6", className)}>
       <AboutPanel profile={profile} t={t} />
-      <AccountPanel profile={profile} />
-      <VisibilityPanel profile={profile} />
+      <ReadingStatsPanel profile={profile} />
     </aside>
   )
 }
