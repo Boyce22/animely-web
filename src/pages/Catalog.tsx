@@ -7,7 +7,8 @@ import {
   type CatalogFilters,
   type MediaType,
 } from "@/components/site/CatalogTopBar"
-import { CatalogGrid, CATALOG_DATA } from "@/components/site/CatalogGrid"
+import { CatalogGrid } from "@/components/site/CatalogGrid"
+import { CATALOG_DATA } from "@/components/site/catalog/catalogData"
 import {
   CATALOG_PER_PAGE,
   filterCatalogItems,

@@ -1,4 +1,4 @@
-import type { CatalogItem } from "@/components/site/CatalogGrid"
+import type { CatalogItem } from "@/components/site/catalog/catalogData"
 import type { CatalogFilters } from "@/components/site/CatalogTopBar"
 
 export const CATALOG_PER_PAGE = 24
