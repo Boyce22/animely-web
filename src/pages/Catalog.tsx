@@ -1,14 +1,14 @@
 import { useState, useMemo, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import { ExploreSidebar } from "@/components/site/ExploreSidebar"
+import { CatalogTopBar } from "@/components/site/CatalogTopBar"
+import { CatalogGrid } from "@/components/site/CatalogGrid"
+import { CATALOG_DATA } from "@/components/site/catalog/catalogData"
 import {
-  CatalogTopBar,
   DEFAULT_CATALOG_FILTERS,
   type CatalogFilters,
   type MediaType,
-} from "@/components/site/CatalogTopBar"
-import { CatalogGrid } from "@/components/site/CatalogGrid"
-import { CATALOG_DATA } from "@/components/site/catalog/catalogData"
+} from "@/components/site/catalog/catalogFilterTypes"
 import {
   CATALOG_PER_PAGE,
   filterCatalogItems,
