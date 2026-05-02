@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animely — Perfil</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════
+   RESET + TOKENS
+══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --red:     #e63946;
+  --bg:      #0a0a0a;
+  --bg2:     #111;
+  --bg3:     #161616;
+  --fg:      #f0eeec;
+  --muted:   #666;
+  --muted2:  #3a3a3a;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --sidebar-w: 220px;
+  --accent:  #7c3aed;
+  --banner-h: 260px;
+  --grid-cols: 12;
+  --row-h: 40px;
+  --grid-gap: 8px;
+}
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--fg); display: flex; }
+
+/* ══════════════════════════════════════════════════════════
+   SIDEBAR (idêntica às outras telas)
+══════════════════════════════════════════════════════════ */
+aside {
+  width: var(--sidebar-w); height: 100vh; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0; background: var(--bg);
+}
+.sb-logo { padding: 20px 20px 16px; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; border-bottom: 1px solid var(--border); }
+.sb-logo span { color: var(--red); }
+.sb-search-wrap { margin: 12px 14px; display: flex; align-items: center; gap: 8px; background: var(--bg3); border: 1px solid var(--border); padding: 8px 12px; }
+.sb-search-wrap input { background: none; border: none; color: var(--fg); font-family: inherit; font-size: 12px; outline: none; width: 100%; }
+.sb-search-wrap input::placeholder { color: var(--muted); }
+.sb-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted2); padding: 14px 20px 6px; }
+nav { flex: 1; overflow-y: auto; }
+nav::-webkit-scrollbar { display: none; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 9px 20px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted); transition: color .15s, background .15s; border-left: 2px solid transparent; }
+.nav-item:hover { color: var(--fg); background: rgba(255,255,255,.03); }
+.nav-item.active { color: var(--fg); border-left-color: var(--red); background: rgba(230,57,70,.06); }
+.nav-item .nav-count { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--muted2); font-family: monospace; }
+.nav-item .badge-n { margin-left: auto; background: var(--red); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 6px; }
+.sb-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.sb-user { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.sb-avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#e63946,#6930c3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.sb-user-info { flex: 1; }
+.sb-user-name { font-size: 13px; font-weight: 700; }
+.sb-user-role { font-size: 11px; color: var(--muted); }
+
+/* ══════════════════════════════════════════════════════════
+   MAIN WRAPPER
+══════════════════════════════════════════════════════════ */
+main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+/* ── TOP NAV TABS ── */
+.profile-topbar {
+  flex-shrink: 0; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 24px; height: 44px; background: var(--bg); z-index: 20;
+}
+.profile-tab {
+  display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 14px;
+  font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer;
+  border-bottom: 2px solid transparent; transition: color .15s, border-color .15s;
+  background: none; border-top: none; border-left: none; border-right: none;
+  font-family: inherit; white-space: nowrap;
+}
+.profile-tab:hover { color: var(--fg); }
+.profile-tab.active { color: var(--fg); border-bottom-color: var(--red); }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.draft-pill {
+  font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+  background: rgba(244,162,97,.15); border: 1px solid rgba(244,162,97,.3); color: #f4a261; padding: 2px 8px;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid var(--border);
+  color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 6px 12px; cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.btn:hover { color: var(--fg); border-color: var(--border2); }
+.btn.red { background: var(--red); border-color: var(--red); color: #fff; }
+.btn.red:hover { opacity: .88; }
+.btn.purple { background: rgba(124,58,237,.15); border-color: rgba(124,58,237,.4); color: #a78bfa; }
+.btn.purple:hover { background: rgba(124,58,237,.25); }
+
+/* ══════════════════════════════════════════════════════════
+   SCROLL AREA
+══════════════════════════════════════════════════════════ */
+.profile-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative; }
+.profile-scroll::-webkit-scrollbar { width: 4px; }
+.profile-scroll::-webkit-scrollbar-thumb { background: var(--muted2); }
+
+/* ══════════════════════════════════════════════════════════
+   BANNER — FULL BLEED, TALL, IMPACTANTE
+══════════════════════════════════════════════════════════ */
+.banner-wrap {
+  position: relative; width: 100%; height: var(--banner-h);
+  overflow: hidden; flex-shrink: 0;
+}
+.banner-img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center 30%;
+  transition: transform .4s ease;
+}
+.banner-wrap:hover .banner-img { transform: scale(1.02); }
+
+/* gradient overlay — escurece embaixo para o header se integrar */
+.banner-gradient {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to bottom,
+      rgba(10,10,10,0)       0%,
+      rgba(10,10,10,0)      45%,
+      rgba(10,10,10,.55)    70%,
+      rgba(10,10,10,.92)   100%),
+    linear-gradient(to right,
+      rgba(10,10,10,.6)     0%,
+      transparent           40%);
+  pointer-events: none;
+}
+/* Animated accent glow over gradient */
+.banner-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 80% at 15% 100%, rgba(124,58,237,.22) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 50% at 80% 60%, rgba(230,57,70,.10) 0%, transparent 60%);
+}
+
+/* Pattern overlay — subtle texture */
+.banner-pattern {
+  position: absolute; inset: 0; pointer-events: none; mix-blend-mode: overlay; opacity: .4;
+  background-image: repeating-linear-gradient(-48deg, transparent, transparent 24px, rgba(255,255,255,.025) 24px, rgba(255,255,255,.025) 25px);
+}
+
+/* Placeholder banner (when no image) */
+.banner-placeholder {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, #12082a 0%, #0d0d1a 50%, #0a0d20 100%);
+}
+.banner-placeholder-glow {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 60% at 65% 50%, rgba(124,58,237,.22) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 15% 80%, rgba(230,57,70,.14) 0%, transparent 55%);
+}
+
+/* Anchored user info — lives AT THE BOTTOM of banner */
+.banner-user-anchor {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; align-items: flex-end; gap: 18px;
+  padding: 0 28px 16px;
+}
+.banner-avatar {
+  width: 88px; height: 88px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #e63946 0%, #6930c3 55%, #7c3aed 100%);
+  border: 3px solid rgba(10,10,10,.9);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; font-weight: 800;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 8px 28px rgba(0,0,0,.7);
+  position: relative; margin-bottom: -16px; /* dips below banner */
+  z-index: 2;
+}
+.avatar-online-ring {
+  position: absolute; bottom: 4px; right: 4px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #52b788; border: 2px solid rgba(10,10,10,.9);
+  box-shadow: 0 0 6px #52b788;
+}
+.banner-name-block {
+  flex: 1; padding-bottom: 6px; min-width: 0;
+}
+.banner-username {
+  font-size: 22px; font-weight: 800; letter-spacing: -.4px; line-height: 1.1;
+  color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.6);
+}
+.banner-meta {
+  display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap;
+}
+.banner-role-badge {
+  font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+  padding: 2px 8px;
+}
+.banner-joined { font-size: 12px; color: rgba(255,255,255,.5); font-family: monospace; }
+.banner-actions {
+  display: flex; align-items: center; gap: 8px; padding-bottom: 6px; flex-shrink: 0;
+}
+
+/* Edit banner overlay btn */
+.banner-edit-hint {
+  position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.45); cursor: pointer; z-index: 5;
+  font-size: 13px; font-weight: 700; color: rgba(255,255,255,.8); gap: 8px;
+}
+.banner-wrap:hover .banner-edit-hint.visible { display: flex; }
+
+/* ══════════════════════════════════════════════════════════
+   HEADER STRIP (below banner — avatar overlap zone)
+══════════════════════════════════════════════════════════ */
+.profile-header-strip {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 28px 0 28px;
+  /* Avatar overlaps here from above */
+}
+.header-strip-inner {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding-bottom: 14px;
+}
+/* Spacer so content doesn't go under avatar overlap */
+.avatar-spacer { width: 88px; flex-shrink: 0; }
+.header-user-info { flex: 1; padding-top: 2px; min-width: 0; }
+.profile-bio { font-size: 13px; color: rgba(240,238,236,.65); line-height: 1.55; max-width: 560px; text-wrap: pretty; }
+.bio-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.bio-tag {
+  font-size: 10px; font-weight: 600; padding: 2px 8px;
+  background: rgba(255,255,255,.05); border: 1px solid var(--border); color: var(--muted);
+}
+.header-right-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; padding-top: 2px; }
+.header-action-row { display: flex; align-items: center; gap: 6px; }
+.follow-btn {
+  background: var(--red); border: none; color: #fff; font-family: inherit; font-size: 12px; font-weight: 700;
+  padding: 7px 18px; cursor: pointer; transition: opacity .15s; letter-spacing: .04em;
+}
+.follow-btn:hover { opacity: .85; }
+.follow-btn.following { background: none; border: 1px solid var(--border2); color: var(--muted); }
+.follow-btn.following:hover { color: var(--red); border-color: rgba(230,57,70,.3); }
+.icon-btn {
+  background: none; border: 1px solid var(--border2); color: var(--muted);
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s;
+}
+.icon-btn:hover { color: var(--fg); border-color: var(--border); }
+.social-links { display: flex; align-items: center; gap: 8px; }
+.social-lnk { font-size: 11px; color: var(--muted); text-decoration: none; transition: color .15s; display: flex; align-items: center; gap: 4px; }
+.social-lnk:hover { color: var(--fg); }
+.sep-dot { color: var(--muted2); }
+
+/* ── STATS BAR ── */
+.profile-stats-bar {
+  display: flex; align-items: center; padding: 0 28px;
+  border-bottom: 1px solid var(--border); height: 48px; overflow-x: auto; background: var(--bg);
+}
+.profile-stats-bar::-webkit-scrollbar { display: none; }
+.stat-item { display: flex; align-items: center; gap: 10px; padding: 0 20px 0 0; flex-shrink: 0; }
+.stat-item + .stat-item { border-left: 1px solid var(--border); padding-left: 20px; }
+.stat-num { font-size: 16px; font-weight: 800; font-family: monospace; }
+.stat-lbl { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.stat-sub { font-size: 10px; color: var(--muted2); font-family: monospace; margin-top: 1px; }
+
+/* ══════════════════════════════════════════════════════════
+   EDIT TOOLBAR
+══════════════════════════════════════════════════════════ */
+.edit-toolbar {
+  display: none; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding: 8px 28px; background: rgba(124,58,237,.06);
+  border-bottom: 1px solid rgba(124,58,237,.2); flex-shrink: 0;
+}
+.edit-mode .edit-toolbar { display: flex; }
+.edit-toolbar-lbl { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #a78bfa; }
+.toolbar-sep { width: 1px; height: 16px; background: rgba(124,58,237,.3); }
+.toolbar-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: none; border: 1px solid rgba(124,58,237,.3); color: #a78bfa;
+  font-family: inherit; font-size: 11px; font-weight: 600;
+  padding: 5px 10px; cursor: pointer; transition: all .15s;
+}
+.toolbar-btn:hover { background: rgba(124,58,237,.12); border-color: rgba(124,58,237,.5); }
+.toolbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.autosave { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.autosave-dot { width: 6px; height: 6px; border-radius: 50%; background: #52b788; transition: background .3s; }
+.autosave-dot.saving { background: #f4a261; animation: blink 1s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* ══════════════════════════════════════════════════════════
+   PROFILE CANVAS — customizable background + widget grid
+══════════════════════════════════════════════════════════ */
+.profile-canvas {
+  position: relative; min-height: 600px;
+  /* Background customizable via JS */
+  background: var(--bg);
+  transition: background .4s;
+}
+
+/* Background layer — sits below everything */
+.canvas-bg-layer {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: inherit;
+  /* pattern or image overrides applied via JS */
+}
+
+/* ── GRID CONTAINER ── */
+.widget-grid {
+  position: relative; z-index: 1;
+  padding: 16px 28px 48px;
+  /* We use absolute positioning for free drag; grid is just for initial layout rendering */
+  min-height: 600px;
+}
+
+/* In view mode: use CSS grid for clean layout */
+.widget-grid.view-mode {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: var(--row-h);
+  gap: var(--grid-gap);
+}
+/* In edit mode: absolute positioning driven by JS */
+.widget-grid.edit-mode-grid {
+  position: relative;
+}
+
+/* Grid guide lines (edit mode) */
+.grid-guides {
+  position: absolute; inset: 16px 28px 48px;
+  display: none; pointer-events: none; z-index: 0;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: var(--row-h);
+  gap: var(--grid-gap);
+}
+.edit-mode .grid-guides { display: grid; }
+.grid-cell {
+  border: 1px dashed rgba(124,58,237,.12);
+  border-radius: 0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   WIDGET BASE
+══════════════════════════════════════════════════════════ */
+.widget {
+  background: rgba(255,255,255,.035);
+  border: 1px solid var(--border);
+  overflow: hidden; position: relative;
+  transition: border-color .2s, box-shadow .2s;
+  display: flex; flex-direction: column;
+  /* view mode: grid positions handled by .w-* classes */
+}
+/* transparent variant — no bg, no border */
+.widget.transparent {
+  background: transparent !important;
+  border-color: transparent !important;
+  backdrop-filter: none !important;
+}
+.widget.transparent .widget-header { border-bottom-color: rgba(255,255,255,.06); }
+
+/* card styles */
+.widget.glass { background: rgba(255,255,255,.045); backdrop-filter: blur(14px) saturate(160%); }
+.widget.flat { background: rgba(255,255,255,.04); }
+.widget.bordered { background: rgba(255,255,255,.02); border-color: rgba(255,255,255,.18); }
+.widget.shadow { background: rgba(0,0,0,.55); box-shadow: 0 8px 32px rgba(0,0,0,.5); }
+.widget.neon { background: rgba(0,0,0,.75); border-color: var(--accent); box-shadow: 0 0 10px rgba(124,58,237,.25), inset 0 0 10px rgba(124,58,237,.04); }
+
+/* edit-mode states */
+.edit-mode .widget {
+  cursor: default;
+  border-color: rgba(124,58,237,.18);
+  user-select: none;
+}
+.edit-mode .widget:hover { border-color: rgba(124,58,237,.45); }
+.edit-mode .widget.dragging {
+  border-color: rgba(124,58,237,.8);
+  box-shadow: 0 12px 40px rgba(0,0,0,.7), 0 0 0 2px rgba(124,58,237,.4);
+  z-index: 100; opacity: .92;
+  cursor: grabbing;
+}
+.edit-mode .widget.drop-preview {
+  border-color: rgba(124,58,237,.5);
+  background: rgba(124,58,237,.07);
+}
+
+/* widget header */
+.widget-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px 8px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.widget-title { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); flex: 1; }
+.widget-header-btn { background: none; border: none; color: var(--muted2); font-family: inherit; font-size: 10px; font-weight: 600; cursor: pointer; transition: color .15s; padding: 0; }
+.widget-header-btn:hover { color: var(--fg); }
+
+/* ── drag handle (edit mode only) ── */
+.drag-handle {
+  position: absolute; top: 0; left: 0; right: 0; height: 32px;
+  cursor: grab; z-index: 5; display: none; align-items: center; justify-content: center;
+}
+.edit-mode .drag-handle { display: flex; }
+.drag-handle-dots {
+  display: flex; gap: 2px; opacity: 0; transition: opacity .15s;
+}
+.widget:hover .drag-handle-dots { opacity: .4; }
+.drag-handle-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--muted); }
+
+/* ── resize handle ── */
+.resize-handle {
+  position: absolute; bottom: 0; right: 0;
+  width: 16px; height: 16px; cursor: se-resize; z-index: 6;
+  display: none; align-items: flex-end; justify-content: flex-end;
+  padding: 3px;
+}
+.edit-mode .resize-handle { display: flex; }
+.resize-icon { color: rgba(124,58,237,.5); transition: color .15s; }
+.widget:hover .resize-icon { color: rgba(124,58,237,.9); }
+
+/* ── widget controls overlay ── */
+.widget-controls {
+  position: absolute; top: 6px; right: 6px; display: flex; gap: 4px;
+  z-index: 10; opacity: 0; transition: opacity .15s; pointer-events: none;
+}
+.edit-mode .widget:hover .widget-controls { opacity: 1; pointer-events: all; }
+.widget-ctrl {
+  width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.85); border: 1px solid var(--border2); color: var(--muted);
+  cursor: pointer; transition: all .15s;
+}
+.widget-ctrl:hover { color: var(--fg); border-color: rgba(255,255,255,.25); }
+.widget-ctrl.danger:hover { color: var(--red); border-color: rgba(230,57,70,.4); }
+
+/* View-mode CSS grid positions */
+.view-mode .w-avatar    { grid-column: 1 / span 3; grid-row: 1 / span 6; }
+.view-mode .w-bio       { grid-column: 4 / span 9; grid-row: 1 / span 3; }
+.view-mode .w-st-anime  { grid-column: 4 / span 4; grid-row: 4 / span 3; }
+.view-mode .w-st-manga  { grid-column: 8 / span 5; grid-row: 4 / span 3; }
+.view-mode .w-fav-anime { grid-column: 1 / span 6; grid-row: 7 / span 6; }
+.view-mode .w-fav-manga { grid-column: 7 / span 6; grid-row: 7 / span 6; }
+.view-mode .w-fav-chars { grid-column: 1 / span 6; grid-row: 13 / span 5; }
+.view-mode .w-fav-staff { grid-column: 7 / span 6; grid-row: 13 / span 5; }
+.view-mode .w-music     { grid-column: 8 / span 2; grid-row: 13 / span 3; display: flex; }
+.view-mode .w-badges    { grid-column: 10 / span 3; grid-row: 13 / span 5; }
+.view-mode .w-divider   { grid-column: 1 / span 12; grid-row: 18 / span 1; }
+.view-mode .w-activity  { grid-column: 1 / span 4; grid-row: 19 / span 7; }
+.view-mode .w-social    { grid-column: 5 / span 3; grid-row: 19 / span 7; }
+.view-mode .w-text      { grid-column: 8 / span 5; grid-row: 19 / span 4; }
+.view-mode .w-clock     { grid-column: 8 / span 2; grid-row: 23 / span 3; }
+.view-mode .w-posts     { grid-column: 10 / span 3; grid-row: 23 / span 3; }
+
+/* ══════════════════════════════════════════════════════════
+   WIDGET CONTENT STYLES
+══════════════════════════════════════════════════════════ */
+
+/* AVATAR CARD */
+.avatar-body { display: flex; flex-direction: column; align-items: center; padding: 20px 14px 14px; gap: 10px; height: 100%; }
+.avatar-img { width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(135deg,#e63946,#6930c3,#7c3aed); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; box-shadow: 0 0 0 2px var(--border2), 0 4px 16px rgba(0,0,0,.5); flex-shrink: 0; }
+.avatar-name { font-size: 14px; font-weight: 800; text-align: center; }
+.avatar-handle { font-size: 11px; color: var(--muted); }
+.avatar-badges { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.ubadge { font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; }
+.ubadge.pro    { background: rgba(244,162,97,.15); border: 1px solid rgba(244,162,97,.3); color: #f4a261; }
+.ubadge.early  { background: rgba(124,58,237,.15); border: 1px solid rgba(124,58,237,.3); color: #a78bfa; }
+.ubadge.rev    { background: rgba(82,183,136,.15); border: 1px solid rgba(82,183,136,.3); color: #52b788; }
+.avatar-counts { display: flex; width: 100%; border-top: 1px solid var(--border); padding-top: 10px; }
+.count-item { flex: 1; text-align: center; }
+.count-item + .count-item { border-left: 1px solid var(--border); }
+.count-num { font-size: 15px; font-weight: 800; font-family: monospace; }
+.count-lbl { font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 1px; }
+
+/* BIO */
+.bio-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; height: 100%; }
+.bio-text { font-size: 13px; line-height: 1.65; color: rgba(240,238,236,.72); text-wrap: pretty; flex: 1; }
+
+/* STATS */
+.stats-body { padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+.stats-big { font-size: 30px; font-weight: 800; font-family: monospace; letter-spacing: -1px; line-height: 1; }
+.stats-big-lbl { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+.stats-statuses { display: flex; flex-direction: column; gap: 4px; }
+.stat-line { display: flex; align-items: center; font-size: 11px; }
+.stat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.stat-line-name { color: var(--muted); flex: 1; margin-left: 6px; }
+.stat-line-val { font-family: monospace; font-size: 10px; color: var(--muted2); }
+.stats-bar { height: 2px; background: var(--muted2); margin-top: 8px; overflow: hidden; }
+.stats-bar-fill { height: 100%; background: var(--red); }
+
+/* FAVORITES (anime/manga) */
+.fav-body { padding: 0 10px 10px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.fav-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; flex: 1; }
+.fav-item { position: relative; overflow: hidden; cursor: pointer; border: 1px solid var(--border); transition: border-color .2s, transform .18s; }
+.fav-item:hover { border-color: rgba(255,255,255,.22); transform: translateY(-2px); }
+.fav-item:hover .fav-over { opacity: 1; }
+.fav-bg { width: 100%; height: 100%; min-height: 78px; position: relative; }
+.fav-over { position: absolute; inset: 0; background: rgba(0,0,0,.72); display: flex; align-items: flex-end; padding: 6px; opacity: 0; transition: opacity .18s; }
+.fav-over-title { font-size: 9px; font-weight: 700; color: #fff; line-height: 1.2; }
+.fav-score { position: absolute; top: 4px; right: 4px; font-size: 9px; font-weight: 800; font-family: monospace; background: rgba(0,0,0,.82); color: #f4a261; padding: 1px 5px; }
+
+/* CHARACTERS / STAFF */
+.chars-body { padding: 0 10px 10px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.chars-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; flex: 1; }
+.char-item { position: relative; overflow: hidden; cursor: pointer; border: 1px solid var(--border); transition: border-color .2s; }
+.char-item:hover { border-color: rgba(255,255,255,.2); }
+.char-bg { width: 100%; min-height: 64px; position: relative; }
+.char-name { position: absolute; bottom: 0; left: 0; right: 0; padding: 10px 4px 4px; background: linear-gradient(transparent, rgba(0,0,0,.88)); font-size: 8px; font-weight: 700; text-align: center; line-height: 1.2; }
+
+/* ACTIVITY */
+.activity-body { flex: 1; overflow-y: auto; }
+.activity-body::-webkit-scrollbar { width: 3px; }
+.activity-body::-webkit-scrollbar-thumb { background: var(--muted2); }
+.act-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.act-item:last-child { border-bottom: none; }
+.act-cover { width: 30px; height: 42px; flex-shrink: 0; border: 1px solid var(--border); overflow: hidden; }
+.act-info { flex: 1; min-width: 0; }
+.act-action { color: var(--muted); font-size: 11px; margin-bottom: 2px; }
+.act-action strong { color: var(--fg); font-weight: 700; }
+.act-meta { font-size: 10px; color: var(--muted2); font-family: monospace; }
+.act-score { font-size: 11px; font-weight: 800; font-family: monospace; color: #f4a261; flex-shrink: 0; }
+
+/* SOCIAL */
+.social-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.soc-item { display: flex; align-items: center; gap: 10px; padding: 7px 9px; border: 1px solid var(--border); cursor: pointer; transition: all .15s; text-decoration: none; }
+.soc-item:hover { border-color: var(--border2); background: rgba(255,255,255,.03); }
+.soc-icon { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 4px; flex-shrink: 0; }
+.soc-name { font-size: 12px; font-weight: 600; color: var(--fg); }
+.soc-handle { font-size: 10px; color: var(--muted); }
+.soc-arrow { margin-left: auto; color: var(--muted2); }
+
+/* MUSIC */
+.music-body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 10px; gap: 7px; }
+.music-disc { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg,#1a0a2e,#4a1a6e); border: 2px solid rgba(124,58,237,.35); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.music-disc.spin { animation: spin 4s linear infinite; }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+.music-title { font-size: 11px; font-weight: 700; text-align: center; line-height: 1.2; }
+.music-artist { font-size: 10px; color: var(--muted); text-align: center; }
+.music-prog { width: 100%; height: 2px; background: var(--muted2); cursor: pointer; }
+.music-prog-fill { height: 100%; background: var(--red); width: 35%; }
+.music-ctrls { display: flex; align-items: center; gap: 9px; }
+.mctrl { background: none; border: none; color: var(--muted); cursor: pointer; transition: color .15s; padding: 0; }
+.mctrl:hover { color: var(--fg); }
+.mctrl.play { background: var(--red); color: #fff; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: opacity .15s; }
+.mctrl.play:hover { opacity: .85; }
+
+/* BADGES */
+.badges-body { padding: 10px; display: flex; flex-wrap: wrap; gap: 7px; align-content: flex-start; }
+.bdg-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 7px 10px; border: 1px solid var(--border); cursor: pointer; transition: border-color .15s; min-width: 56px; }
+.bdg-item:hover { border-color: rgba(255,255,255,.18); }
+.bdg-icon { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.bdg-name { font-size: 8px; font-weight: 700; text-align: center; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+
+/* TEXT BLOCK */
+.text-body { padding: 12px 14px; font-size: 13px; line-height: 1.7; color: rgba(240,238,236,.72); overflow-y: auto; flex: 1; }
+.text-body::-webkit-scrollbar { width: 3px; }
+.text-body::-webkit-scrollbar-thumb { background: var(--muted2); }
+
+/* CLOCK */
+.clock-body { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; padding: 12px; }
+.clock-time { font-size: 26px; font-weight: 800; font-family: monospace; letter-spacing: -1px; }
+.clock-date { font-size: 11px; color: var(--muted); margin-top: 4px; text-align: center; }
+.clock-tz { font-size: 10px; color: var(--muted2); font-family: monospace; margin-top: 2px; }
+
+/* POSTS */
+.posts-body { padding: 0; }
+.post-item { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.post-item:last-child { border-bottom: none; }
+.post-hdr { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+.post-av { width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(135deg,#e63946,#7c3aed); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 800; flex-shrink: 0; }
+.post-user { font-size: 11px; font-weight: 700; }
+.post-time { font-size: 10px; color: var(--muted2); font-family: monospace; margin-left: auto; }
+.post-text { font-size: 12px; color: rgba(240,238,236,.68); line-height: 1.5; }
+.post-likes { font-size: 10px; color: var(--muted2); margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+
+/* DIVIDER */
+.divider-body { display: flex; align-items: center; height: 100%; padding: 0 2px; }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-txt { font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted2); padding: 0 12px; flex-shrink: 0; }
+
+/* Cover palette helpers */
+.cov-1{background:linear-gradient(160deg,#1a0800,#4a1500 40%,#0d0400)}
+.cov-2{background:linear-gradient(160deg,#0a0a1f,#1a1a4a 40%,#050510)}
+.cov-3{background:linear-gradient(160deg,#100010,#300030 40%,#080008)}
+.cov-4{background:linear-gradient(160deg,#001510,#003328 40%,#000d08)}
+.cov-5{background:linear-gradient(160deg,#00111f,#002a44 40%,#000810)}
+.cov-6{background:linear-gradient(160deg,#1a1000,#3d2800 40%,#0d0800)}
+.cov-7{background:linear-gradient(160deg,#100010,#280028 40%,#0a000a)}
+.cov-8{background:linear-gradient(160deg,#0d0d00,#1e1e00 40%,#080800)}
+.cov-9{background:linear-gradient(160deg,#1a0a00,#3d2010 40%,#0d0500)}
+.cov-10{background:linear-gradient(160deg,#001a0d,#00331a 40%,#000d06)}
+.cov-11{background:linear-gradient(160deg,#0d001a,#200035 40%,#06000d)}
+.cov-12{background:linear-gradient(160deg,#1a0010,#350020 40%,#0d0008)}
+.cov-13{background:linear-gradient(160deg,#001533,#002866 40%,#000a1a)}
+.cov-14{background:linear-gradient(160deg,#151500,#2a2a00 40%,#0a0a00)}
+.cover-tex::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(-52deg,transparent,transparent 20px,rgba(255,255,255,.012) 20px,rgba(255,255,255,.012) 21px); }
+
+/* ══════════════════════════════════════════════════════════
+   PANELS (right-side overlays)
+══════════════════════════════════════════════════════════ */
+.panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 200; display: none; }
+.panel-overlay.open { display: block; }
+.side-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 300px;
+  background: #111; border-left: 1px solid var(--border2);
+  display: flex; flex-direction: column; box-shadow: -8px 0 32px rgba(0,0,0,.5);
+  z-index: 201; transform: translateX(100%); transition: transform .25s ease;
+}
+.panel-overlay.open .side-panel { transform: translateX(0); }
+.panel-hdr { padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+.panel-title { font-size: 14px; font-weight: 800; flex: 1; }
+.panel-close { background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; padding: 0; line-height: 1; transition: color .15s; }
+.panel-close:hover { color: var(--fg); }
+.panel-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
+.panel-body::-webkit-scrollbar { width: 3px; }
+.panel-body::-webkit-scrollbar-thumb { background: var(--muted2); }
+.panel-section-lbl { font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--muted2); padding: 12px 0 7px; }
+.panel-section-lbl:first-child { padding-top: 0; }
+
+/* Widget picker items */
+.w-pick {
+  display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid var(--border);
+  cursor: pointer; transition: all .15s; margin-bottom: 5px;
+}
+.w-pick:hover { border-color: rgba(124,58,237,.4); background: rgba(124,58,237,.06); }
+.w-pick-icon { width: 34px; height: 34px; background: rgba(255,255,255,.05); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.w-pick-name { font-size: 12px; font-weight: 700; }
+.w-pick-desc { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+/* Theme panel fields */
+.theme-field { margin-bottom: 16px; }
+.theme-lbl { font-size: 9px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; display: block; }
+.theme-presets { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; }
+.theme-preset { height: 34px; border: 2px solid transparent; cursor: pointer; transition: border-color .15s; }
+.theme-preset:hover, .theme-preset.sel { border-color: rgba(255,255,255,.7); }
+.card-style-btns { display: flex; flex-wrap: wrap; gap: 5px; }
+.csbtn {
+  font-size: 10px; font-weight: 600; padding: 4px 10px;
+  border: 1px solid var(--border); color: var(--muted);
+  cursor: pointer; background: none; font-family: inherit; transition: all .12s;
+}
+.csbtn:hover { color: var(--fg); border-color: var(--border2); }
+.csbtn.sel { color: #a78bfa; border-color: rgba(124,58,237,.5); background: rgba(124,58,237,.1); }
+.color-swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.cswatch { width: 28px; height: 28px; border: 2px solid transparent; cursor: pointer; transition: border-color .15s; position: relative; }
+.cswatch:hover, .cswatch.sel { border-color: rgba(255,255,255,.7); }
+.cswatch input[type=color] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.theme-select { width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--fg); font-family: inherit; font-size: 12px; padding: 7px 10px; outline: none; }
+.bg-pattern-btns { display: flex; flex-wrap: wrap; gap: 5px; }
+.transparency-toggle { display: flex; align-items: center; gap: 10px; }
+.toggle-switch { position: relative; width: 36px; height: 20px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-track { position: absolute; inset: 0; background: var(--muted2); cursor: pointer; transition: background .2s; border-radius: 10px; }
+.toggle-track::before { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: transform .2s; }
+input:checked + .toggle-track { background: var(--accent); }
+input:checked + .toggle-track::before { transform: translateX(16px); }
+
+/* ══════════════════════════════════════════════════════════
+   CONFIRM MODAL
+══════════════════════════════════════════════════════════ */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 300; display: none; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: #141414; border: 1px solid var(--border2); padding: 24px; width: 360px; }
+.modal-title { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+.modal-body { font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1c1c1c; border: 1px solid var(--border); padding: 10px 20px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all .25s; white-space: nowrap; z-index: 999; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SIDEBAR
+════════════════════════════════════════ -->
+<aside>
+  <div class="sb-logo"><span>a</span>nimely</div>
+  <div class="sb-search-wrap">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="5.5" cy="5.5" r="4.5" stroke="#555" stroke-width="1.2"/><path d="M9 9l3 3" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="Buscar...">
+  </div>
+  <nav>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M1 6.5L7.5 1 14 6.5V14H9.5V10h-4v4H1V6.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Início</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5l3.5 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Explorar</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 1v13M5 5h9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Animes</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 1h8l3 3v10H2V1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M10 1v3h3M5 6h5M5 9h5M5 12h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Mangás</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Personagens</div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Atividades</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="1" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="8" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="8" y="8" width="6" height="6" stroke="currentColor" stroke-width="1.3"/></svg>Feed</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M7.5 1a5 5 0 0 1 5 5c0 2-1 4-2 5.5H4.5C3.5 10 2.5 8 2.5 6a5 5 0 0 1 5-5zM5.5 11.5h4M7.5 14v-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Notificações<div class="badge-n">3</div></div>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Minhas Listas</div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Lendo<span class="nav-count">12</span></div>
+    <div class="nav-item" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M2 2h11v11H2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 2v11M2 5.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Favoritos<span class="nav-count">34</span></div>
+    <div class="sb-divider"></div>
+    <div class="nav-item active" onclick="setNav(this)"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Meu Perfil</div>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar-sm">K</div>
+    <div class="sb-user-info"><div class="sb-user-name">kurumi_fan</div><div class="sb-user-role">Pro · 847 eps</div></div>
+  </div>
+</aside>
+
+<!-- ════════════════════════════════════════
+     MAIN
+════════════════════════════════════════ -->
+<main>
+  <!-- TOP TABS -->
+  <div class="profile-topbar">
+    <button class="profile-tab active" onclick="setTab(this)">Perfil</button>
+    <button class="profile-tab" onclick="setTab(this)">Lista Anime</button>
+    <button class="profile-tab" onclick="setTab(this)">Lista Mangá</button>
+    <button class="profile-tab" onclick="setTab(this)">Favoritos</button>
+    <button class="profile-tab" onclick="setTab(this)">Atividade</button>
+    <button class="profile-tab" onclick="setTab(this)">Reviews</button>
+    <div class="topbar-actions">
+      <div class="draft-pill" id="draft-pill" style="display:none">Rascunho</div>
+      <button class="btn" id="edit-btn" onclick="enterEdit()">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8.5 1.5l2 2L3 11H1V9L8.5 1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Editar perfil
+      </button>
+      <button class="btn" onclick="toast('Link copiado!')">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="10" cy="2" r="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="10" r="1.5" stroke="currentColor" stroke-width="1.2"/><circle cx="2" cy="6" r="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M3.5 5.2l5-2.7M3.5 6.8l5 2.7" stroke="currentColor" stroke-width="1.2"/></svg>
+        Partilhar
+      </button>
+    </div>
+  </div>
+
+  <!-- SCROLL AREA -->
+  <div class="profile-scroll" id="profile-scroll">
+
+    <!-- ══════════ BANNER — IMPACTANTE ══════════ -->
+    <div class="banner-wrap" id="banner-wrap">
+      <!-- Placeholder bg (shown when no image) -->
+      <div class="banner-placeholder" id="banner-placeholder">
+        <div class="banner-placeholder-glow" style="padding: 17px; height: 351px"></div>
+      </div>
+      <!-- Actual image (hidden until set) -->
+      <img class="banner-img" id="banner-img" alt="" style="display:none">
+      <!-- Overlay layers -->
+      <div class="banner-gradient"></div>
+      <div class="banner-glow" id="banner-glow"></div>
+      <div class="banner-pattern"></div>
+
+      <!-- Edit hint (click to change banner in edit mode) -->
+      <div class="banner-edit-hint" id="banner-edit-hint" onclick="openBannerEdit()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="5.5" r="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 11l4-4 3 3 2-2 5 5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        Trocar banner
+      </div>
+
+      <!-- User info anchored to bottom of banner -->
+      <div class="banner-user-anchor">
+        <div class="banner-avatar" id="banner-avatar">
+          K
+          <div class="avatar-online-ring"></div>
+        </div>
+        <div class="banner-name-block">
+          <div class="banner-username">kurumi_fan</div>
+          <div class="banner-meta">
+            <span class="banner-role-badge ubadge pro">Pro</span>
+            <span class="banner-role-badge ubadge early">Early</span>
+            <span class="banner-joined">Membro desde Jan 2022</span>
+          </div>
+        </div>
+        <div class="banner-actions">
+          <button class="follow-btn" id="follow-btn" onclick="toggleFollow()">Seguir</button>
+          <button class="icon-btn" onclick="toast('Mensagem aberta')">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1 5l6 4 6-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          </button>
+          <button class="icon-btn" onclick="toast('Mais opções')">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="3.5" r="1" fill="currentColor"/><circle cx="7" cy="7" r="1" fill="currentColor"/><circle cx="7" cy="10.5" r="1" fill="currentColor"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PROFILE HEADER STRIP ══════════ -->
+    <div class="profile-header-strip">
+      <div class="header-strip-inner">
+        <div class="avatar-spacer"></div><!-- aligns with banner avatar -->
+        <div class="header-user-info">
+          <div class="profile-bio">Apreciador de dark fantasy e seinen desde os 14 anos. Berserk mudou completamente minha visão de narrativa e arte. Sempre procurando o próximo mangá que vai me destruir emocionalmente.</div>
+          <div class="bio-tags">
+            <span class="bio-tag">Dark Fantasy</span>
+            <span class="bio-tag">Seinen</span>
+            <span class="bio-tag">Mangá</span>
+            <span class="bio-tag">Berserk</span>
+            <span class="bio-tag">Valinhos / SP</span>
+          </div>
+        </div>
+        <div class="header-right-actions">
+          <div class="social-links">
+            <a class="social-lnk" href="#" onclick="return false">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 1h3.5l2.5 3.5-4 5.5H1l3.5-4.5L1 1z" stroke="currentColor" stroke-width="1.1"/><path d="M10 1L6.5 5.5 10 10" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+              @kurumi_fan
+            </a>
+            <span class="sep-dot">·</span>
+            <a class="social-lnk" href="#" onclick="return false">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="1" y="1" width="9" height="9" rx="2" stroke="currentColor" stroke-width="1.1"/><circle cx="5.5" cy="5.5" r="2" stroke="currentColor" stroke-width="1.1"/><circle cx="8" cy="3" r=".8" fill="currentColor"/></svg>
+              @kurumi.otaku
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ STATS BAR ══════════ -->
+    <div class="profile-stats-bar">
+      <div class="stat-item"><div><div class="stat-num">1.247</div><div class="stat-lbl">Eps assistidos</div></div></div>
+      <div class="stat-item"><div><div class="stat-num">387</div><div class="stat-lbl">Animes</div><div class="stat-sub">∅ 7.8</div></div></div>
+      <div class="stat-item"><div><div class="stat-num">12.840</div><div class="stat-lbl">Capítulos</div></div></div>
+      <div class="stat-item"><div><div class="stat-num">214</div><div class="stat-lbl">Mangás</div><div class="stat-sub">∅ 8.2</div></div></div>
+      <div class="stat-item"><div><div class="stat-num">48</div><div class="stat-lbl">Reviews</div></div></div>
+      <div class="stat-item"><div><div class="stat-num">312</div><div class="stat-lbl">Seguidores</div></div></div>
+      <div class="stat-item"><div><div class="stat-num">89</div><div class="stat-lbl">Seguindo</div></div></div>
+    </div>
+
+    <!-- ══════════ EDIT TOOLBAR ══════════ -->
+    <div class="edit-toolbar" id="edit-toolbar">
+      <span class="edit-toolbar-lbl">Editar</span>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" onclick="openWidgetPanel()">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Widget
+      </button>
+      <button class="toolbar-btn" onclick="openThemePanel()">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.2"/><circle cx="5" cy="5" r="1" fill="currentColor"/></svg>
+        Tema
+      </button>
+      <button class="toolbar-btn" onclick="openBannerEdit()">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="2" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1.1"/><circle cx="3.5" cy="4.5" r=".8" fill="currentColor"/><path d="M1 7l2.5-2.5L6 7l1.5-1.5L10 9" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></svg>
+        Banner
+      </button>
+      <div class="toolbar-right">
+        <div class="autosave" id="autosave-row">
+          <div class="autosave-dot" id="autosave-dot"></div>
+          <span id="autosave-lbl">Salvo</span>
+        </div>
+        <button class="btn" onclick="discardDraft()">Descartar</button>
+        <button class="btn red" onclick="publishDraft()">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Publicar
+        </button>
+      </div>
+    </div>
+
+    <!-- ══════════ PROFILE CANVAS (bg + widgets) ══════════ -->
+    <div class="profile-canvas" id="profile-canvas">
+      <div class="canvas-bg-layer" id="canvas-bg-layer"></div>
+
+      <!-- Grid guide cells (edit mode only) -->
+      <div class="grid-guides" id="grid-guides"></div>
+
+      <!-- WIDGET GRID -->
+      <div class="widget-grid view-mode" id="widget-grid">
+
+        <!-- AVATAR CARD -->
+        <div class="widget glass w-avatar" id="w-avatar" data-wid="avatar" data-x="0" data-y="0" data-w="3" data-h="6" data-minw="2" data-minh="4">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-avatar')" title="Transparente">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg>
+            </button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-avatar')" title="Ocultar">
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <div class="resize-handle">
+            <svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="avatar-body">
+            <div class="avatar-img">K</div>
+            <div class="avatar-name">kurumi_fan</div>
+            <div class="avatar-handle">@kurumi_fan · #24819</div>
+            <div class="avatar-badges">
+              <span class="ubadge pro">Pro</span>
+              <span class="ubadge early">Early</span>
+              <span class="ubadge rev">Reviewer</span>
+            </div>
+            <div class="avatar-counts">
+              <div class="count-item"><div class="count-num">312</div><div class="count-lbl">Seguidores</div></div>
+              <div class="count-item"><div class="count-num">89</div><div class="count-lbl">Seguindo</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BIO -->
+        <div class="widget glass w-bio" id="w-bio" data-wid="bio" data-x="3" data-y="0" data-w="9" data-h="3" data-minw="4" data-minh="2">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-bio')" title="Transparente"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-bio')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Sobre</span><button class="widget-header-btn" onclick="toast('Editar bio')">Editar</button></div>
+          <div class="bio-body">
+            <div class="bio-text">Apreciador de dark fantasy e seinen desde os 14 anos. Berserk mudou completamente minha visão de narrativa e arte. Sempre procurando o próximo mangá que vai me destruir emocionalmente — e geralmente acho.<br><br>Listo tudo que leio/assisto. Reviews honestas, sem spoilers desnecessários.</div>
+            <div class="bio-tags">
+              <span class="bio-tag">Dark Fantasy</span><span class="bio-tag">Seinen</span><span class="bio-tag">Mangá</span><span class="bio-tag">Berserk</span><span class="bio-tag">Valinhos / SP</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATS ANIME -->
+        <div class="widget glass w-st-anime" id="w-st-anime" data-wid="stats-anime" data-x="3" data-y="3" data-w="4" data-h="3" data-minw="3" data-minh="3">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-st-anime')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-st-anime')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Stats Anime</span></div>
+          <div class="stats-body">
+            <div><div class="stats-big">1.247</div><div class="stats-big-lbl">Episódios</div></div>
+            <div>
+              <div class="stats-statuses">
+                <div class="stat-line"><div class="stat-dot" style="background:#52b788"></div><span class="stat-line-name">Assistindo</span><span class="stat-line-val">14</span></div>
+                <div class="stat-line"><div class="stat-dot" style="background:var(--muted2)"></div><span class="stat-line-name">Completo</span><span class="stat-line-val">318</span></div>
+                <div class="stat-line"><div class="stat-dot" style="background:#f4a261"></div><span class="stat-line-name">Pausado</span><span class="stat-line-val">42</span></div>
+                <div class="stat-line"><div class="stat-dot" style="background:var(--red)"></div><span class="stat-line-name">Dropado</span><span class="stat-line-val">13</span></div>
+              </div>
+              <div class="stats-bar"><div class="stats-bar-fill" style="width:78%;background:#52b788"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STATS MANGA -->
+        <div class="widget glass w-st-manga" id="w-st-manga" data-wid="stats-manga" data-x="7" data-y="3" data-w="5" data-h="3" data-minw="3" data-minh="3">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-st-manga')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-st-manga')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Stats Mangá</span></div>
+          <div class="stats-body">
+            <div><div class="stats-big">12.840</div><div class="stats-big-lbl">Capítulos lidos</div></div>
+            <div>
+              <div class="stats-statuses">
+                <div class="stat-line"><div class="stat-dot" style="background:#52b788"></div><span class="stat-line-name">Lendo</span><span class="stat-line-val">12</span></div>
+                <div class="stat-line"><div class="stat-dot" style="background:var(--muted2)"></div><span class="stat-line-name">Completo</span><span class="stat-line-val">178</span></div>
+                <div class="stat-line"><div class="stat-dot" style="background:#f4a261"></div><span class="stat-line-name">Pausado</span><span class="stat-line-val">21</span></div>
+                <div class="stat-line"><div class="stat-dot" style="background:var(--red)"></div><span class="stat-line-name">Dropado</span><span class="stat-line-val">3</span></div>
+              </div>
+              <div class="stats-bar"><div class="stats-bar-fill" style="width:82%;background:#a78bfa"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAV ANIME -->
+        <div class="widget glass w-fav-anime" id="w-fav-anime" data-wid="fav-anime" data-x="0" data-y="6" data-w="6" data-h="6" data-minw="4" data-minh="4">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-fav-anime')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-fav-anime')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Animes Favoritos</span><button class="widget-header-btn">Ver todos →</button></div>
+          <div class="fav-body"><div class="fav-grid" id="fav-anime-grid"></div></div>
+        </div>
+
+        <!-- FAV MANGA -->
+        <div class="widget glass w-fav-manga" id="w-fav-manga" data-wid="fav-manga" data-x="6" data-y="6" data-w="6" data-h="6" data-minw="4" data-minh="4">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-fav-manga')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-fav-manga')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Mangás Favoritos</span><button class="widget-header-btn">Ver todos →</button></div>
+          <div class="fav-body"><div class="fav-grid" id="fav-manga-grid"></div></div>
+        </div>
+
+        <!-- FAV CHARACTERS -->
+        <div class="widget glass w-fav-chars" id="w-fav-chars" data-wid="fav-chars" data-x="0" data-y="12" data-w="6" data-h="5" data-minw="3" data-minh="3">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-fav-chars')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-fav-chars')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Personagens Favoritos</span><button class="widget-header-btn">Ver todos →</button></div>
+          <div class="chars-body"><div class="chars-grid" id="chars-grid"></div></div>
+        </div>
+
+        <!-- FAV STAFF -->
+        <div class="widget glass w-fav-staff" id="w-fav-staff" data-wid="fav-staff" data-x="6" data-y="12" data-w="6" data-h="5" data-minw="3" data-minh="3">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-fav-staff')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-fav-staff')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Staff / Autores</span><button class="widget-header-btn">Ver todos →</button></div>
+          <div class="chars-body"><div class="chars-grid" id="staff-grid"></div></div>
+        </div>
+
+        <!-- MUSIC -->
+        <div class="widget glass w-music" id="w-music" data-wid="music" data-x="0" data-y="17" data-w="2" data-h="4" data-minw="2" data-minh="3">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-music')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-music')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Tocando agora</span></div>
+          <div class="music-body">
+            <div class="music-disc" id="music-disc">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="2.5" stroke="rgba(167,139,250,.4)" stroke-width="1.5"/><path d="M8 1v2.5M8 12.5V15M1 8h2.5M12.5 8H15" stroke="rgba(167,139,250,.25)" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="music-title">Kabeneri OST — Unato</div>
+            <div class="music-artist">Hiroyuki Sawano</div>
+            <div class="music-prog"><div class="music-prog-fill" id="music-fill"></div></div>
+            <div class="music-ctrls">
+              <button class="mctrl" onclick="toast('Anterior')"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M3 2v9M11 3L5.5 6.5 11 10V3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+              <button class="mctrl play" id="music-play" onclick="toggleMusic()"><svg width="9" height="9" viewBox="0 0 9 9" fill="none" id="play-icon"><path d="M2.5 1.5l5 3-5 3V1.5z" fill="white"/></svg></button>
+              <button class="mctrl" onclick="toast('Próxima')"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M10 2v9M2 3l5.5 3.5L2 10V3z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- BADGES -->
+        <div class="widget glass w-badges" id="w-badges" data-wid="badges" data-x="2" data-y="17" data-w="3" data-h="5" data-minw="2" data-minh="3">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-badges')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-badges')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Conquistas</span><button class="widget-header-btn">Ver todas →</button></div>
+          <div class="badges-body" id="badges-body"></div>
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="widget w-divider transparent" id="w-divider" data-wid="divider" data-x="0" data-y="22" data-w="12" data-h="1" data-minw="4" data-minh="1">
+          <div class="divider-body">
+            <div class="divider-line"></div>
+            <div class="divider-txt">Mais</div>
+            <div class="divider-line"></div>
+          </div>
+        </div>
+
+        <!-- ACTIVITY -->
+        <div class="widget glass w-activity" id="w-activity" data-wid="activity" data-x="0" data-y="23" data-w="4" data-h="7" data-minw="3" data-minh="4">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-activity')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-activity')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Atividade Recente</span><button class="widget-header-btn">Ver tudo →</button></div>
+          <div class="activity-body" id="activity-body"></div>
+        </div>
+
+        <!-- SOCIAL -->
+        <div class="widget glass w-social" id="w-social" data-wid="social" data-x="4" data-y="23" data-w="3" data-h="7" data-minw="2" data-minh="3">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-social')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-social')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Links Sociais</span></div>
+          <div class="social-body">
+            <a class="soc-item" href="#" onclick="return false"><div class="soc-icon" style="background:rgba(0,0,0,.4)"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 1h4l3 4-5 7H1l4.5-5.5L1 1z" stroke="#888" stroke-width="1.1"/><path d="M12 1L8.5 6 12 11" stroke="#888" stroke-width="1.1" stroke-linecap="round"/></svg></div><div><div class="soc-name">X / Twitter</div><div class="soc-handle">@kurumi_fan</div></div><div class="soc-arrow"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M3 2l3 2.5-3 2.5" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg></div></a>
+            <a class="soc-item" href="#" onclick="return false"><div class="soc-icon" style="background:rgba(228,64,95,.15)"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="2" width="9" height="9" rx="2.5" stroke="#e4405f" stroke-width="1.1"/><circle cx="6.5" cy="6.5" r="2" stroke="#e4405f" stroke-width="1.1"/><circle cx="9.3" cy="3.7" r=".7" fill="#e4405f"/></svg></div><div><div class="soc-name">Instagram</div><div class="soc-handle">@kurumi.otaku</div></div><div class="soc-arrow"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M3 2l3 2.5-3 2.5" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg></div></a>
+            <a class="soc-item" href="#" onclick="return false"><div class="soc-icon" style="background:rgba(255,0,0,.1)"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1" y="3" width="11" height="7" rx="2" stroke="#f00" stroke-width="1.1"/><path d="M5.5 5.5l3 1.5-3 1.5V5.5z" fill="#f00"/></svg></div><div><div class="soc-name">YouTube</div><div class="soc-handle">kurumi_reacts</div></div><div class="soc-arrow"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M3 2l3 2.5-3 2.5" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg></div></a>
+            <a class="soc-item" href="#" onclick="return false"><div class="soc-icon" style="background:rgba(88,101,242,.15)"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#5865f2" stroke-width="1.1"/><path d="M4 8.5c0-1.8.7-3.5 2.5-3.5 1.8 0 2.5 1.7 2.5 3.5" stroke="#5865f2" stroke-width="1" stroke-linecap="round"/></svg></div><div><div class="soc-name">Discord</div><div class="soc-handle">kurumi_fan#0001</div></div><div class="soc-arrow"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M3 2l3 2.5-3 2.5" stroke="#555" stroke-width="1.2" stroke-linecap="round"/></svg></div></a>
+          </div>
+        </div>
+
+        <!-- TEXT BLOCK -->
+        <div class="widget glass w-text" id="w-text" data-wid="text" data-x="7" data-y="23" data-w="5" data-h="4" data-minw="2" data-minh="2">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-text')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-text')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Critério de avaliação</span><button class="widget-header-btn">Editar</button></div>
+          <div class="text-body">
+            <strong style="display:block;margin-bottom:7px;font-size:12px;color:var(--fg)">Como avalio:</strong>
+            10 — obra-prima que muda perspectiva<br>
+            9 — excepcionais, poucas falhas<br>
+            8 — muito boas, recomendo fortemente<br>
+            7 — boas, valem o tempo<br>
+            6 — medianas, abaixo da expectativa<br>
+            ≤5 — não recomendo
+          </div>
+        </div>
+
+        <!-- CLOCK -->
+        <div class="widget glass w-clock" id="w-clock" data-wid="clock" data-x="7" data-y="27" data-w="2" data-h="3" data-minw="2" data-minh="2">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-clock')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-clock')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="clock-body"><div class="clock-time" id="clock-time">--:--</div><div class="clock-date" id="clock-date">—</div><div class="clock-tz">America/Sao_Paulo</div></div>
+        </div>
+
+        <!-- POSTS -->
+        <div class="widget glass w-posts" id="w-posts" data-wid="posts" data-x="9" data-y="27" data-w="3" data-h="3" data-minw="2" data-minh="2">
+          <div class="drag-handle"><div class="drag-handle-dots"><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div><div class="drag-handle-dot"></div></div></div>
+          <div class="widget-controls">
+            <button class="widget-ctrl" onclick="toggleTransparent('w-posts')"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.1" stroke-dasharray="2 1.5"/></svg></button>
+            <button class="widget-ctrl danger" onclick="hideWidget('w-posts')"><svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M1.5 1.5l6 6M7.5 1.5l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+          </div>
+          <div class="resize-handle"><svg class="resize-icon" width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M4 9h5V4M9 9L4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="widget-header"><span class="widget-title">Posts Recentes</span></div>
+          <div class="posts-body" id="posts-body"></div>
+        </div>
+
+      </div><!-- /widget-grid -->
+    </div><!-- /profile-canvas -->
+  </div><!-- /profile-scroll -->
+</main>
+
+<!-- ════════════════════════════════════════
+     WIDGET PANEL
+════════════════════════════════════════ -->
+<div class="panel-overlay" id="widget-overlay" onclick="closePanels()">
+  <div class="side-panel" onclick="event.stopPropagation()">
+    <div class="panel-hdr"><span class="panel-title">Adicionar widget</span><button class="panel-close" onclick="closePanels()">×</button></div>
+    <div class="panel-body">
+      <div class="panel-section-lbl">Perfil</div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#666" stroke-width="1.3"/><circle cx="8" cy="6" r="2" stroke="#666" stroke-width="1.2"/></svg></div><div><div class="w-pick-name">Avatar Card</div><div class="w-pick-desc">Foto, nome, badges, seguidores</div></div></div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 7h10M3 10h6" stroke="#666" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="w-pick-name">Biografia</div><div class="w-pick-desc">Texto livre com tags</div></div></div>
+      <div class="panel-section-lbl">Listas e Stats</div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="#666" stroke-width="1.3"/><path d="M2 6h12" stroke="#666" stroke-width="1.2"/><path d="M6 2v12" stroke="#666" stroke-width="1.2"/></svg></div><div><div class="w-pick-name">Stats Anime</div><div class="w-pick-desc">Episódios, status, score médio</div></div></div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l4 4v8H3V2z" stroke="#7c3aed" stroke-width="1.3" stroke-linejoin="round"/></svg></div><div><div class="w-pick-name">Stats Mangá</div><div class="w-pick-desc">Capítulos, status, score médio</div></div></div>
+      <div class="panel-section-lbl">Favoritos</div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4" height="5" rx=".5" stroke="#666" stroke-width="1.2"/><rect x="6" y="2" width="4" height="5" rx=".5" stroke="#666" stroke-width="1.2"/><rect x="10" y="2" width="4" height="5" rx=".5" stroke="#666" stroke-width="1.2"/><rect x="2" y="9" width="4" height="5" rx=".5" stroke="#666" stroke-width="1.2"/><rect x="6" y="9" width="4" height="5" rx=".5" stroke="#666" stroke-width="1.2"/><rect x="10" y="9" width="4" height="5" rx=".5" stroke="#666" stroke-width="1.2"/></svg></div><div><div class="w-pick-name">Animes Favoritos</div><div class="w-pick-desc">Grid de capas</div></div></div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="#666" stroke-width="1.3"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#666" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="w-pick-name">Personagens Favoritos</div><div class="w-pick-desc">Grid de personagens</div></div></div>
+      <div class="panel-section-lbl">Outros</div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#7c3aed" stroke-width="1.3"/><circle cx="8" cy="8" r="2" stroke="#7c3aed" stroke-width="1.2"/></svg></div><div><div class="w-pick-name">Music Player</div><div class="w-pick-desc">Áudio de fundo do perfil</div></div></div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 7h7M3 10h9" stroke="#666" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="w-pick-name">Bloco de Texto</div><div class="w-pick-desc">Markdown customizado</div></div></div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="#666" stroke-width="1.3"/><path d="M8 5v3l2 2" stroke="#666" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="w-pick-name">Relógio</div><div class="w-pick-desc">Hora e timezone do usuário</div></div></div>
+      <div class="w-pick" onclick="toast('Widget adicionado ao layout')"><div class="w-pick-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="5.5" cy="5.5" r="3" stroke="#f4a261" stroke-width="1.2"/><circle cx="11.5" cy="5.5" r="2" stroke="#f4a261" stroke-width="1.2"/><circle cx="8.5" cy="12" r="2.5" stroke="#f4a261" stroke-width="1.2"/></svg></div><div><div class="w-pick-name">Conquistas</div><div class="w-pick-desc">Badges e troféus</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     THEME PANEL
+════════════════════════════════════════ -->
+<div class="panel-overlay" id="theme-overlay" onclick="closePanels()">
+  <div class="side-panel" onclick="event.stopPropagation()">
+    <div class="panel-hdr"><span class="panel-title">Personalizar tema</span><button class="panel-close" onclick="closePanels()">×</button></div>
+    <div class="panel-body">
+      <div class="theme-field">
+        <span class="theme-lbl">Fundo da área de widgets</span>
+        <div class="theme-presets">
+          <div class="theme-preset sel" style="background:#0a0a0a" onclick="setCanvasBg(this,'#0a0a0a')"></div>
+          <div class="theme-preset" style="background:linear-gradient(135deg,#12082a,#0d0d1a)" onclick="setCanvasBg(this,'linear-gradient(135deg,#12082a,#0d0d1a)')"></div>
+          <div class="theme-preset" style="background:linear-gradient(135deg,#0a1a0d,#050d08)" onclick="setCanvasBg(this,'linear-gradient(135deg,#0a1a0d,#050d08)')"></div>
+          <div class="theme-preset" style="background:linear-gradient(135deg,#1a0a0a,#0d0505)" onclick="setCanvasBg(this,'linear-gradient(135deg,#1a0a0a,#0d0505)')"></div>
+          <div class="theme-preset" style="background:linear-gradient(135deg,#0a0a1a,#05050d)" onclick="setCanvasBg(this,'linear-gradient(135deg,#0a0a1a,#05050d)')"></div>
+          <div class="theme-preset" style="background:radial-gradient(ellipse at 50% 0%,#1a082a,#0a0a0a)" onclick="setCanvasBg(this,'radial-gradient(ellipse at 50% 0%,#1a082a,#0a0a0a)')"></div>
+          <div class="theme-preset" style="background:linear-gradient(180deg,#1a0808,#0a0a0a)" onclick="setCanvasBg(this,'linear-gradient(180deg,#1a0808,#0a0a0a)')"></div>
+          <div class="theme-preset" style="background:linear-gradient(135deg,#0a1020,#0a0a0a)" onclick="setCanvasBg(this,'linear-gradient(135deg,#0a1020,#0a0a0a)')"></div>
+        </div>
+      </div>
+      <div class="theme-field">
+        <span class="theme-lbl">Padrão de fundo</span>
+        <div class="bg-pattern-btns">
+          <button class="csbtn sel" onclick="setBgPattern(this,'none')">Nenhum</button>
+          <button class="csbtn" onclick="setBgPattern(this,'dots')">Pontos</button>
+          <button class="csbtn" onclick="setBgPattern(this,'grid')">Grade</button>
+          <button class="csbtn" onclick="setBgPattern(this,'diagonal')">Diagonal</button>
+          <button class="csbtn" onclick="setBgPattern(this,'noise')">Ruído</button>
+        </div>
+      </div>
+      <div class="theme-field">
+        <span class="theme-lbl">Estilo de widgets</span>
+        <div class="card-style-btns">
+          <button class="csbtn sel" onclick="setCardStyle(this,'glass')">Glass</button>
+          <button class="csbtn" onclick="setCardStyle(this,'flat')">Flat</button>
+          <button class="csbtn" onclick="setCardStyle(this,'bordered')">Bordered</button>
+          <button class="csbtn" onclick="setCardStyle(this,'shadow')">Shadow</button>
+          <button class="csbtn" onclick="setCardStyle(this,'neon')">Neon</button>
+        </div>
+      </div>
+      <div class="theme-field">
+        <span class="theme-lbl">Cor de destaque</span>
+        <div class="color-swatches">
+          <div class="cswatch sel" style="background:#7c3aed" onclick="setAccent(this,'#7c3aed')"></div>
+          <div class="cswatch" style="background:#e63946" onclick="setAccent(this,'#e63946')"></div>
+          <div class="cswatch" style="background:#52b788" onclick="setAccent(this,'#52b788')"></div>
+          <div class="cswatch" style="background:#f4a261" onclick="setAccent(this,'#f4a261')"></div>
+          <div class="cswatch" style="background:#60a5fa" onclick="setAccent(this,'#60a5fa')"></div>
+          <div class="cswatch" style="background:#f472b6" onclick="setAccent(this,'#f472b6')"></div>
+          <div class="cswatch" style="background:#facc15" onclick="setAccent(this,'#facc15')"></div>
+          <div class="cswatch" style="background:#34d399" onclick="setAccent(this,'#34d399')"></div>
+          <div class="cswatch" style="background:#e879f9" onclick="setAccent(this,'#e879f9')"></div>
+          <!-- custom color picker -->
+          <div class="cswatch" style="background: conic-gradient(red,yellow,lime,aqua,blue,magenta,red)">
+            <input type="color" onchange="setAccentCustom(this.value)">
+          </div>
+        </div>
+      </div>
+      <div class="theme-field">
+        <span class="theme-lbl">Glow do banner</span>
+        <div class="color-swatches">
+          <div class="cswatch" style="background:rgba(124,58,237,.5)" onclick="setBannerGlow(this,'rgba(124,58,237,.22)')"></div>
+          <div class="cswatch" style="background:rgba(230,57,70,.5)" onclick="setBannerGlow(this,'rgba(230,57,70,.22)')"></div>
+          <div class="cswatch" style="background:rgba(82,183,136,.5)" onclick="setBannerGlow(this,'rgba(82,183,136,.22)')"></div>
+          <div class="cswatch" style="background:rgba(244,162,97,.5)" onclick="setBannerGlow(this,'rgba(244,162,97,.22)')"></div>
+          <div class="cswatch" style="background:rgba(96,165,250,.5)" onclick="setBannerGlow(this,'rgba(96,165,250,.22)')"></div>
+          <div class="cswatch" style="background:transparent;border:1px dashed var(--border)" onclick="setBannerGlow(this,'none')"><span style="font-size:9px;color:var(--muted);position:absolute;inset:0;display:flex;align-items:center;justify-content:center">∅</span></div>
+        </div>
+      </div>
+      <div class="theme-field">
+        <span class="theme-lbl">Fonte</span>
+        <select class="theme-select" onchange="setFont(this.value)">
+          <option value="'Space Grotesk',sans-serif">Space Grotesk</option>
+          <option value="'Bebas Neue',sans-serif">Bebas Neue</option>
+          <option value="Georgia,serif">Georgia</option>
+          <option value="monospace">Monospace</option>
+        </select>
+      </div>
+      <div class="theme-field">
+        <span class="theme-lbl">Overlay de partículas</span>
+        <div class="card-style-btns">
+          <button class="csbtn sel" onclick="setParticles(this,'none')">Nenhum</button>
+          <button class="csbtn" onclick="setParticles(this,'sakura')">Sakura</button>
+          <button class="csbtn" onclick="setParticles(this,'stars')">Estrelas</button>
+          <button class="csbtn" onclick="setParticles(this,'snow')">Neve</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BANNER EDIT PANEL -->
+<div class="panel-overlay" id="banner-overlay" onclick="closePanels()">
+  <div class="side-panel" onclick="event.stopPropagation()">
+    <div class="panel-hdr"><span class="panel-title">Trocar banner</span><button class="panel-close" onclick="closePanels()">×</button></div>
+    <div class="panel-body">
+      <div class="theme-field">
+        <span class="theme-lbl">URL de imagem</span>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <input id="banner-url-input" type="text" placeholder="https://..." style="flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--fg);font-family:inherit;font-size:12px;padding:8px 10px;outline:none">
+          <button class="btn" onclick="applyBannerUrl()">Aplicar</button>
+        </div>
+      </div>
+      <div class="theme-field">
+        <span class="theme-lbl">Upload</span>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1px dashed var(--border);cursor:pointer;font-size:12px;color:var(--muted)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 12V4M5 7l3-3 3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Enviar imagem local
+          <input type="file" accept="image/*" style="display:none" onchange="applyBannerFile(this)">
+        </label>
+      </div>
+      <div class="theme-field">
+        <span class="theme-lbl">Gradientes predefinidos</span>
+        <div class="theme-presets" style="grid-template-columns:repeat(3,1fr)">
+          <div class="theme-preset" style="height:44px;background:linear-gradient(135deg,#12082a,#0d0d1a)" onclick="setBannerGrad('linear-gradient(135deg,#12082a,#0d0d1a)')"></div>
+          <div class="theme-preset" style="height:44px;background:linear-gradient(135deg,#0a1a1a,#0a0d1a)" onclick="setBannerGrad('linear-gradient(135deg,#0a1a1a,#0a0d1a)')"></div>
+          <div class="theme-preset" style="height:44px;background:linear-gradient(135deg,#1a0808,#0d0a0a)" onclick="setBannerGrad('linear-gradient(135deg,#1a0808,#0d0a0a)')"></div>
+          <div class="theme-preset" style="height:44px;background:linear-gradient(135deg,#0a1520,#050a10)" onclick="setBannerGrad('linear-gradient(135deg,#0a1520,#050a10)')"></div>
+          <div class="theme-preset" style="height:44px;background:radial-gradient(ellipse at 60% 40%,#2a0a3a,#0a0a0a)" onclick="setBannerGrad('radial-gradient(ellipse at 60% 40%,#2a0a3a,#0a0a0a)')"></div>
+          <div class="theme-preset" style="height:44px;background:linear-gradient(180deg,#1a1000,#0a0a0a)" onclick="setBannerGrad('linear-gradient(180deg,#1a1000,#0a0a0a)')"></div>
+        </div>
+      </div>
+      <div class="theme-field">
+        <span class="theme-lbl">Altura do banner</span>
+        <input type="range" min="160" max="400" value="260" style="width:100%;accent-color:var(--accent)" oninput="setBannerHeight(this.value)">
+      </div>
+      <button class="btn" style="width:100%;margin-top:4px;justify-content:center" onclick="removeBanner()">Remover imagem</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Confirmar</div>
+    <div class="modal-body" id="modal-body">Tem certeza?</div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn red" id="modal-ok" onclick="confirmOk()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+/* ── NAV & TABS ── */
+function setNav(el) { document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); }
+function setTab(el) { document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active')); el.classList.add('active'); }
+
+/* ── FOLLOW ── */
+let following = false;
+function toggleFollow() {
+  following = !following;
+  const btn = document.getElementById('follow-btn');
+  btn.textContent = following ? 'Seguindo' : 'Seguir';
+  btn.classList.toggle('following', following);
+  toast(following ? 'Agora seguindo kurumi_fan' : 'Deixou de seguir');
+}
+
+/* ── TOAST ── */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ── MODAL ── */
+let _confirmCb = null;
+function showModal(title, body, onOk) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').textContent = body;
+  _confirmCb = onOk;
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('confirm-modal').classList.remove('open'); _confirmCb = null; }
+function confirmOk() { closeModal(); if (_confirmCb) _confirmCb(); }
+
+/* ── EDIT MODE ── */
+let editMode = false;
+function enterEdit() {
+  editMode = true;
+  document.body.classList.add('edit-mode');
+  document.getElementById('edit-btn').style.display = 'none';
+  document.getElementById('draft-pill').style.display = 'inline-block';
+  document.getElementById('banner-edit-hint').classList.add('visible');
+  activateEditGrid();
+  triggerAutosave();
+}
+function exitEdit() {
+  editMode = false;
+  document.body.classList.remove('edit-mode');
+  document.getElementById('edit-btn').style.display = '';
+  document.getElementById('draft-pill').style.display = 'none';
+  document.getElementById('banner-edit-hint').classList.remove('visible');
+  deactivateEditGrid();
+}
+function publishDraft() {
+  showModal('Publicar perfil?', 'O rascunho ficará visível para todos. Você pode editar novamente a qualquer momento.', () => {
+    exitEdit(); toast('Perfil publicado!');
+  });
+}
+function discardDraft() {
+  showModal('Descartar rascunho?', 'As alterações não publicadas serão perdidas.', () => {
+    exitEdit(); toast('Rascunho descartado.');
+    // restore hidden widgets
+    document.querySelectorAll('.widget[data-hidden]').forEach(w => {
+      w.removeAttribute('data-hidden');
+      w.style.display = '';
+    });
+  });
+}
+
+/* ── AUTOSAVE ── */
+let _saveTimer = null;
+function triggerAutosave() {
+  const dot = document.getElementById('autosave-dot');
+  const lbl = document.getElementById('autosave-lbl');
+  dot.classList.add('saving'); lbl.textContent = 'Salvando...';
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    dot.classList.remove('saving'); lbl.textContent = 'Salvo automaticamente';
+  }, 1400);
+}
+
+/* ── PANELS ── */
+function openWidgetPanel() { document.getElementById('widget-overlay').classList.add('open'); }
+function openThemePanel()  { document.getElementById('theme-overlay').classList.add('open'); }
+function openBannerEdit()  { document.getElementById('banner-overlay').classList.add('open'); }
+function closePanels() {
+  ['widget-overlay','theme-overlay','banner-overlay'].forEach(id => document.getElementById(id).classList.remove('open'));
+}
+
+/* ── WIDGET HIDE / TRANSPARENT ── */
+function hideWidget(id) {
+  const w = document.getElementById(id);
+  if (!w) return;
+  w.setAttribute('data-hidden','1');
+  w.style.display = 'none';
+  toast('Widget ocultado');
+  triggerAutosave();
+}
+function toggleTransparent(id) {
+  const w = document.getElementById(id);
+  if (!w) return;
+  w.classList.toggle('transparent');
+  toast(w.classList.contains('transparent') ? 'Widget transparente' : 'Widget opaco');
+  triggerAutosave();
+}
+
+/* ════════════════════════════════════════
+   DRAG + RESIZE ENGINE
+   ─ Operates on absolute px positions in edit mode
+   ─ Snaps to a virtual 12-col × rowH grid
+   ─ Anti-collision: push overlapping widgets down
+════════════════════════════════════════ */
+const COLS = 12;
+const ROW_H = 40;
+const GAP = 8;
+
+let gridEl, gridRect, cellW;
+function getGridMeasures() {
+  gridEl = document.getElementById('widget-grid');
+  gridRect = gridEl.getBoundingClientRect();
+  cellW = (gridRect.width - GAP * (COLS - 1)) / COLS;
+}
+
+// Convert grid units → px
+function toPx(x, y, w, h) {
+  return {
+    left:  x * (cellW + GAP),
+    top:   y * (ROW_H + GAP),
+    width: w * cellW + (w - 1) * GAP,
+    height: h * ROW_H + (h - 1) * GAP,
+  };
+}
+
+// Convert px position → grid units (snapped)
+function toGrid(pxLeft, pxTop, pxW, pxH, minW, minH) {
+  const x = Math.round(pxLeft / (cellW + GAP));
+  const y = Math.round(pxTop  / (ROW_H + GAP));
+  const w = Math.max(minW, Math.round((pxW  + GAP) / (cellW + GAP)));
+  const h = Math.max(minH, Math.round((pxH  + GAP) / (ROW_H + GAP)));
+  return {
+    x: Math.max(0, Math.min(x, COLS - w)),
+    y: Math.max(0, y),
+    w: Math.min(w, COLS - Math.max(0, x)),
+    h: Math.max(minH, h),
+  };
+}
+
+function readWidgetLayout() {
+  const widgets = [];
+  document.querySelectorAll('.widget[data-wid]').forEach(el => {
+    widgets.push({
+      el,
+      x: parseInt(el.dataset.x),
+      y: parseInt(el.dataset.y),
+      w: parseInt(el.dataset.w),
+      h: parseInt(el.dataset.h),
+      minW: parseInt(el.dataset.minw || 2),
+      minH: parseInt(el.dataset.minh || 2),
+    });
+  });
+  return widgets;
+}
+
+function applyLayout(widgets) {
+  widgets.forEach(wgt => {
+    const { left, top, width, height } = toPx(wgt.x, wgt.y, wgt.w, wgt.h);
+    wgt.el.style.left   = left   + 'px';
+    wgt.el.style.top    = top    + 'px';
+    wgt.el.style.width  = width  + 'px';
+    wgt.el.style.height = height + 'px';
+    wgt.el.dataset.x = wgt.x;
+    wgt.el.dataset.y = wgt.y;
+    wgt.el.dataset.w = wgt.w;
+    wgt.el.dataset.h = wgt.h;
+  });
+  // Update grid height
+  const maxY = Math.max(...widgets.map(w => w.y + w.h));
+  gridEl.style.height = (maxY * (ROW_H + GAP) + 16) + 'px';
+}
+
+// Anti-collision: push widgets that overlap the moved widget down
+function resolveCollisions(widgets, movedId) {
+  const sorted = [...widgets].sort((a, b) => a.y - b.y || a.x - b.x);
+  let changed = true;
+  let passes = 0;
+  while (changed && passes++ < 20) {
+    changed = false;
+    for (let i = 0; i < sorted.length; i++) {
+      const a = sorted[i];
+      for (let j = i + 1; j < sorted.length; j++) {
+        const b = sorted[j];
+        if (overlaps(a, b)) {
+          // push b below a (unless a is the one we're dragging, keep a)
+          b.y = a.y + a.h;
+          changed = true;
+        }
+      }
+    }
+  }
+  return sorted;
+}
+
+function overlaps(a, b) {
+  return !(a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y);
+}
+
+function buildGuides() {
+  const guides = document.getElementById('grid-guides');
+  guides.innerHTML = '';
+  for (let row = 0; row < 30; row++) {
+    for (let col = 0; col < COLS; col++) {
+      const cell = document.createElement('div');
+      cell.className = 'grid-cell';
+      guides.appendChild(cell);
+    }
+  }
+}
+
+function activateEditGrid() {
+  getGridMeasures();
+  buildGuides();
+
+  gridEl.classList.remove('view-mode');
+  gridEl.classList.add('edit-mode-grid');
+  gridEl.style.position = 'relative';
+
+  // Remove CSS grid classes, apply absolute positions
+  const widgets = readWidgetLayout();
+  widgets.forEach(w => {
+    w.el.style.position = 'absolute';
+  });
+  applyLayout(widgets);
+  attachDragResize(widgets);
+}
+
+function deactivateEditGrid() {
+  gridEl.classList.add('view-mode');
+  gridEl.classList.remove('edit-mode-grid');
+  gridEl.style.height = '';
+
+  document.querySelectorAll('.widget[data-wid]').forEach(el => {
+    el.style.position = '';
+    el.style.left = '';
+    el.style.top  = '';
+    el.style.width = '';
+    el.style.height = '';
+  });
+}
+
+function attachDragResize(widgets) {
+  widgets.forEach(wgt => {
+    const handle = wgt.el.querySelector('.drag-handle');
+    const resizeHandle = wgt.el.querySelector('.resize-handle');
+    if (handle) attachDrag(wgt, handle, widgets);
+    if (resizeHandle) attachResize(wgt, resizeHandle, widgets);
+  });
+}
+
+function attachDrag(wgt, handle, widgets) {
+  let startX, startY, startLeft, startTop;
+
+  handle.addEventListener('mousedown', e => {
+    if (e.target.closest('.widget-controls')) return;
+    e.preventDefault();
+    getGridMeasures();
+    startX = e.clientX;
+    startY = e.clientY;
+    startLeft = parseInt(wgt.el.style.left);
+    startTop  = parseInt(wgt.el.style.top);
+    wgt.el.classList.add('dragging');
+    wgt.el.style.zIndex = 100;
+
+    function onMove(e) {
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      wgt.el.style.left = (startLeft + dx) + 'px';
+      wgt.el.style.top  = (startTop  + dy) + 'px';
+    }
+
+    function onUp() {
+      wgt.el.classList.remove('dragging');
+      wgt.el.style.zIndex = '';
+
+      // Snap to grid
+      const newLeft = parseInt(wgt.el.style.left);
+      const newTop  = parseInt(wgt.el.style.top);
+      const snapped = toGrid(newLeft, newTop, wgt.w * cellW + (wgt.w-1)*GAP, wgt.h * (ROW_H) + (wgt.h-1)*GAP, wgt.minW, wgt.minH);
+      wgt.x = snapped.x;
+      wgt.y = snapped.y;
+
+      const resolved = resolveCollisions(widgets, wgt.el.dataset.wid);
+      applyLayout(resolved);
+      triggerAutosave();
+
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+function attachResize(wgt, handle, widgets) {
+  let startX, startY, startW, startH;
+
+  handle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    getGridMeasures();
+    startX = e.clientX;
+    startY = e.clientY;
+    startW = parseInt(wgt.el.style.width);
+    startH = parseInt(wgt.el.style.height);
+
+    function onMove(e) {
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const newW = Math.max(wgt.minW * cellW + (wgt.minW - 1) * GAP, startW + dx);
+      const newH = Math.max(wgt.minH * ROW_H + (wgt.minH - 1) * GAP, startH + dy);
+      wgt.el.style.width  = newW + 'px';
+      wgt.el.style.height = newH + 'px';
+    }
+
+    function onUp() {
+      // Snap dimensions
+      const finalW = parseInt(wgt.el.style.width);
+      const finalH = parseInt(wgt.el.style.height);
+      const snapped = toGrid(wgt.x * (cellW + GAP), wgt.y * (ROW_H + GAP), finalW, finalH, wgt.minW, wgt.minH);
+      wgt.w = Math.min(snapped.w, COLS - wgt.x);
+      wgt.h = snapped.h;
+
+      const resolved = resolveCollisions(widgets, wgt.el.dataset.wid);
+      applyLayout(resolved);
+      triggerAutosave();
+
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
+
+/* ── THEME FUNCTIONS ── */
+function setCanvasBg(el, val) {
+  document.querySelectorAll('.theme-preset').forEach(p => p.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('profile-canvas').style.background = val;
+  triggerAutosave();
+}
+
+const BG_PATTERNS = {
+  none: '',
+  dots: 'radial-gradient(circle,rgba(255,255,255,.08) 1px,transparent 1px)',
+  grid: 'linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px)',
+  diagonal: 'repeating-linear-gradient(-45deg,transparent,transparent 20px,rgba(255,255,255,.025) 20px,rgba(255,255,255,.025) 21px)',
+  noise: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence baseFrequency=\'.65\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'200\' height=\'200\' filter=\'url(%23n)\' opacity=\'.04\'/%3E%3C/svg%3E")',
+};
+const BG_SIZES = { dots:'20px 20px', grid:'24px 24px', diagonal:'', noise:'200px 200px' };
+function setBgPattern(el, type) {
+  document.querySelectorAll('.bg-pattern-btns .csbtn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  const layer = document.getElementById('canvas-bg-layer');
+  layer.style.backgroundImage = BG_PATTERNS[type] || '';
+  layer.style.backgroundSize  = BG_SIZES[type]    || '';
+  triggerAutosave();
+}
+
+const CARD_STYLES = ['glass','flat','bordered','shadow','neon'];
+function setCardStyle(el, style) {
+  document.querySelectorAll('.card-style-btns .csbtn').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+  document.querySelectorAll('.widget[data-wid]').forEach(w => {
+    CARD_STYLES.forEach(s => w.classList.remove(s));
+    if (!w.classList.contains('transparent')) w.classList.add(style);
+  });
+  triggerAutosave(); toast('Estilo ' + style + ' aplicado');
+}
+
+function setAccent(el, color) {
+  document.querySelectorAll('.color-swatches .cswatch').forEach(s => s.classList.remove('sel'));
+  el.classList.add('sel');
+  document.documentElement.style.setProperty('--accent', color);
+  triggerAutosave();
+}
+function setAccentCustom(color) {
+  document.documentElement.style.setProperty('--accent', color);
+  triggerAutosave();
+}
+
+function setBannerGlow(el, color) {
+  document.querySelectorAll('.theme-field .cswatch').forEach(s => s.classList.remove('sel'));
+  el.classList.add('sel');
+  const glowEl = document.getElementById('banner-glow');
+  if (color === 'none') {
+    glowEl.style.background = 'none';
+  } else {
+    glowEl.style.background = `radial-gradient(ellipse 50% 80% at 15% 100%,${color} 0%,transparent 70%), radial-gradient(ellipse 30% 50% at 80% 60%,rgba(230,57,70,.08) 0%,transparent 60%)`;
+  }
+  triggerAutosave();
+}
+
+function setFont(font) {
+  document.getElementById('profile-scroll').style.fontFamily = font;
+  triggerAutosave();
+}
+
+function setParticles(el, type) {
+  document.querySelectorAll('.card-style-btns .csbtn').forEach(b => {
+    if (b.closest('.theme-field') === el.closest('.theme-field')) b.classList.remove('sel');
+  });
+  el.classList.add('sel');
+  toast('Overlay: ' + type);
+}
+
+/* ── BANNER FUNCTIONS ── */
+function applyBannerUrl() {
+  const url = document.getElementById('banner-url-input').value.trim();
+  if (!url) return;
+  setBannerImage(url);
+  closePanels();
+}
+function applyBannerFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { setBannerImage(e.target.result); closePanels(); };
+  reader.readAsDataURL(file);
+}
+function setBannerImage(src) {
+  const img = document.getElementById('banner-img');
+  const ph  = document.getElementById('banner-placeholder');
+  img.src = src;
+  img.style.display = 'block';
+  ph.style.display = 'none';
+  triggerAutosave();
+}
+function removeBanner() {
+  const img = document.getElementById('banner-img');
+  const ph  = document.getElementById('banner-placeholder');
+  img.src = ''; img.style.display = 'none';
+  ph.style.display = 'block';
+  closePanels(); triggerAutosave();
+}
+function setBannerGrad(grad) {
+  const ph = document.getElementById('banner-placeholder');
+  ph.style.background = grad;
+  document.getElementById('banner-img').style.display = 'none';
+  ph.style.display = 'block';
+  closePanels(); triggerAutosave();
+}
+function setBannerHeight(h) {
+  document.getElementById('banner-wrap').style.height = h + 'px';
+  triggerAutosave();
+}
+
+/* ── MUSIC ── */
+let playing = false, progVal = 35;
+function toggleMusic() {
+  playing = !playing;
+  document.getElementById('music-disc').classList.toggle('spin', playing);
+  document.getElementById('play-icon').innerHTML = playing
+    ? '<path d="M2.5 2h2v5h-2zM5.5 2h2v5h-2z" fill="white"/>'
+    : '<path d="M2.5 1.5l5 3-5 3V1.5z" fill="white"/>';
+  if (playing) animProg();
+}
+function animProg() {
+  if (!playing) return;
+  progVal = Math.min(100, progVal + .02);
+  document.getElementById('music-fill').style.width = progVal + '%';
+  if (progVal < 100) requestAnimationFrame(animProg);
+}
+
+/* ── CLOCK ── */
+function updateClock() {
+  const now = new Date();
+  const H = String(now.getHours()).padStart(2,'0');
+  const M = String(now.getMinutes()).padStart(2,'0');
+  const S = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock-time').textContent = `${H}:${M}:${S}`;
+  const days   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  document.getElementById('clock-date').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+updateClock(); setInterval(updateClock, 1000);
+
+/* ── DATA RENDERING ── */
+const ANIME_FAVS = [
+  {title:'Berserk',score:'9.2',cov:'cov-1'},{title:'Vinland Saga',score:'9.0',cov:'cov-6'},
+  {title:'Kabeneri',score:'8.1',cov:'cov-7'},{title:'Mushishi',score:'9.0',cov:'cov-10'},
+  {title:'Ping Pong',score:'8.9',cov:'cov-8'},{title:'Cowboy Bebop',score:'9.1',cov:'cov-5'},
+];
+const MANGA_FAVS = [
+  {title:'Berserk',score:'9.4',cov:'cov-1'},{title:'Vagabond',score:'9.3',cov:'cov-6'},
+  {title:'Oyasumi Punpun',score:'9.1',cov:'cov-11'},{title:'Mushishi',score:'9.0',cov:'cov-10'},
+  {title:'Frieren',score:'9.2',cov:'cov-2'},{title:'20th Century Boys',score:'9.0',cov:'cov-14'},
+];
+const CHARS = [
+  {name:'Guts',cov:'cov-1'},{name:'Thorfinn',cov:'cov-6'},{name:'Ginko',cov:'cov-10'},
+  {name:'Punpun',cov:'cov-11'},{name:'Laios',cov:'cov-4'},{name:'Frieren',cov:'cov-2'},
+  {name:'Griffith',cov:'cov-3'},{name:'Askeladd',cov:'cov-6'},
+];
+const STAFF = [
+  {name:'Kentaro Miura',cov:'cov-1'},{name:'Takehiko Inoue',cov:'cov-6'},
+  {name:'Yuki Urushibara',cov:'cov-10'},{name:'Inio Asano',cov:'cov-11'},
+  {name:'Makoto Yukimura',cov:'cov-6'},{name:'Ryoko Kui',cov:'cov-4'},
+  {name:'Naoki Urasawa',cov:'cov-14'},{name:'Tatsuki Fujimoto',cov:'cov-7'},
+];
+const BADGES_DATA = [
+  {icon:'⚔️',name:'Guerreiro',bg:'rgba(230,57,70,.2)'},{icon:'📚',name:'1k Caps',bg:'rgba(124,58,237,.2)'},
+  {icon:'⭐',name:'Reviewer',bg:'rgba(244,162,97,.2)'},{icon:'🎯',name:'Early Bird',bg:'rgba(82,183,136,.2)'},
+  {icon:'🌙',name:'Noturno',bg:'rgba(96,165,250,.2)'},{icon:'🔥',name:'Streak 30',bg:'rgba(230,57,70,.2)'},
+];
+const ACTIVITY = [
+  {action:'Terminou de ler',title:'Frieren',ep:'Cap. 118',score:'9.2',cov:'cov-2',time:'2h'},
+  {action:'Favoritou',title:'Vagabond',ep:'—',score:null,cov:'cov-6',time:'5h'},
+  {action:'Avaliou',title:'Chainsaw Man',ep:'Cap. 168',score:'8.7',cov:'cov-1',time:'1d'},
+  {action:'Começou a ler',title:'Kingdom',ep:'Cap. 1',score:null,cov:'cov-6',time:'2d'},
+  {action:'Terminou de assistir',title:'Vinland Saga S2',ep:'Ep. 24',score:'9.0',cov:'cov-6',time:'3d'},
+  {action:'Publicou review de',title:'Berserk',ep:'—',score:null,cov:'cov-1',time:'4d'},
+];
+const POSTS = [
+  {text:'Cap. 374 de Berserk saiu. Studio Gaga não perdoa. Absolutamente devastador.',likes:48,time:'3h'},
+  {text:'Frieren encerrou com perfeição. Obrigado Yamada-sensei.',likes:31,time:'1d'},
+  {text:'Kingdom vol. 67 no correio. Finalmente.',likes:17,time:'3d'},
+];
+
+function renderFavGrid(data, id) {
+  document.getElementById(id).innerHTML = data.map(d => `
+    <div class="fav-item" onclick="toast('${d.title}')">
+      <div class="fav-bg ${d.cov} cover-tex" style="position:relative"></div>
+      ${d.score ? `<div class="fav-score">★ ${d.score}</div>` : ''}
+      <div class="fav-over"><div class="fav-over-title">${d.title}</div></div>
+    </div>`).join('');
+}
+function renderCharsGrid(data, id) {
+  document.getElementById(id).innerHTML = data.map(d => `
+    <div class="char-item" onclick="toast('${d.name}')">
+      <div class="char-bg ${d.cov} cover-tex" style="position:relative"></div>
+      <div class="char-name">${d.name}</div>
+    </div>`).join('');
+}
+function renderActivity() {
+  document.getElementById('activity-body').innerHTML = ACTIVITY.map(a => `
+    <div class="act-item">
+      <div class="act-cover"><div class="act-cover ${a.cov}" style="width:30px;height:42px"></div></div>
+      <div class="act-info">
+        <div class="act-action">${a.action} <strong>${a.title}</strong></div>
+        <div class="act-meta">${a.ep} · ${a.time} atrás</div>
+      </div>
+      ${a.score ? `<div class="act-score">★ ${a.score}</div>` : ''}
+    </div>`).join('');
+}
+function renderBadges() {
+  document.getElementById('badges-body').innerHTML = BADGES_DATA.map(b => `
+    <div class="bdg-item" onclick="toast('${b.name}')">
+      <div class="bdg-icon" style="background:${b.bg}">${b.icon}</div>
+      <div class="bdg-name">${b.name}</div>
+    </div>`).join('');
+}
+function renderPosts() {
+  document.getElementById('posts-body').innerHTML = POSTS.map(p => `
+    <div class="post-item">
+      <div class="post-hdr">
+        <div class="post-av">K</div>
+        <div class="post-user">kurumi_fan</div>
+        <div class="post-time">${p.time}</div>
+      </div>
+      <div class="post-text">${p.text}</div>
+      <div class="post-likes"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 8.5S1 6 1 3.5a2 2 0 0 1 4-.5 2 2 0 0 1 4 .5C9 6 5 8.5 5 8.5z" stroke="#666" stroke-width="1"/></svg>${p.likes}</div>
+    </div>`).join('');
+}
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePanels(); closeModal(); }
+});
+
+/* ── INIT ── */
+renderFavGrid(ANIME_FAVS, 'fav-anime-grid');
+renderFavGrid(MANGA_FAVS, 'fav-manga-grid');
+renderCharsGrid(CHARS, 'chars-grid');
+renderCharsGrid(STAFF, 'staff-grid');
+renderActivity();
+renderBadges();
+renderPosts();
+</script>
+</body>
+</html>

@@ -1,69 +1,97 @@
-import { useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { EditProfileModal } from "@/components/site/EditProfileModal"
-import { ExploreRightPanel } from "@/components/site/ExploreRightPanel"
+import { useCallback, useState } from "react"
 import { ExploreSidebar } from "@/components/site/ExploreSidebar"
-import { ProfileActivityPanel } from "@/components/site/profile/ProfileActivityPanel"
-import { ProfileCommentsPanel } from "@/components/site/profile/ProfileCommentsPanel"
-import { PROFILE_ACTIVITY, PROFILE_COLLECTIONS, PROFILE_TABS, DEFAULT_PROFILE } from "@/components/site/profile/profileData"
-import { ProfileHero } from "@/components/site/profile/ProfileHero"
-import { ProfileLibraryPanel } from "@/components/site/profile/ProfileLibraryPanel"
-import { ProfileSidePanel } from "@/components/site/profile/ProfileSidePanel"
-import { ProfileTabs } from "@/components/site/profile/ProfileTabs"
-import type { ProfileData, ProfileTab } from "@/components/site/profile/profileTypes"
-import { applyEditProfileData, toEditProfileData } from "@/components/site/profile/profileUtils"
+import { BannerEditPanel, ThemePanel, WidgetPickerPanel } from "@/components/site/profile/ProfileEditPanels"
+import { ProfileBanner } from "@/components/site/profile/ProfileBanner"
+import { ProfileCanvas } from "@/components/site/profile/ProfileCanvas"
+import { ProfileStatsBar } from "@/components/site/profile/ProfileStatsBar"
+import { ProfileTopBar } from "@/components/site/profile/ProfileTopBar"
+import { DEFAULT_PROFILE, PROFILE_STATS } from "@/components/site/profile/profileData"
+import type { ProfileData, ProfilePageTab } from "@/components/site/profile/profileTypes"
 
 export default function Profile() {
-  const { t } = useTranslation()
-  const [profile, setProfile] = useState<ProfileData>(DEFAULT_PROFILE)
-  const [activeTab, setActiveTab] = useState<ProfileTab>("activity")
-  const [editOpen, setEditOpen] = useState(false)
+  const [profile]                     = useState<ProfileData>(DEFAULT_PROFILE)
+  const [activeTab, setActiveTab]     = useState<ProfilePageTab>("profile")
+  const [editMode, setEditMode]       = useState(false)
+  const [bannerUrl, setBannerUrl]     = useState<string | undefined>(undefined)
+  const [widgetPanel, setWidgetPanel] = useState(false)
+  const [themePanel, setThemePanel]   = useState(false)
+  const [bannerPanel, setBannerPanel] = useState(false)
+  const [hiddenWidgets, setHiddenWidgets] = useState<string[]>([])
 
-  const editProfileData = useMemo(() => toEditProfileData(profile), [profile])
+  const handleShare = useCallback(() => {
+    navigator.clipboard?.writeText(window.location.href).catch(() => {})
+  }, [])
+
+  const handleExitEdit = useCallback(() => {
+    setEditMode(false)
+    setWidgetPanel(false)
+    setThemePanel(false)
+    setBannerPanel(false)
+  }, [])
+
+  const handleShowWidget = useCallback((id: string) => {
+    setHiddenWidgets((prev) => prev.filter((w) => w !== id))
+  }, [])
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0a0a0a] text-gray-200">
+    <div className="flex h-screen overflow-hidden bg-[#0a0a0a] text-[#f0eeec]" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
       <ExploreSidebar />
 
-      <main className="flex min-w-0 flex-1 overflow-hidden">
-        <div className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
-          <ProfileHero profile={profile} onEdit={() => setEditOpen(true)} t={t} />
+      <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        {/* Top tab bar (hidden in edit mode — edit toolbar replaces it) */}
+        <ProfileTopBar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          editMode={editMode}
+          onEnterEdit={() => setEditMode(true)}
+          onShare={handleShare}
+          isDraft={editMode}
+        />
 
-          <div className="mx-auto w-full max-w-[1600px] px-4 sm:px-8 lg:px-12 pb-12">
-            <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]">
-              <ProfileSidePanel profile={profile} t={t} className="hidden lg:block" />
-
-              <div className="min-w-0">
-                <ProfileTabs
-                  activeTab={activeTab}
-                  tabs={PROFILE_TABS}
-                  profile={profile}
-                  onTabChange={setActiveTab}
-                  t={t}
-                />
-
-                <div className="mt-6">
-                  {activeTab === "activity" && <ProfileActivityPanel items={PROFILE_ACTIVITY} t={t} />}
-                  {activeTab === "library" && <ProfileLibraryPanel collections={PROFILE_COLLECTIONS} t={t} />}
-                  {activeTab === "comments" && <ProfileCommentsPanel commentsCount={profile.commentsCount} t={t} />}
-                </div>
-
-                <ProfileSidePanel profile={profile} t={t} className="mt-8 lg:hidden" />
-              </div>
-            </div>
+        {/* Scrollable content */}
+        <div className="scrollbar-hide flex-1 overflow-y-auto overflow-x-hidden">
+          {/* Banner */}
+          <div className="profile-banner-wrap">
+            <ProfileBanner
+              profile={profile}
+              bannerUrl={bannerUrl || undefined}
+            />
           </div>
-        </div>
 
-        <div className="hidden 2xl:block">
-          <ExploreRightPanel />
+          {/* Stats bar */}
+          <ProfileStatsBar stats={PROFILE_STATS} />
+
+          {/* Widget canvas */}
+          <div className="profile-canvas-bg" style={{ background: "#0a0a0a" }}>
+            <ProfileCanvas
+              profile={profile}
+              editMode={editMode}
+              onExitEdit={handleExitEdit}
+              onOpenWidgetPanel={() => setWidgetPanel(true)}
+              onOpenThemePanel={() => setThemePanel(true)}
+              onOpenBannerPanel={() => setBannerPanel(true)}
+            />
+          </div>
         </div>
       </main>
 
-      <EditProfileModal
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        initial={editProfileData}
-        onSave={data => setProfile(current => applyEditProfileData(current, data))}
+      {/* Edit panels */}
+      <WidgetPickerPanel
+        open={widgetPanel}
+        onClose={() => setWidgetPanel(false)}
+        hiddenWidgetIds={hiddenWidgets}
+        onShowWidget={handleShowWidget}
+      />
+      <ThemePanel
+        open={themePanel}
+        onClose={() => setThemePanel(false)}
+        onCardStyleChange={() => {}}
+        currentCardStyle="glass"
+      />
+      <BannerEditPanel
+        open={bannerPanel}
+        onClose={() => setBannerPanel(false)}
+        onBannerChange={setBannerUrl}
       />
     </div>
   )
