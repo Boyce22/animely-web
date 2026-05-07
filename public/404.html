@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Animely — Manga & Manhwa</title>
+    <meta name="description" content="Your premium source for manga, manhwa and manhua." />
+    <meta name="author" content="Animely" />
+    <link rel="icon" type="image/svg+xml" href="/animely-web/icon.svg" />
+    <link rel="apple-touch-icon" href="/animely-web/apple-icon.png" />
+    <meta property="og:title" content="Animely — Manga & Manhwa" />
+    <meta property="og:description" content="Your premium source for manga, manhwa and manhua." />
+    <meta property="og:type" content="website" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        background: #0d0d0d;
+        color: #f2f2f2;
+        font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        text-align: center;
+        padding: 2rem;
+      }
+      .container { max-width: 480px; }
+      h1 { font-size: 5rem; font-weight: 800; color: #e02424; line-height: 1; }
+      p { margin-top: 1rem; font-size: 1.125rem; color: #999; }
+      a {
+        display: inline-block;
+        margin-top: 1.5rem;
+        padding: 0.75rem 2rem;
+        background: #e02424;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      a:hover { background: #c01f1f; }
+    </style>
+    <script>
+      sessionStorage.redirect = location.pathname + location.search + location.hash;
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>404</h1>
+      <p>Page not found — but don't worry, we'll redirect you.</p>
+      <a href="/animely-web/">Go to Home</a>
+    </div>
+    <script>
+      const redirect = sessionStorage.redirect;
+      if (redirect && redirect !== location.pathname) {
+        history.replaceState(null, '', redirect);
+        location.reload();
+      }
+    </script>
+  </body>
+</html>

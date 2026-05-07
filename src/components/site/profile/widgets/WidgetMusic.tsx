@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import { Widget } from "./Widget"
 import type { WidgetContextValue } from "./Widget"
 
-interface Props extends WidgetContextValue {}
+type Props = WidgetContextValue
 
 const TRACK_DURATION = 204
 const formatTime = (s: number) =>
