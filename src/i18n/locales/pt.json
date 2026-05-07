@@ -338,7 +338,13 @@
     "widget_add": "Widget",
     "theme": "Tema",
     "banner": "Banner",
-    "view_all_arr": "Ver todos →"
+    "view_all_arr": "Ver todos →",
+    "time_ago": "há {{time}}",
+    "joined": "Entrou em",
+    "genres": "Gêneros",
+    "mean_score": "Nota Média",
+    "score_dist": "Notas",
+    "unlocked": "desbloqueados"
   },
   "edit_profile": {
     "title": "Editar Perfil",

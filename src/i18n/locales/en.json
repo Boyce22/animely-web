@@ -338,7 +338,13 @@
     "widget_add": "Widget",
     "theme": "Theme",
     "banner": "Banner",
-    "view_all_arr": "View all →"
+    "view_all_arr": "View all →",
+    "time_ago": "{{time}} ago",
+    "joined": "Joined",
+    "genres": "Genres",
+    "mean_score": "Mean Score",
+    "score_dist": "Scores",
+    "unlocked": "unlocked"
   },
   "edit_profile": {
     "title": "Edit Profile",

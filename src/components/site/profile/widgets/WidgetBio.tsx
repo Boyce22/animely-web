@@ -8,8 +8,6 @@ interface Props extends WidgetContextValue {
   profile: ProfileData
 }
 
-const TAGS = ["Dark Fantasy", "Seinen", "Mangá", "Berserk", "Valinhos / SP"]
-
 function WidgetBioComponent({ profile, ...context }: Props) {
   const { t } = useTranslation()
 
@@ -20,24 +18,33 @@ function WidgetBioComponent({ profile, ...context }: Props) {
       {...context}
       action={
         <button className="text-[11px] font-[600] text-white/30 hover:text-white/70 transition-colors">
-          Editar
+          {t("profile.editing")}
         </button>
       }
     >
-      <div className="flex h-full flex-col gap-3 p-4">
-        <p className="flex-1 text-[15px] leading-[1.7] text-white/70">
-          {profile.biography}
-        </p>
-        <div className="flex flex-wrap gap-[6px]">
-          {TAGS.map((tag) => (
-            <span
-              key={tag}
-              className="border border-white/[0.07] bg-white/[0.05] px-2.5 py-[3px] text-[12px] font-[600] text-white/40"
-            >
-              {tag}
-            </span>
-          ))}
+      <div className="flex h-full w-full flex-col justify-between">
+        <div className="relative px-4 py-3.5">
+          <div className="absolute left-0 top-3.5 bottom-3.5 w-[2px] bg-gradient-to-b from-purple-500/70 via-purple-500/20 to-transparent" />
+          <p className="text-[13px] leading-[1.75] text-white/[0.7]">
+            {profile.biography}
+          </p>
         </div>
+
+        {profile.genres && profile.genres.length > 0 && (
+          <div className="flex flex-wrap items-center gap-[5px] border-t border-white/[0.055] px-4 py-2.5">
+            <span className="mr-1 text-[9px] font-[700] uppercase tracking-[0.12em] text-white/[0.22]">
+              {t("profile.genres")}
+            </span>
+            {profile.genres.map((g) => (
+              <span
+                key={g}
+                className="border border-white/[0.07] bg-white/[0.035] px-[8px] py-[2px] text-[10px] font-[600] text-white/[0.48] transition-colors hover:border-white/[0.14] hover:text-white/[0.72]"
+              >
+                {g}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </Widget>
   )

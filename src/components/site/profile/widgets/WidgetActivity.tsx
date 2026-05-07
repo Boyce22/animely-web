@@ -23,31 +23,45 @@ function WidgetActivityComponent({ items, ...context }: Props) {
       }
     >
       <div className="scrollbar-hide flex-1 overflow-y-auto">
-        {items.map((item, i) => (
-          <div
-            key={i}
-            className="flex items-start gap-3 border-b border-white/[0.07] px-4 py-3 last:border-b-0"
-          >
+        {items.map((item, i) => {
+          const typeColor: Record<string, string> = {
+            watch: "#52b788", read: "#60a5fa", rate: "#f4a261", fav: "#e63946", review: "#a78bfa",
+          }
+          const accent = item.type ? (typeColor[item.type] ?? "rgba(255,255,255,0.15)") : "rgba(255,255,255,0.15)"
+          return (
             <div
-              className="h-[54px] w-[38px] shrink-0 border border-white/[0.07]"
-              style={{ background: item.gradient }}
-            />
-            <div className="min-w-0 flex-1">
-              <div className="mb-[3px] text-[13px] text-white/40">
-                {item.action}{" "}
-                <strong className="font-[700] text-white/85">{item.title}</strong>
+              key={i}
+              className="flex items-start gap-[9px] border-b border-white/[0.04] px-3.5 py-[9px] last:border-b-0 hover:bg-white/[0.025] transition-colors"
+            >
+              {/* Cover thumbnail with accent strip */}
+              <div
+                className="relative h-[48px] w-[33px] shrink-0 overflow-hidden border border-white/[0.07]"
+                style={{ background: item.gradient }}
+              >
+                <div className="absolute inset-0" style={{
+                  backgroundImage: "repeating-linear-gradient(-52deg,transparent,transparent 18px,rgba(255,255,255,0.012) 18px,rgba(255,255,255,0.012) 19px)",
+                }} />
+                <div className="absolute bottom-0 left-0 top-0 w-[2.5px]" style={{ background: accent }} />
               </div>
-              <div className="font-mono text-[12px] text-white/25">
-                {item.episode} · {item.time} atrás
+
+              <div className="min-w-0 flex-1">
+                <div className="mb-[3px] text-[11px] leading-[1.4] text-white/[0.32]">
+                  {item.action}{" "}
+                  <strong className="font-[700] text-white/[0.82]">{item.title}</strong>
+                </div>
+                <div className="font-mono text-[9.5px] tracking-[0.01em] text-white/[0.2]">
+                  {item.episode !== "—" ? `${item.episode} · ` : ""}{t("profile.time_ago", { time: item.time })}
+                </div>
               </div>
+
+              {item.score && (
+                <div className="mt-[1px] shrink-0 font-mono text-[12px] font-[800] text-orange-300">
+                  {item.score}
+                </div>
+              )}
             </div>
-            {item.score && (
-              <div className="shrink-0 font-mono text-[13px] font-[800] text-orange-300">
-                ★ {item.score}
-              </div>
-            )}
-          </div>
-        ))}
+          )
+        })}
       </div>
     </Widget>
   )

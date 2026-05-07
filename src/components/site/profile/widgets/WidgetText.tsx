@@ -5,6 +5,15 @@ import type { WidgetContextValue } from "./Widget"
 
 interface Props extends WidgetContextValue {}
 
+const SCORE_ROWS = [
+  { score: "10", desc: "obra-prima que muda perspectiva", color: "#f59e0b", bar: 100 },
+  { score: "9",  desc: "excepcional, poucas falhas",      color: "#84cc16", bar: 88 },
+  { score: "8",  desc: "muito boa, recomendo fortemente", color: "#22d3ee", bar: 76 },
+  { score: "7",  desc: "boa, vale o tempo",               color: "#60a5fa", bar: 62 },
+  { score: "6",  desc: "mediana, abaixo do esperado",     color: "#a78bfa", bar: 48 },
+  { score: "≤5", desc: "não recomendo",                   color: "#ef4444", bar: 28 },
+]
+
 function WidgetTextComponent(context: Props) {
   const { t } = useTranslation()
 
@@ -15,18 +24,30 @@ function WidgetTextComponent(context: Props) {
       {...context}
       action={
         <button className="text-[10px] font-[600] text-white/30 hover:text-white/70 transition-colors">
-          Editar
+          {t("profile.editing")}
         </button>
       }
     >
-      <div className="scrollbar-hide flex-1 overflow-y-auto p-3 text-[13px] leading-[1.7] text-white/70">
-        <strong className="mb-1.5 block text-[12px] text-white/85">Como avalio:</strong>
-        10 — obra-prima que muda perspectiva<br />
-        9 — excepcionais, poucas falhas<br />
-        8 — muito boas, recomendo fortemente<br />
-        7 — boas, valem o tempo<br />
-        6 — medianas, abaixo da expectativa<br />
-        ≤5 — não recomendo
+      <div className="scrollbar-hide flex-1 overflow-y-auto px-4 py-3">
+        {SCORE_ROWS.map(({ score, desc, color, bar }) => (
+          <div key={score} className="flex items-center gap-2.5 border-b border-white/[0.04] py-[6px] last:border-b-0">
+            <span
+              className="w-6 shrink-0 font-mono text-[17px] font-[800] leading-none"
+              style={{ color }}
+            >
+              {score}
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="mb-[4px] h-[2px] rounded-full bg-white/[0.06]">
+                <div
+                  className="h-full rounded-full"
+                  style={{ width: `${bar}%`, background: color, opacity: 0.5 }}
+                />
+              </div>
+              <span className="text-[11px] leading-none text-white/[0.42]">{desc}</span>
+            </div>
+          </div>
+        ))}
       </div>
     </Widget>
   )

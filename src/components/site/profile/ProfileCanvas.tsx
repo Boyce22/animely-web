@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { CheckIcon, XMarkIcon, PlusIcon, SwatchIcon, PhotoIcon } from "@heroicons/react/24/outline"
+import { CheckIcon, PlusIcon, SwatchIcon, PhotoIcon } from "@heroicons/react/24/outline"
 import {
   DEFAULT_WIDGET_STATES,
   FAV_ANIMES,
@@ -28,16 +28,18 @@ import { WidgetStats } from "./widgets/WidgetStats"
 import { WidgetText } from "./widgets/WidgetText"
 
 // ─── grid constants ───────────────────────────────────────────────────────────
-const COLS    = 12
-const ROW_H   = 110
-const GAP     = 18
-const PADDING = 40 // px-10
+const COLS       = 12
+const ROW_H      = 110
+const GAP        = 18
+const PADDING    = 40 // view mode padding (px-10)
+const EDIT_PAD   = 6  // edit mode padding (much tighter)
 const MAX_PASSES = 50
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
-function cellW(containerW: number) {
-  return (containerW - PADDING * 2 - GAP * (COLS - 1)) / COLS
+function cellW(containerW: number, padding: number = PADDING) {
+  return (containerW - padding * 2 - GAP * (COLS - 1)) / COLS
 }
+
 
 function toPx(x: number, y: number, w: number, h: number, cw: number) {
   return {
@@ -66,18 +68,11 @@ function snapToGrid(pxLeft: number, pxTop: number, pxW: number, pxH: number, cw:
  *
  * Algorithm:
  * 1. Clone all widget states (mutations happen on clones).
- * 2. Iteratively find any pair of visible widgets that overlap.
- * 3. When they overlap, push the lower widget (higher y) below the upper one.
- * 4. Repeat until no overlaps remain (capped at MAX_PASSES).
- *
- * NOTE: `sorted` is an array of REFERENCE-wrappers pointing to the same objects
- * as `result`. Mutating `ref.y` directly modifies `result[i].y`.
+ * 2. Iteratively sort visible widgets by Y and push lower widgets below upper ones.
+ * 3. Repeat until no overlaps remain (capped at MAX_PASSES).
  */
 function resolveCollisions(states: WidgetState[], _movedId: string): WidgetState[] {
   const result = states.map((s) => ({ ...s }))
-
-  // Reference wrappers — mutations affect result objects directly
-  const sorted = result.map((s) => ({ ref: s }))
 
   let changed = true
   let passes  = 0
@@ -85,22 +80,21 @@ function resolveCollisions(states: WidgetState[], _movedId: string): WidgetState
   while (changed && passes++ < MAX_PASSES) {
     changed = false
 
+    // Sort by Y position every pass so we always process top-to-bottom
+    const sorted = result
+      .map((s) => ({ ref: s }))
+      .filter((s) => s.ref.visible)
+      .sort((a, b) => a.ref.y - b.ref.y)
+
     for (let i = 0; i < sorted.length; i++) {
       const a = sorted[i].ref
-      if (!a.visible) continue
 
       for (let j = i + 1; j < sorted.length; j++) {
         const b = sorted[j].ref
-        if (!b.visible) continue
 
         if (overlaps(a, b)) {
-          if (a.y <= b.y) {
-            // a is above b → push b below a
-            b.y = a.y + a.h
-          } else {
-            // b is above a → push a below b
-            a.y = b.y + b.h
-          }
+          // a is above b → push b below a
+          b.y = Math.max(b.y, a.y + a.h)
           changed = true
         }
       }
@@ -234,7 +228,7 @@ export const ProfileCanvas = memo(function ProfileCanvas({
 }: ProfileCanvasProps) {
   const { t } = useTranslation()
   const [widgets, setWidgets]         = useState<WidgetState[]>(DEFAULT_WIDGET_STATES)
-  const [cardStyle, setCardStyle]     = useState<WidgetStyle>("glass")
+  const [cardStyle]                    = useState<WidgetStyle>("glass")
   const [saveState, setSaveState]     = useState<"idle" | "saving" | "saved">("idle")
   const [confirm, setConfirm]         = useState<null | "publish" | "discard">(null)
   const toast                         = useToast()
@@ -279,8 +273,9 @@ export const ProfileCanvas = memo(function ProfileCanvas({
 
   const getCellW = useCallback(() => {
     const w = containerRef.current?.clientWidth ?? 800
-    return cellW(w)
+    return cellW(w, EDIT_PAD)
   }, [])
+
 
   // Stable per-widget ref setter: identity never changes → React won't re-run
   // it on re-renders, only on actual mount/unmount — prevents position resets.
@@ -296,7 +291,6 @@ export const ProfileCanvas = memo(function ProfileCanvas({
   const handleWidgetMouseDown = useCallback((e: React.MouseEvent, id: string) => {
     if (!editMode) return
     const target = e.target as HTMLElement
-    // Allow dragging from anywhere except interactive elements and resize handle
     if (
       target.closest("button") ||
       target.closest("a") ||
@@ -312,8 +306,9 @@ export const ProfileCanvas = memo(function ProfileCanvas({
 
     const startX   = e.clientX
     const startY   = e.clientY
-    const startL   = parseInt(el.style.left) || 0
-    const startT   = parseInt(el.style.top)  || 0
+    // FIX #3: use parseFloat to preserve sub-pixel precision
+    const startL   = parseFloat(el.style.left) || 0
+    const startT   = parseFloat(el.style.top)  || 0
     draggingId.current   = id
     el.style.zIndex      = "100"
     el.style.opacity     = "0.92"
@@ -332,14 +327,15 @@ export const ProfileCanvas = memo(function ProfileCanvas({
       el!.style.boxShadow     = ""
       el!.style.cursor        = ""
 
-      const pxLeft = parseInt(el!.style.left)
-      const pxTop  = parseInt(el!.style.top)
+      // FIX #3: use parseFloat to preserve sub-pixel precision
+      const pxLeft = parseFloat(el!.style.left)
+      const pxTop  = parseFloat(el!.style.top)
 
       setWidgets((prev) => {
         const ws   = prev.map((w) => ({ ...w }))
         const wgt  = ws.find((w) => w.id === id)!
-        // Recalculate cw at the moment of snap (not stale from mousedown)
-        const cwNow = cellW(containerRef.current?.clientWidth ?? 800)
+        const cwNow = cellW(containerRef.current?.clientWidth ?? 800, EDIT_PAD)
+
         const snap = snapToGrid(pxLeft, pxTop, wgt.w * cwNow + (wgt.w - 1) * GAP, wgt.h * ROW_H + (wgt.h - 1) * GAP, cwNow, wgt.minW, wgt.minH)
         wgt.x = snap.x
         wgt.y = snap.y
@@ -364,13 +360,14 @@ export const ProfileCanvas = memo(function ProfileCanvas({
     const startX = e.clientX
     const startY = e.clientY
     const rect   = el.getBoundingClientRect()
-    const startW = parseInt(el.style.width)  || rect.width
-    const startH = parseInt(el.style.height) || rect.height
+    // FIX #3: use parseFloat to preserve sub-pixel precision
+    const startW = parseFloat(el.style.width)  || rect.width
+    const startH = parseFloat(el.style.height) || rect.height
 
     // Capture min sizes now — avoids calling setWidgets during onMove
     const wgtSnap = widgets.find((w) => w.id === id)
-    // Recalculate cw at resize start
-    const cwNow = cellW(containerRef.current?.clientWidth ?? 800)
+    const cwNow = cellW(containerRef.current?.clientWidth ?? 800, EDIT_PAD)
+
     const minPxW = wgtSnap ? wgtSnap.minW * cwNow + (wgtSnap.minW - 1) * GAP : cwNow
     const minPxH = wgtSnap ? wgtSnap.minH * ROW_H + (wgtSnap.minH - 1) * GAP : ROW_H
 
@@ -383,19 +380,27 @@ export const ProfileCanvas = memo(function ProfileCanvas({
 
     function onUp() {
       el!.style.zIndex = ""
-      const finalW = parseInt(el!.style.width)
-      const finalH = parseInt(el!.style.height)
+      // FIX #3: use parseFloat to preserve sub-pixel precision
+      const finalW = parseFloat(el!.style.width)
+      const finalH = parseFloat(el!.style.height)
 
       setWidgets((prev) => {
         const ws  = prev.map((w) => ({ ...w }))
         const wgt = ws.find((w) => w.id === id)!
-        // Recalculate cw at the moment of snap
-        const cwNow2 = cellW(containerRef.current?.clientWidth ?? 800)
-        const snap = snapToGrid(wgt.x * (cwNow2 + GAP), wgt.y * (ROW_H + GAP), finalW, finalH, cwNow2, wgt.minW, wgt.minH)
-        wgt.w = Math.min(snap.w, COLS - wgt.x)
-        wgt.h = snap.h
+        const cwNow2 = cellW(containerRef.current?.clientWidth ?? 800, EDIT_PAD)
+
+        // FIX #2: preserve x/y during resize — only recalculate w/h
+        const newW = Math.min(
+          Math.max(wgt.minW, Math.round((finalW + GAP) / (cwNow2 + GAP))),
+          COLS - wgt.x
+        )
+        const newH = Math.max(wgt.minH, Math.round((finalH + GAP) / (ROW_H + GAP)))
+
+        wgt.w = newW
+        wgt.h = newH
         return resolveCollisions(ws, id)
       })
+
       triggerSave()
       document.removeEventListener("mousemove", onMove)
       document.removeEventListener("mouseup", onUp)
@@ -407,20 +412,53 @@ export const ProfileCanvas = memo(function ProfileCanvas({
 
   // ── apply absolute positions whenever edit mode is active or widget layout changes ──
   useEffect(() => {
-    if (!editMode) return
-    const cw = getCellW()
-    widgets.forEach((w) => {
-      if (!w.visible || w.id === draggingId.current) return
-      const ref = widgetRefs.current[w.id]
-      if (!ref) return
-      const { left, top, width, height } = toPx(w.x, w.y, w.w, w.h, cw)
-      ref.style.left   = `${left}px`
-      ref.style.top    = `${top}px`
-      ref.style.width  = `${width}px`
-      ref.style.height = `${height}px`
-    })
+    // FIX #1: clear inline positioning styles when leaving edit mode so CSS Grid
+    // in view mode is not contaminated by leftover absolute positioning.
+    if (!editMode) {
+      widgets.forEach((w) => {
+        const ref = widgetRefs.current[w.id]
+        if (!ref) return
+        ref.style.left = ""
+        ref.style.top = ""
+        ref.style.width = ""
+        ref.style.height = ""
+        ref.style.zIndex = ""
+        ref.style.opacity = ""
+        ref.style.boxShadow = ""
+        ref.style.cursor = ""
+      })
+      return
+    }
+
+    const applyPositions = () => {
+      const cw = getCellW()
+      widgets.forEach((w) => {
+        if (!w.visible || w.id === draggingId.current) return
+        const ref = widgetRefs.current[w.id]
+        if (!ref) return
+        const { left, top, width, height } = toPx(w.x, w.y, w.w, w.h, cw)
+        ref.style.left   = `${left}px`
+        ref.style.top    = `${top}px`
+        ref.style.width  = `${width}px`
+        ref.style.height = `${height}px`
+      })
+    }
+
+    applyPositions()
+
+    // Re‑apply positions whenever the container resizes so widgets always fill 100%
+    const container = containerRef.current
+    if (!container) return
+
+    const observer = new ResizeObserver(applyPositions)
+    observer.observe(container)
+
+    return () => {
+      observer.disconnect()
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editMode, widgets])
+
 
   // ── grid canvas height in edit mode ──────────────────────────────────────
   const canvasHeight = useMemo(() => {
@@ -470,6 +508,8 @@ export const ProfileCanvas = memo(function ProfileCanvas({
     { labelKey: "profile.paused_status",    value: 21,  color: "#f4a261" },
     { labelKey: "profile.dropped_status",   value: 3,   color: "#e63946" },
   ]
+  const animeScoreDist = [2, 3, 5, 8, 15, 22, 48, 78, 110, 97]
+  const mangaScoreDist = [1, 2, 3, 7, 12, 18, 42, 68, 95, 114]
 
   return (
     <>
@@ -498,7 +538,7 @@ export const ProfileCanvas = memo(function ProfileCanvas({
               gridTemplateColumns: `repeat(${COLS}, 1fr)`,
               gridAutoRows: `${ROW_H}px`,
               gap: `${GAP}px`,
-              padding: `${GAP}px ${PADDING}px`,
+              padding: `${GAP}px ${EDIT_PAD}px`,
             }}
           >
             {Array.from({ length: 30 * COLS }).map((_, i) => (
@@ -512,7 +552,8 @@ export const ProfileCanvas = memo(function ProfileCanvas({
           className={editMode ? "relative" : "grid"}
           style={
             editMode
-              ? { minHeight: canvasHeight, padding: `${GAP}px ${PADDING}px` }
+              ? { minHeight: canvasHeight, padding: `${GAP}px ${EDIT_PAD}px` }
+
               : {
                   display: "grid",
                   gridTemplateColumns: `repeat(${COLS}, 1fr)`,
@@ -545,6 +586,7 @@ export const ProfileCanvas = memo(function ProfileCanvas({
               <WidgetStats
                 id="statsAnime" titleKey="profile.stats_anime" bigNumber={1247} bigLabelKey="profile.episodes_stat"
                 statuses={animeStatuses} barColor="#52b788" barPercent={78}
+                meanScore="7.8" scoreDist={animeScoreDist}
                 {...widgetContext}
               />
               {editMode && <ResizeHandle id="statsAnime" onMouseDown={handleResizeMouseDown} />}
@@ -556,6 +598,7 @@ export const ProfileCanvas = memo(function ProfileCanvas({
               <WidgetStats
                 id="statsManga" titleKey="profile.stats_manga" bigNumber={12840} bigLabelKey="profile.chapters_read_stat"
                 statuses={mangaStatuses} barColor="#a78bfa" barPercent={82}
+                meanScore="8.2" scoreDist={mangaScoreDist}
                 {...widgetContext}
               />
               {editMode && <ResizeHandle id="statsManga" onMouseDown={handleResizeMouseDown} />}
@@ -637,7 +680,7 @@ export const ProfileCanvas = memo(function ProfileCanvas({
 
           {visibleIds.has("clock") && (
             <div ref={getRefSetter("clock")} style={viewStyle("clock")} onMouseDown={(e) => handleWidgetMouseDown(e, "clock")}>
-              <WidgetClock timeZone={profile.timeZone} {...widgetContext} />
+              <WidgetClock timeZone={profile.timeZone} location={profile.address} {...widgetContext} />
               {editMode && <ResizeHandle id="clock" onMouseDown={handleResizeMouseDown} />}
             </div>
           )}

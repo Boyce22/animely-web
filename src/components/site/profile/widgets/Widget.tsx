@@ -54,9 +54,11 @@ function WidgetComponent({
     <div
       style={style}
       className={[
-        "relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-white/[0.07] transition-[border-color,box-shadow] duration-200",
+        "relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-white/[0.07] transition-[border-color,box-shadow,transform] duration-[220ms]",
+        "shadow-[inset_0_1px_0_rgba(255,255,255,0.055),0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.25)]",
+        !editMode && !transparent ? "hover:-translate-y-px hover:border-white/[0.13] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.075),0_2px_8px_rgba(0,0,0,0.35),0_8px_28px_rgba(0,0,0,0.35)]" : "",
         baseClass,
-        editMode && !transparent ? "border-purple-600/[0.18] hover:border-purple-500/50 cursor-default select-none" : "",
+        editMode && !transparent ? "border-purple-600/[0.18] hover:border-purple-500/50 cursor-default select-none !transform-none" : "",
         className,
       ].join(" ")}
     >
@@ -95,8 +97,8 @@ function WidgetComponent({
       )}
 
       {title && (
-        <div className="flex shrink-0 items-center gap-2 border-b border-white/[0.07] px-4 py-3">
-          <span className="flex-1 text-[12px] font-[800] uppercase tracking-[0.12em] text-white/40">
+        <div className="flex shrink-0 items-center gap-2 border-b border-white/[0.055] bg-black/[0.12] px-3.5 pt-[10px] pb-[9px]">
+          <span className="flex-1 text-[10px] font-[800] uppercase tracking-[0.14em] text-white/30">
             {title}
           </span>
           {action}

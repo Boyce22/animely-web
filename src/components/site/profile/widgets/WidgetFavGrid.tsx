@@ -26,25 +26,35 @@ function WidgetFavGridComponent({
         </button>
       }
     >
-      <div className="flex min-h-0 flex-1 flex-col px-3 pb-3">
-        <div className="grid flex-1 grid-cols-3 gap-2">
-          {items.map((item) => (
+      <div className="flex min-h-0 flex-1 flex-col px-[10px] pb-[10px]">
+        <div className="grid flex-1 grid-cols-3 gap-[5px]">
+          {items.map((item, i) => (
             <div
               key={item.title}
-              className="group/fav relative cursor-pointer overflow-hidden border border-white/[0.07] transition-[border-color,transform] duration-[180ms] hover:-translate-y-0.5 hover:border-white/20"
+              className="group/fav relative cursor-pointer overflow-hidden border border-white/[0.06] transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-white/[0.2] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
             >
-              <div className="relative min-h-[110px] w-full" style={{ background: item.gradient }}>
+              {/* Cover */}
+              <div className="relative min-h-[88px] w-full" style={{ background: item.gradient }}>
                 <div className="absolute inset-0" style={{
-                  backgroundImage: "repeating-linear-gradient(-52deg,transparent,transparent 20px,rgba(255,255,255,0.012) 20px,rgba(255,255,255,0.012) 21px)",
+                  backgroundImage: "repeating-linear-gradient(-52deg,transparent,transparent 18px,rgba(255,255,255,0.018) 18px,rgba(255,255,255,0.018) 19px)",
                 }} />
               </div>
+
+              {/* Rank badge */}
+              <div className="absolute left-[5px] top-[5px] flex h-[17px] w-[17px] items-center justify-center bg-black/[0.7] text-[8px] font-[800] text-white/60 backdrop-blur-sm">
+                #{i + 1}
+              </div>
+
+              {/* Score badge */}
               {item.score && (
-                <div className="absolute right-1.5 top-1.5 bg-black/80 px-[6px] py-[2px] font-mono text-[11px] font-[800] text-orange-300">
+                <div className="absolute right-[5px] top-[5px] bg-black/[0.75] px-[5px] py-[2px] text-[10px] font-[800] text-orange-300 backdrop-blur-sm">
                   ★ {item.score}
                 </div>
               )}
-              <div className="absolute inset-0 flex items-end bg-black/0 p-2 opacity-0 transition-opacity duration-[180ms] group-hover/fav:bg-black/72 group-hover/fav:opacity-100">
-                <span className="text-[11px] font-[700] leading-tight text-white">{item.title}</span>
+
+              {/* Always-visible title */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/55 to-transparent px-[6px] pb-[5px] pt-[18px]">
+                <span className="block truncate text-[9px] font-[700] leading-tight text-white/80">{item.title}</span>
               </div>
             </div>
           ))}

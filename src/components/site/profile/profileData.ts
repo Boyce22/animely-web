@@ -49,6 +49,7 @@ export const DEFAULT_PROFILE: ProfileData = {
   showActivity: true,
   showCollections: true,
   timeZone: "America/Sao_Paulo",
+  genres: ["Dark Fantasy", "Seinen", "Psychological", "Historical", "Slice of Life"],
 }
 
 export const PROFILE_STATS: ProfileStats = {
@@ -151,43 +152,43 @@ export const FAV_MANGAS: FavItem[] = [
 ]
 
 export const FAV_CHARS: CharItem[] = [
-  { name: "Guts",      gradient: G.dark_red },
-  { name: "Thorfinn",  gradient: G.dark_orange },
-  { name: "Ginko",     gradient: G.dark_teal },
-  { name: "Punpun",    gradient: G.dark_indigo },
-  { name: "Laios",     gradient: G.dark_green },
-  { name: "Frieren",   gradient: G.dark_blue },
-  { name: "Griffith",  gradient: G.dark_purple },
-  { name: "Askeladd",  gradient: G.dark_orange },
+  { name: "Guts",      gradient: G.dark_red,    series: "Berserk" },
+  { name: "Thorfinn",  gradient: G.dark_orange, series: "Vinland Saga" },
+  { name: "Ginko",     gradient: G.dark_teal,   series: "Mushishi" },
+  { name: "Punpun",    gradient: G.dark_indigo, series: "Oyasumi Punpun" },
+  { name: "Laios",     gradient: G.dark_green,  series: "Dungeon Meshi" },
+  { name: "Frieren",   gradient: G.dark_blue,   series: "Frieren" },
+  { name: "Griffith",  gradient: G.dark_purple, series: "Berserk" },
+  { name: "Askeladd",  gradient: G.dark_orange, series: "Vinland Saga" },
 ]
 
 export const FAV_STAFF: CharItem[] = [
-  { name: "Kentaro Miura",   gradient: G.dark_red },
-  { name: "Takehiko Inoue",  gradient: G.dark_orange },
-  { name: "Yuki Urushibara", gradient: G.dark_teal },
-  { name: "Inio Asano",      gradient: G.dark_indigo },
-  { name: "Makoto Yukimura", gradient: G.dark_orange },
-  { name: "Ryoko Kui",       gradient: G.dark_green },
-  { name: "Naoki Urasawa",   gradient: G.dark_yellow },
-  { name: "Tatsuki Fujimoto",gradient: G.dark_violet },
+  { name: "Kentaro Miura",    gradient: G.dark_red,    series: "Berserk" },
+  { name: "Takehiko Inoue",   gradient: G.dark_orange, series: "Vagabond" },
+  { name: "Yuki Urushibara",  gradient: G.dark_teal,   series: "Mushishi" },
+  { name: "Inio Asano",       gradient: G.dark_indigo, series: "Oyasumi Punpun" },
+  { name: "Makoto Yukimura",  gradient: G.dark_orange, series: "Vinland Saga" },
+  { name: "Ryoko Kui",        gradient: G.dark_green,  series: "Dungeon Meshi" },
+  { name: "Naoki Urasawa",    gradient: G.dark_yellow, series: "20th Century Boys" },
+  { name: "Tatsuki Fujimoto", gradient: G.dark_violet, series: "Chainsaw Man" },
 ]
 
 export const WIDGET_BADGES: BadgeItem[] = [
-  { emoji: "⚔️", name: "Guerreiro",  bg: "rgba(230,57,70,.18)" },
-  { emoji: "📚", name: "1k Caps",    bg: "rgba(124,58,237,.18)" },
-  { emoji: "⭐", name: "Reviewer",   bg: "rgba(244,162,97,.18)" },
-  { emoji: "🎯", name: "Early Bird", bg: "rgba(82,183,136,.18)" },
-  { emoji: "🌙", name: "Noturno",    bg: "rgba(96,165,250,.18)" },
-  { emoji: "🔥", name: "Streak 30",  bg: "rgba(230,57,70,.18)" },
+  { emoji: "⚔️", name: "Guerreiro",  bg: "rgba(230,57,70,.18)",   rarity: "rare" },
+  { emoji: "📚", name: "1k Caps",    bg: "rgba(124,58,237,.18)",  rarity: "epic" },
+  { emoji: "⭐", name: "Reviewer",   bg: "rgba(244,162,97,.18)",  rarity: "rare" },
+  { emoji: "🎯", name: "Early Bird", bg: "rgba(82,183,136,.18)",  rarity: "legendary" },
+  { emoji: "🌙", name: "Noturno",    bg: "rgba(96,165,250,.18)",  rarity: "common" },
+  { emoji: "🔥", name: "Streak 30",  bg: "rgba(230,57,70,.18)",   rarity: "rare" },
 ]
 
 export const WIDGET_ACTIVITY: WidgetActivityItem[] = [
-  { action: "Terminou de ler",      title: "Frieren",           episode: "Cap. 118", score: "9.2", gradient: G.dark_blue,   time: "2h" },
-  { action: "Favoritou",            title: "Vagabond",          episode: "—",        gradient: G.dark_orange, time: "5h" },
-  { action: "Avaliou",              title: "Chainsaw Man",      episode: "Cap. 168", score: "8.7", gradient: G.dark_red,    time: "1d" },
-  { action: "Começou a ler",        title: "Kingdom",           episode: "Cap. 1",   gradient: G.dark_orange, time: "2d" },
-  { action: "Terminou de assistir", title: "Vinland Saga S2",   episode: "Ep. 24",   score: "9.0", gradient: G.dark_orange, time: "3d" },
-  { action: "Publicou review de",   title: "Berserk",           episode: "—",        gradient: G.dark_red,    time: "4d" },
+  { action: "Terminou de ler",      title: "Frieren",         episode: "Cap. 118", score: "9.2", gradient: G.dark_blue,   time: "2h", type: "read" },
+  { action: "Favoritou",            title: "Vagabond",        episode: "—",                      gradient: G.dark_orange, time: "5h", type: "fav" },
+  { action: "Avaliou",              title: "Chainsaw Man",    episode: "Cap. 168", score: "8.7", gradient: G.dark_red,    time: "1d", type: "rate" },
+  { action: "Começou a ler",        title: "Kingdom",         episode: "Cap. 1",                 gradient: G.dark_orange, time: "2d", type: "read" },
+  { action: "Terminou de assistir", title: "Vinland Saga S2", episode: "Ep. 24",   score: "9.0", gradient: G.dark_orange, time: "3d", type: "watch" },
+  { action: "Publicou review de",   title: "Berserk",         episode: "—",                      gradient: G.dark_red,    time: "4d", type: "review" },
 ]
 
 export const WIDGET_SOCIAL: SocialLinkItem[] = [
@@ -198,45 +199,57 @@ export const WIDGET_SOCIAL: SocialLinkItem[] = [
 ]
 
 export const WIDGET_POSTS: PostItem[] = [
-  { text: "Cap. 374 de Berserk saiu. Studio Gaga não perdoa. Absolutamente devastador.", likes: 48, time: "3h" },
-  { text: "Frieren encerrou com perfeição. Obrigado Yamada-sensei.", likes: 31, time: "1d" },
-  { text: "Kingdom vol. 67 no correio. Finalmente.", likes: 17, time: "3d" },
+  { text: "Cap. 374 de Berserk saiu. Studio Gaga não perdoa. Absolutamente devastador.", likes: 48, time: "3h", comments: 12 },
+  { text: "Frieren encerrou com perfeição. Obrigado Yamada-sensei.", likes: 31, time: "1d", comments: 7 },
+  { text: "Kingdom vol. 67 no correio. Finalmente.", likes: 17, time: "3d", comments: 3 },
 ]
 
 export const DEFAULT_WIDGET_STATES: WidgetState[] = [
-  { id: "avatar",     visible: true, transparent: false, x: 0,  y: 0,  w: 3,  h: 6,  minW: 2, minH: 4 },
-  { id: "bio",        visible: true, transparent: false, x: 3,  y: 0,  w: 9,  h: 3,  minW: 4, minH: 2 },
-  { id: "statsAnime", visible: true, transparent: false, x: 3,  y: 3,  w: 4,  h: 3,  minW: 3, minH: 3 },
-  { id: "statsManga", visible: true, transparent: false, x: 7,  y: 3,  w: 5,  h: 3,  minW: 3, minH: 3 },
-  { id: "favAnime",   visible: true, transparent: false, x: 0,  y: 6,  w: 6,  h: 6,  minW: 4, minH: 4 },
-  { id: "favManga",   visible: true, transparent: false, x: 6,  y: 6,  w: 6,  h: 6,  minW: 4, minH: 4 },
-  { id: "favChars",   visible: true, transparent: false, x: 0,  y: 12, w: 6,  h: 5,  minW: 3, minH: 3 },
-  { id: "favStaff",   visible: true, transparent: false, x: 6,  y: 12, w: 6,  h: 5,  minW: 3, minH: 3 },
-  { id: "music",      visible: true, transparent: false, x: 0,  y: 17, w: 2,  h: 4,  minW: 2, minH: 3 },
-  { id: "badges",     visible: true, transparent: false, x: 2,  y: 17, w: 3,  h: 5,  minW: 2, minH: 3 },
-  { id: "divider",    visible: true, transparent: true,  x: 0,  y: 22, w: 12, h: 1,  minW: 4, minH: 1 },
-  { id: "activity",   visible: true, transparent: false, x: 0,  y: 23, w: 4,  h: 7,  minW: 3, minH: 4 },
-  { id: "social",     visible: true, transparent: false, x: 4,  y: 23, w: 3,  h: 7,  minW: 2, minH: 3 },
-  { id: "text",       visible: true, transparent: false, x: 7,  y: 23, w: 5,  h: 4,  minW: 2, minH: 2 },
-  { id: "clock",      visible: true, transparent: false, x: 7,  y: 27, w: 2,  h: 3,  minW: 2, minH: 2 },
-  { id: "posts",      visible: true, transparent: false, x: 9,  y: 27, w: 3,  h: 3,  minW: 2, minH: 2 },
+  // Section 1 — header: avatar takes rows 0-4, bio fills top-right, stats fill bottom-right
+  { id: "avatar",     visible: true, transparent: false, x: 0,  y: 0,  w: 3,  h: 5,  minW: 2, minH: 3 },
+  { id: "bio",        visible: true, transparent: false, x: 3,  y: 0,  w: 9,  h: 2,  minW: 4, minH: 2 },
+  { id: "statsAnime", visible: true, transparent: false, x: 3,  y: 2,  w: 4,  h: 3,  minW: 3, minH: 2 },
+  { id: "statsManga", visible: true, transparent: false, x: 7,  y: 2,  w: 5,  h: 3,  minW: 3, minH: 2 },
+  // Section 2 — favorite media (4 rows each)
+  { id: "favAnime",   visible: true, transparent: false, x: 0,  y: 5,  w: 6,  h: 4,  minW: 4, minH: 3 },
+  { id: "favManga",   visible: true, transparent: false, x: 6,  y: 5,  w: 6,  h: 4,  minW: 4, minH: 3 },
+  // Section 3 — characters & staff (4 rows each)
+  { id: "favChars",   visible: true, transparent: false, x: 0,  y: 9,  w: 6,  h: 4,  minW: 3, minH: 3 },
+  { id: "favStaff",   visible: true, transparent: false, x: 6,  y: 9,  w: 6,  h: 4,  minW: 3, minH: 3 },
+  // Section 4 — compact utility row: music(2) + badges(4) + social(3) + clock(3) = 12
+  { id: "music",      visible: true, transparent: false, x: 0,  y: 13, w: 2,  h: 3,  minW: 2, minH: 3 },
+  { id: "badges",     visible: true, transparent: false, x: 2,  y: 13, w: 4,  h: 3,  minW: 2, minH: 3 },
+  { id: "social",     visible: true, transparent: false, x: 6,  y: 13, w: 3,  h: 3,  minW: 2, minH: 3 },
+  { id: "clock",      visible: true, transparent: false, x: 9,  y: 13, w: 3,  h: 3,  minW: 2, minH: 2 },
+  // Divider
+  { id: "divider",    visible: true, transparent: true,  x: 0,  y: 16, w: 12, h: 1,  minW: 4, minH: 1 },
+  // Section 5 — activity(4) + text(5) + posts(3) = 12
+  { id: "activity",   visible: true, transparent: false, x: 0,  y: 17, w: 4,  h: 4,  minW: 3, minH: 3 },
+  { id: "text",       visible: true, transparent: false, x: 4,  y: 17, w: 5,  h: 4,  minW: 2, minH: 2 },
+  { id: "posts",      visible: true, transparent: false, x: 9,  y: 17, w: 3,  h: 4,  minW: 2, minH: 2 },
 ]
 
 export const VIEW_LAYOUT: Record<string, { gridColumn: string; gridRow: string; display?: string }> = {
-  avatar:     { gridColumn: "1 / span 3",   gridRow: "1 / span 6"   },
-  bio:        { gridColumn: "4 / span 9",   gridRow: "1 / span 3"   },
-  statsAnime: { gridColumn: "4 / span 4",   gridRow: "4 / span 3"   },
-  statsManga: { gridColumn: "8 / span 5",   gridRow: "4 / span 3"   },
-  favAnime:   { gridColumn: "1 / span 6",   gridRow: "7 / span 6"   },
-  favManga:   { gridColumn: "7 / span 6",   gridRow: "7 / span 6"   },
-  favChars:   { gridColumn: "1 / span 6",   gridRow: "13 / span 5"  },
-  favStaff:   { gridColumn: "7 / span 6",   gridRow: "13 / span 5"  },
-  music:      { gridColumn: "8 / span 2",   gridRow: "13 / span 3", display: "flex" },
-  badges:     { gridColumn: "10 / span 3",  gridRow: "13 / span 5"  },
-  divider:    { gridColumn: "1 / span 12",  gridRow: "18 / span 1"  },
-  activity:   { gridColumn: "1 / span 4",   gridRow: "19 / span 7"  },
-  social:     { gridColumn: "5 / span 3",   gridRow: "19 / span 7"  },
-  text:       { gridColumn: "8 / span 5",   gridRow: "19 / span 4"  },
-  clock:      { gridColumn: "8 / span 2",   gridRow: "23 / span 3"  },
-  posts:      { gridColumn: "10 / span 3",  gridRow: "23 / span 3"  },
+  // Section 1
+  avatar:     { gridColumn: "1 / span 3",  gridRow: "1 / span 5"  },
+  bio:        { gridColumn: "4 / span 9",  gridRow: "1 / span 2"  },
+  statsAnime: { gridColumn: "4 / span 4",  gridRow: "3 / span 3"  },
+  statsManga: { gridColumn: "8 / span 5",  gridRow: "3 / span 3"  },
+  // Section 2
+  favAnime:   { gridColumn: "1 / span 6",  gridRow: "6 / span 4"  },
+  favManga:   { gridColumn: "7 / span 6",  gridRow: "6 / span 4"  },
+  // Section 3
+  favChars:   { gridColumn: "1 / span 6",  gridRow: "10 / span 4" },
+  favStaff:   { gridColumn: "7 / span 6",  gridRow: "10 / span 4" },
+  // Section 4 — col totals: 2+4+3+3 = 12
+  music:      { gridColumn: "1 / span 2",  gridRow: "14 / span 3" },
+  badges:     { gridColumn: "3 / span 4",  gridRow: "14 / span 3" },
+  social:     { gridColumn: "7 / span 3",  gridRow: "14 / span 3" },
+  clock:      { gridColumn: "10 / span 3", gridRow: "14 / span 3" },
+  // Divider
+  divider:    { gridColumn: "1 / span 12", gridRow: "17 / span 1" },
+  // Section 5 — col totals: 4+5+3 = 12
+  activity:   { gridColumn: "1 / span 4",  gridRow: "18 / span 4" },
+  text:       { gridColumn: "5 / span 5",  gridRow: "18 / span 4" },
+  posts:      { gridColumn: "10 / span 3", gridRow: "18 / span 4" },
 }

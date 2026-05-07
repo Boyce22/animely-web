@@ -7,6 +7,8 @@ export type PreferredLanguage = "ENGLISH" | "PORTUGUESE" | "SPANISH"
 export type UserTheme = "DARK" | "LIGHT" | "SYSTEM"
 export type ActivityType = "comment" | "rating" | "bookmark"
 export type WidgetStyle = "glass" | "flat" | "bordered" | "shadow" | "neon"
+export type BadgeRarity = "common" | "rare" | "epic" | "legendary"
+export type ActivityWidgetType = "watch" | "read" | "rate" | "fav" | "review"
 
 export interface ProfileData {
   id: string
@@ -41,6 +43,7 @@ export interface ProfileData {
   showActivity: boolean
   showCollections: boolean
   timeZone: string
+  genres?: string[]
 }
 
 export interface EditProfileData {
@@ -88,12 +91,14 @@ export interface FavItem {
 export interface CharItem {
   name: string
   gradient: string
+  series?: string
 }
 
 export interface BadgeItem {
   emoji: string
   name: string
   bg: string
+  rarity?: BadgeRarity
 }
 
 export interface WidgetActivityItem {
@@ -103,6 +108,7 @@ export interface WidgetActivityItem {
   score?: string
   gradient: string
   time: string
+  type?: ActivityWidgetType
 }
 
 export interface SocialLinkItem {
@@ -115,6 +121,7 @@ export interface PostItem {
   text: string
   likes: number
   time: string
+  comments?: number
 }
 
 export interface StatsStatus {
