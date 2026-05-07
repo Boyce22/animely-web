@@ -194,7 +194,7 @@ export default function Donate() {
       </div>
 
       <img
-        src="/donate_background.png"
+        src={`${import.meta.env.BASE_URL}donate_background.png`}
         alt=""
         aria-hidden
         className="pointer-events-none select-none fixed bottom-0 right-0 h-[340px] sm:h-[420px] object-contain object-bottom z-10"
