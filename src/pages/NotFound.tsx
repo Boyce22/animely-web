@@ -11,7 +11,7 @@ export default function NotFound() {
 
       {/* 404 + chibi — desktop only */}
       <div aria-hidden className="pointer-events-none select-none hidden sm:flex absolute inset-0 flex-col items-center justify-center -translate-y-16">
-        <img src="/404_lost_chibi_without_text.png" alt="" className="h-[clamp(130px,14vw,190px)] object-contain opacity-80" />
+        <img src={`${import.meta.env.BASE_URL}404_lost_chibi_without_text.png`} alt="" className="h-[clamp(130px,14vw,190px)] object-contain opacity-80" />
         <span className="text-[clamp(72px,12vw,140px)] font-black leading-none text-foreground/[0.06] tracking-tighter -mt-2">
           404
         </span>
@@ -31,7 +31,7 @@ export default function NotFound() {
 
           {/* Chibi — mobile only */}
           <div className="flex justify-center mb-6 sm:hidden">
-            <img src="/404_lost_chibi_without_text.png" alt="" aria-hidden className="h-[160px] object-contain" />
+            <img src={`${import.meta.env.BASE_URL}404_lost_chibi_without_text.png`} alt="" aria-hidden className="h-[160px] object-contain" />
           </div>
 
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60 mb-4">Animely</p>
