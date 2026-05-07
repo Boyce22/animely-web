@@ -23,7 +23,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/animely-web">
         <PageLoader />
         <Routes>
           <Route path="/" element={<Index />} />
