@@ -24,7 +24,7 @@ export function setRightPanelExpanded(value: boolean | ((prev: boolean) => boole
   const saveToStorage = () => {
     try {
       localStorage.setItem(STORAGE_KEY, String(nextValue))
-    } catch {}
+    } catch { /* noop */ }
   }
 
   if (typeof requestIdleCallback !== "undefined") {
