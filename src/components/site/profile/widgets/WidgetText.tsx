@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next"
 import { Widget } from "./Widget"
 import type { WidgetContextValue } from "./Widget"
 
-interface Props extends WidgetContextValue {}
+type Props = WidgetContextValue
 
 const SCORE_ROWS = [
   { score: "10", desc: "obra-prima que muda perspectiva", color: "#f59e0b", bar: 100 },

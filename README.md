@@ -115,3 +115,4 @@ Backend (localhost:3000)
 
 - [Animely Back](/TSUAA/projects/animely-back) — API REST
 - Repositório: [github.com/Boyce22/animely-web](https://github.com/Boyce22/animely-web)
+- Deploy (GitHub Pages): [boyce22.github.io/animely-web](https://boyce22.github.io/animely-web/)
