@@ -111,6 +111,13 @@ Backend (localhost:3000)
 | Página | useState / useReducer | Filtros, tabs, modais |
 | Componente | useState local | Like, bookmark, spoiler |
 
+## Documentação
+
+| Documento | Descrição |
+|-----------|-----------|
+| [Workflow Playbook](docs/WORKFLOW_PLAYBOOK.md) | Pipeline completo: PR → produção, papéis, gates, rollback |
+| [Git Flow](docs/GIT_FLOW.md) | Modelo de branches, regras de versionamento, hooks |
+
 ## Links
 
 - [Animely Back](/TSUAA/projects/animely-back) — API REST

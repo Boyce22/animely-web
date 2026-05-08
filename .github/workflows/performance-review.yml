@@ -1,0 +1,211 @@
+name: Performance Gate — Frontend Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  statuses: write
+
+concurrency:
+  group: perf-review-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  CHECK_NAME: gate/performance-review
+
+jobs:
+  classify-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      classification: ${{ steps.classify.outputs.classification }}
+      changed_files: ${{ steps.classify.outputs.changed_files }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Classify frontend changes — logical vs cosmetic
+        id: classify
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+
+          CHANGED=$(git diff --name-only "$BASE"..."$HEAD" || git diff --name-only "${{ github.event.pull_request.base.ref }}"..."$HEAD")
+
+          echo "All changed files:"
+          echo "$CHANGED"
+
+          echo "$CHANGED" > /tmp/changed-files.txt
+
+          LOGICAL_PATTERNS='\.(tsx|jsx)$|\.(ts|js)$|^vite\.config\.|^eslint\.config\.|^package\.json$'
+          COSMETIC_PATTERNS='\.(css|scss)$|^tailwind\.config\.|^postcss\.config\.'
+
+          LOGICAL_FILES=$(echo "$CHANGED" | grep -E "$LOGICAL_PATTERNS" || true)
+          COSMETIC_FILES=$(echo "$CHANGED" | grep -E "$COSMETIC_PATTERNS" || true)
+
+          if [ -n "$LOGICAL_FILES" ]; then
+            echo "classification=logical" >> $GITHUB_OUTPUT
+            echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+            echo "$LOGICAL_FILES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          elif [ -n "$COSMETIC_FILES" ]; then
+            echo "classification=cosmetic" >> $GITHUB_OUTPUT
+            echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+            echo "$COSMETIC_FILES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "classification=none" >> $GITHUB_OUTPUT
+            echo "changed_files=none" >> $GITHUB_OUTPUT
+          fi
+
+  perf-gate:
+    runs-on: ubuntu-latest
+    needs: classify-changes
+    if: needs.classify-changes.outputs.classification == 'logical'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build for bundle analysis
+        id: build
+        run: |
+          npm run build 2>&1 | tee /tmp/build-output.txt
+
+      - name: Analyze bundle size
+        id: bundle-size
+        run: |
+          TOTAL_SIZE=$(du -sh dist/ 2>/dev/null | cut -f1 || echo "unknown")
+          echo "Total dist size: $TOTAL_SIZE"
+          echo "dist_size=$TOTAL_SIZE" >> $GITHUB_OUTPUT
+
+      - name: Create pending status check
+        run: |
+          gh api \
+            --method POST \
+            /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+            -f state="pending" \
+            -f context="${{ env.CHECK_NAME }}" \
+            -f description="Awaiting PerfEngineer performance review" \
+            -f target_url="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Comment on PR — notify PerfEngineer
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const classification = '${{ needs.classify-changes.outputs.classification }}';
+            const changedFiles = `${{ needs.classify-changes.outputs.changed_files }}`;
+            const distSize = `${{ steps.bundle-size.outputs.dist_size }}`;
+
+            const body = `## ⚡ Performance Gate — Review Required
+
+            Logical frontend changes detected. This PR requires performance review by **PerfEngineer** before it can merge.
+
+            ### Classification
+            \`${classification}\`
+
+            ### Changed logical files
+            \`\`\`
+            ${changedFiles}
+            \`\`\`
+
+            ### Bundle size (dist/)
+            \`${distSize}\`
+
+            ### PerfEngineer checklist
+            - [ ] Bundle size impact is acceptable
+            - [ ] No unnecessary re-renders introduced
+            - [ ] Code splitting / lazy loading used where appropriate
+            - [ ] No heavy dependency additions without justification
+            - [ ] Data fetching uses proper caching (no N+1 queries)
+            - [ ] Cache headers (ETag, Cache-Control) are set
+            - [ ] Lighthouse metrics checked
+
+            ### How to approve
+            Set the status check \`gate/performance-review\` to \`success\`:
+            \`\`\`bash
+            gh api /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+              -f state="success" \
+              -f context="${{ env.CHECK_NAME }}" \
+              -f description="Performance review approved"
+            \`\`\`
+
+            To request changes, set to \`failure\` with the reason:
+            \`\`\`bash
+            gh api /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+              -f state="failure" \
+              -f context="${{ env.CHECK_NAME }}" \
+              -f description="Performance issues found: <reason>"
+            \`\`\`
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+
+  perf-gate-cosmetic:
+    runs-on: ubuntu-latest
+    needs: classify-changes
+    if: needs.classify-changes.outputs.classification == 'cosmetic'
+    steps:
+      - name: Set success status — cosmetic-only changes
+        run: |
+          gh api \
+            --method POST \
+            /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+            -f state="success" \
+            -f context="${{ env.CHECK_NAME }}" \
+            -f description="Cosmetic-only changes — performance gate skipped"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Comment on PR — cosmetic skip
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = `## 🎨 Performance Gate — Skipped (Cosmetic)
+
+            Only cosmetic/style changes detected (CSS, Tailwind config, PostCSS config). No performance review needed.
+
+            > If this PR also contains logical changes not detected, uncheck "This PR contains **no** frontend file changes" in the PR template.
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+
+  perf-gate-none:
+    runs-on: ubuntu-latest
+    needs: classify-changes
+    if: needs.classify-changes.outputs.classification == 'none'
+    steps:
+      - name: Set success status — no frontend changes
+        run: |
+          gh api \
+            --method POST \
+            /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+            -f state="success" \
+            -f context="${{ env.CHECK_NAME }}" \
+            -f description="No frontend changes — performance gate skipped"
+        env:
+          GH_TOKEN: ${{ github.token }}
