@@ -3,6 +3,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline"
 import i18n from "@/i18n"
 import { cn } from "@/lib/utils"
 import { LANGUAGES, type LangCode } from "./sidebarData"
+import { FlagIcon, FLAG_MAP } from "./FlagIcon"
 
 function changeLang(code: LangCode) {
   i18n.changeLanguage(code)
@@ -36,7 +37,7 @@ export function SidebarLanguageSelector() {
         )}
       >
         <div className="flex items-center gap-2.5">
-          <span className="flex-shrink-0 text-[16px] leading-none">{currentLang.flag}</span>
+          <FlagIcon country={FLAG_MAP[currentLang.code]} className="h-4 w-5 flex-shrink-0" />
           <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-200 delay-75 group-hover/sidebar:max-w-[80px] group-hover/sidebar:opacity-100">
             {currentLang.native}
           </span>
@@ -62,7 +63,7 @@ export function SidebarLanguageSelector() {
                   : "text-white/50 hover:bg-white/[0.04] hover:text-white",
               )}
             >
-              <span className="text-[16px] leading-none">{lang.flag}</span>
+              <FlagIcon country={FLAG_MAP[lang.code]} className="h-4 w-5 flex-shrink-0" />
               <span>{lang.native}</span>
               {i18n.language === lang.code && (
                 <span className="ml-auto text-[10px] font-black text-primary uppercase">OK</span>

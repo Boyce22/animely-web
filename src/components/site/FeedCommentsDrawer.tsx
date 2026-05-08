@@ -76,11 +76,11 @@ export function FeedCommentsDrawer({ open, count, onClose }: Props) {
       <div
         className={cn(
           "fixed bottom-0 right-0 z-[101] flex flex-col transition-transform duration-350",
+          "inset-x-0 md:left-[64px]",
+          "h-[85vh] md:h-[72vh]",
           open ? "translate-y-0" : "translate-y-full",
         )}
         style={{
-          left: 220,
-          height: "72vh",
           background: "#0e0e0e",
           borderTop: "1px solid rgba(255,255,255,0.1)",
           transitionTimingFunction: "cubic-bezier(0.4,0,0.2,1)",

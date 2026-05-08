@@ -1,44 +1,36 @@
 import type { StylingProfile } from "./types"
 
 export const DEFAULT_STYLING_PROFILE: StylingProfile = {
-  version: 1,
+  version: 2,
   name: "Default",
   canvas: {
     background: "#0a0a0a",
-    accentColor: "#7c3aed",
+    accentColor: "#e63946",
     maxWidth: "1400px",
-    padding: "40px",
+    padding: "24px",
   },
   sections: [
     {
-      id: "section-header",
-      label: "Cabeçalho",
-      layout: "grid-3",
-      style: { gap: "18px" },
+      id: "section-widget-grid",
+      label: "Widget Grid",
+      layout: "grid-12",
+      style: { gap: "18px", padding: "18px 24px" },
       components: [
         {
           id: "avatar",
           type: "avatar",
-          style: { gridColumn: "span 1" },
+          style: { gridColumn: "1 / span 3", gridRow: "1 / span 6" },
         },
         {
           id: "bio",
           type: "bio",
-          style: { gridColumn: "span 2" },
+          style: { gridColumn: "4 / span 9", gridRow: "1 / span 3" },
         },
-      ],
-    },
-    {
-      id: "section-stats",
-      label: "Estatísticas",
-      layout: "flex-row",
-      style: { gap: "18px" },
-      components: [
         {
           id: "stats-anime",
           type: "stats",
           title: "Stats Anime",
-          style: { flex: "1" },
+          style: { gridColumn: "4 / span 4", gridRow: "4 / span 3" },
           data: {
             items: [
               { label: "Episódios Assistidos", value: 1247, color: "#52b788" },
@@ -52,31 +44,22 @@ export const DEFAULT_STYLING_PROFILE: StylingProfile = {
           id: "stats-manga",
           type: "stats",
           title: "Stats Mangá",
-          style: { flex: "1" },
+          style: { gridColumn: "8 / span 5", gridRow: "4 / span 3" },
           data: {
             items: [
-              { label: "Capítulos Lidos", value: 12840, color: "#a78bfa" },
+              { label: "Capítulos Lidos", value: 12840, color: "#e63946" },
               { label: "Completos", value: 178, color: "#555" },
               { label: "Pausados", value: 21, color: "#f4a261" },
               { label: "Dropados", value: 3, color: "#e63946" },
             ],
           },
         },
-      ],
-    },
-    {
-      id: "section-favorites",
-      label: "Favoritos",
-      layout: "grid-2",
-      style: { gap: "18px" },
-      components: [
         {
           id: "fav-anime",
           type: "favorites-grid",
           title: "Animes Favoritos",
-          style: {},
+          style: { gridColumn: "1 / span 6", gridRow: "7 / span 6" },
           data: {
-            title: "Animes Favoritos",
             binding: {
               source: "collection-favorites",
               sort: { field: "score", direction: "desc" },
@@ -88,109 +71,73 @@ export const DEFAULT_STYLING_PROFILE: StylingProfile = {
           id: "fav-manga",
           type: "favorites-grid",
           title: "Mangás Favoritos",
-          style: {},
+          style: { gridColumn: "7 / span 6", gridRow: "7 / span 6" },
           data: {
-            title: "Mangás Favoritos",
+            binding: { source: "collection-favorites" },
           },
         },
-      ],
-    },
-    {
-      id: "section-characters",
-      label: "Personagens & Staff",
-      layout: "grid-2",
-      style: { gap: "18px" },
-      components: [
         {
           id: "fav-chars",
           type: "characters-grid",
           title: "Personagens Favoritos",
-          style: {},
+          style: { gridColumn: "1 / span 6", gridRow: "13 / span 5" },
         },
         {
           id: "fav-staff",
           type: "characters-grid",
           title: "Staff / Autores",
-          style: {},
-          data: {
-            title: "Staff",
-          },
+          style: { gridColumn: "7 / span 6", gridRow: "13 / span 5" },
+          data: { title: "Staff" },
         },
-      ],
-    },
-    {
-      id: "section-utility",
-      label: "Utilitários",
-      layout: "flex-row",
-      style: { gap: "18px" },
-      components: [
         {
           id: "music",
           type: "music",
-          style: { flex: "2" },
+          style: { gridColumn: "1 / span 2", gridRow: "18 / span 4" },
         },
         {
           id: "badges",
           type: "badges",
           title: "Conquistas",
-          style: { flex: "4" },
-          data: {
-            binding: { source: "collection-badges" },
-          },
+          style: { gridColumn: "3 / span 3", gridRow: "18 / span 5" },
+          data: { binding: { source: "collection-badges" } },
+        },
+        {
+          id: "divider",
+          type: "divider",
+          title: "Mais",
+          style: { gridColumn: "1 / span 12", gridRow: "23 / span 1" },
+        },
+        {
+          id: "activity",
+          type: "activity",
+          title: "Atividade Recente",
+          style: { gridColumn: "1 / span 4", gridRow: "24 / span 7" },
+          data: { binding: { source: "collection-activity", limit: 6 } },
         },
         {
           id: "social",
           type: "social-links",
           title: "Redes Sociais",
-          style: { flex: "3" },
-          data: {
-            binding: { source: "collection-social" },
-          },
+          style: { gridColumn: "5 / span 3", gridRow: "24 / span 7" },
+          data: { binding: { source: "collection-social" } },
         },
-      ],
-    },
-    {
-      id: "section-divider",
-      label: "Divisor",
-      layout: "flex-row",
-      style: { padding: "8px 0" },
-      components: [
         {
-          id: "divider",
-          type: "divider",
-          title: "Mais",
-          style: {},
-        },
-      ],
-    },
-    {
-      id: "section-bottom",
-      label: "Conteúdo Inferior",
-      layout: "flex-row",
-      style: { gap: "18px" },
-      components: [
-        {
-          id: "activity",
-          type: "activity",
-          title: "Atividade Recente",
-          style: { flex: "4" },
-          data: {
-            binding: { source: "collection-activity", limit: 6 },
-          },
+          id: "text",
+          type: "text-block",
+          title: "Critérios de Nota",
+          style: { gridColumn: "8 / span 5", gridRow: "24 / span 4" },
         },
         {
           id: "clock",
           type: "clock",
-          style: { flex: "3" },
+          style: { gridColumn: "8 / span 2", gridRow: "28 / span 3" },
         },
         {
           id: "posts",
           type: "posts",
           title: "Posts Recentes",
-          style: { flex: "3" },
-          data: {
-            binding: { source: "collection-posts", limit: 5 },
-          },
+          style: { gridColumn: "10 / span 3", gridRow: "28 / span 3" },
+          data: { binding: { source: "collection-posts", limit: 3 } },
         },
       ],
     },

@@ -134,16 +134,16 @@ interface EditToolbarProps {
 const EditToolbar = memo(function EditToolbar({ onAddWidget, onTheme, onBanner, onPublish, onDiscard, saveState }: EditToolbarProps) {
   const { t } = useTranslation()
   return (
-    <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-purple-600/20 bg-purple-600/[0.06] px-8 py-2.5">
-      <span className="text-[11px] font-[700] uppercase tracking-[0.1em] text-purple-300">{t("profile.editing")}</span>
-      <div className="h-4 w-px bg-purple-600/30" />
-      <button onClick={onAddWidget} className="flex cursor-pointer items-center gap-[5px] border border-purple-500/30 bg-transparent px-2.5 py-[5px] text-[11px] font-[600] text-purple-300 transition-colors hover:border-purple-500/50 hover:bg-purple-600/12 font-[inherit]">
+    <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-red-600/20 bg-red-600/[0.06] px-8 py-2.5">
+      <span className="text-[11px] font-[700] uppercase tracking-[0.1em] text-red-300">{t("profile.editing")}</span>
+      <div className="h-4 w-px bg-red-600/30" />
+      <button onClick={onAddWidget} className="flex cursor-pointer items-center gap-[5px] border border-red-500/30 bg-transparent px-2.5 py-[5px] text-[11px] font-[600] text-red-300 transition-colors hover:border-red-500/50 hover:bg-red-600/12 font-[inherit]">
         <PlusIcon className="h-[10px] w-[10px]" /> {t("profile.widget_add")}
       </button>
-      <button onClick={onTheme} className="flex cursor-pointer items-center gap-[5px] border border-purple-500/30 bg-transparent px-2.5 py-[5px] text-[11px] font-[600] text-purple-300 transition-colors hover:border-purple-500/50 hover:bg-purple-600/12 font-[inherit]">
+      <button onClick={onTheme} className="flex cursor-pointer items-center gap-[5px] border border-red-500/30 bg-transparent px-2.5 py-[5px] text-[11px] font-[600] text-red-300 transition-colors hover:border-red-500/50 hover:bg-red-600/12 font-[inherit]">
         <SwatchIcon className="h-[10px] w-[10px]" /> {t("profile.theme")}
       </button>
-      <button onClick={onBanner} className="flex cursor-pointer items-center gap-[5px] border border-purple-500/30 bg-transparent px-2.5 py-[5px] text-[11px] font-[600] text-purple-300 transition-colors hover:border-purple-500/50 hover:bg-purple-600/12 font-[inherit]">
+      <button onClick={onBanner} className="flex cursor-pointer items-center gap-[5px] border border-red-500/30 bg-transparent px-2.5 py-[5px] text-[11px] font-[600] text-red-300 transition-colors hover:border-red-500/50 hover:bg-red-600/12 font-[inherit]">
         <PhotoIcon className="h-[10px] w-[10px]" /> {t("profile.banner")}
       </button>
       <div className="ml-auto flex items-center gap-2">
@@ -312,7 +312,7 @@ export const ProfileCanvas = memo(function ProfileCanvas({
     draggingId.current   = id
     el.style.zIndex      = "100"
     el.style.opacity     = "0.92"
-    el.style.boxShadow   = "0 12px 40px rgba(0,0,0,0.7),0 0 0 2px rgba(124,58,237,0.4)"
+    el.style.boxShadow   = "0 12px 40px rgba(0,0,0,0.7),0 0 0 2px rgba(230,57,70,0.4)"
     el.style.cursor      = "grabbing"
 
     function onMove(ev: MouseEvent) {
@@ -542,7 +542,7 @@ export const ProfileCanvas = memo(function ProfileCanvas({
             }}
           >
             {Array.from({ length: 30 * COLS }).map((_, i) => (
-              <div key={i} className="border border-dashed border-purple-600/[0.12]" />
+              <div key={i} className="border border-dashed border-red-600/[0.12]" />
             ))}
           </div>
         )}
@@ -597,7 +597,7 @@ export const ProfileCanvas = memo(function ProfileCanvas({
             <div ref={getRefSetter("statsManga")} style={viewStyle("statsManga")} onMouseDown={(e) => handleWidgetMouseDown(e, "statsManga")}>
               <WidgetStats
                 id="statsManga" titleKey="profile.stats_manga" bigNumber={12840} bigLabelKey="profile.chapters_read_stat"
-                statuses={mangaStatuses} barColor="#a78bfa" barPercent={82}
+                statuses={mangaStatuses} barColor="#e63946" barPercent={82}
                 meanScore="8.2" scoreDist={mangaScoreDist}
                 {...widgetContext}
               />
@@ -730,7 +730,7 @@ function ResizeHandle({ id, onMouseDown }: { id: string; onMouseDown: (e: React.
       className="absolute bottom-0 right-0 z-10 flex h-4 w-4 cursor-se-resize items-end justify-end p-[3px]"
       onMouseDown={(e) => { e.stopPropagation(); onMouseDown(e, id) }}
     >
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-purple-400/50 hover:text-purple-400/90 transition-colors">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-red-400/50 hover:text-red-400/90 transition-colors">
         <path d="M4 9h5V4M9 9L4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </div>

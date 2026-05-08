@@ -87,7 +87,7 @@ export const WidgetPickerPanel = memo(function WidgetPickerPanel({ open, onClose
           className={[
             "mb-[5px] flex w-full cursor-pointer items-center gap-3 border border-white/[0.07] bg-transparent p-2.5 text-left transition-[border-color,background] font-[inherit]",
             hidden.has(w.id)
-              ? "hover:border-purple-500/40 hover:bg-purple-600/[0.06]"
+              ? "hover:border-red-500/40 hover:bg-red-600/[0.06]"
               : "opacity-35 cursor-default",
           ].join(" ")}
         >
@@ -120,8 +120,8 @@ const BG_PRESETS = [
 ]
 
 const ACCENT_COLORS = [
-  "#7c3aed", "#e63946", "#52b788", "#f4a261",
-  "#60a5fa", "#f472b6", "#facc15", "#34d399", "#e879f9",
+  "#e63946", "#52b788", "#f4a261",
+  "#60a5fa", "#f472b6", "#facc15", "#34d399", "#c1121f",
 ]
 
 const CARD_STYLES = [
@@ -173,7 +173,7 @@ export const ThemePanel = memo(function ThemePanel({ open, onClose, onCardStyleC
             className={[
               "cursor-pointer border px-2.5 py-1 text-[10px] font-[600] transition-all font-[inherit]",
               currentCardStyle === cs.id
-                ? "border-purple-500/50 bg-purple-600/10 text-purple-300"
+                ? "border-red-500/50 bg-red-600/10 text-red-300"
                 : "border-white/[0.07] bg-transparent text-white/40 hover:border-white/[0.12] hover:text-white",
             ].join(" ")}
           >
@@ -270,7 +270,7 @@ export const BannerEditPanel = memo(function BannerEditPanel({ open, onClose, on
       <SectionLabel>Altura do banner</SectionLabel>
       <input
         type="range" min={160} max={400} defaultValue={260}
-        className="w-full accent-purple-500"
+        className="w-full accent-red-500"
         onInput={(e) => {
           const h = (e.target as HTMLInputElement).value
           document.querySelector<HTMLElement>(".profile-banner-wrap")?.style.setProperty("height", `${h}px`)

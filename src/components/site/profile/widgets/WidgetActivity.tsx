@@ -25,7 +25,7 @@ function WidgetActivityComponent({ items, ...context }: Props) {
       <div className="scrollbar-hide flex-1 overflow-y-auto">
         {items.map((item, i) => {
           const typeColor: Record<string, string> = {
-            watch: "#52b788", read: "#60a5fa", rate: "#f4a261", fav: "#e63946", review: "#a78bfa",
+            watch: "#52b788", read: "#60a5fa", rate: "#f4a261", fav: "#e63946", review: "#e63946",
           }
           const accent = item.type ? (typeColor[item.type] ?? "rgba(255,255,255,0.15)") : "rgba(255,255,255,0.15)"
           return (

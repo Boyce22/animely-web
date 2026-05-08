@@ -6,7 +6,7 @@ export type UserRole = "USER" | "MODERATOR" | "ADMIN" | "OWNER"
 export type PreferredLanguage = "ENGLISH" | "PORTUGUESE" | "SPANISH"
 export type UserTheme = "DARK" | "LIGHT" | "SYSTEM"
 export type ActivityType = "comment" | "rating" | "bookmark"
-export type WidgetStyle = "glass" | "flat" | "bordered" | "shadow" | "neon"
+export type WidgetStyle = "glass" | "flat" | "bordered" | "shadow" | "neon" | "transparent"
 export type BadgeRarity = "common" | "rare" | "epic" | "legendary"
 export type ActivityWidgetType = "watch" | "read" | "rate" | "fav" | "review"
 

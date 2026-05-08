@@ -7,14 +7,14 @@ import type { WidgetContextValue } from "./Widget"
 const RARITY_BORDER: Record<string, string> = {
   common:    "border-white/[0.07]",
   rare:      "border-blue-400/[0.3]",
-  epic:      "border-purple-400/[0.4]",
+  epic:      "border-red-400/[0.4]",
   legendary: "border-amber-400/[0.5]",
 }
 
 const RARITY_GLOW: Record<string, string> = {
   common:    "",
   rare:      "hover:shadow-[0_0_10px_rgba(96,165,250,0.22)]",
-  epic:      "hover:shadow-[0_0_12px_rgba(167,139,250,0.28)]",
+  epic:      "hover:shadow-[0_0_12px_rgba(230,57,70,0.28)]",
   legendary: "hover:shadow-[0_0_14px_rgba(251,191,36,0.32)]",
 }
 
