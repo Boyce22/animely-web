@@ -1,0 +1,187 @@
+name: Performance Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [develop, main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  statuses: write
+
+concurrency:
+  group: perf-review-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  CHECK_NAME: gate/performance-review
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_frontend: ${{ steps.detect.outputs.has_frontend }}
+      has_backend: ${{ steps.detect.outputs.has_backend }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
+      changed_files: ${{ steps.detect.outputs.changed_files }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect file changes
+        id: detect
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+
+          CHANGED=$(git diff --name-only "$BASE"..."$HEAD" || git diff --name-only "${{ github.event.pull_request.base.ref }}"..."$HEAD")
+
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          FRONTEND=$(echo "$CHANGED" | grep -E '\.(tsx|jsx)$|\.(ts|js)$|\.(css|scss)$|^vite\.config\.|^tailwind\.config\.|^postcss\.config\.|^eslint\.config\.|^package\.json$' || true)
+          BACKEND=$(echo "$CHANGED" | grep -E '^server/|^Dockerfile$|^docker-compose' || true)
+
+          HAS_FRONTEND=false
+          HAS_BACKEND=false
+
+          if [ -n "$FRONTEND" ]; then
+            HAS_FRONTEND=true
+          fi
+
+          if [ -n "$BACKEND" ]; then
+            HAS_BACKEND=true
+          fi
+
+          echo "has_frontend=$HAS_FRONTEND" >> $GITHUB_OUTPUT
+          echo "has_backend=$HAS_BACKEND" >> $GITHUB_OUTPUT
+
+          if [ "$HAS_FRONTEND" = "true" ] || [ "$HAS_BACKEND" = "true" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+            echo "$FRONTEND" >> $GITHUB_OUTPUT
+            if [ "$HAS_BACKEND" = "true" ]; then
+              echo "$BACKEND" >> $GITHUB_OUTPUT
+            fi
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "changed_files=none" >> $GITHUB_OUTPUT
+          fi
+
+  perf-gate:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build for bundle analysis
+        if: needs.detect-changes.outputs.has_frontend == 'true'
+        run: |
+          npm run build 2>&1 | tee /tmp/build-output.txt
+
+      - name: Install backend dependencies
+        if: needs.detect-changes.outputs.has_backend == 'true'
+        working-directory: server
+        run: npm ci
+
+      - name: Analyze bundle size
+        id: bundle-size
+        if: needs.detect-changes.outputs.has_frontend == 'true'
+        run: |
+          TOTAL_SIZE=$(du -sh dist/ 2>/dev/null | cut -f1 || echo "unknown")
+          echo "Total dist size: $TOTAL_SIZE"
+          echo "dist_size=$TOTAL_SIZE" >> $GITHUB_OUTPUT
+
+      - name: Create pending status check
+        run: |
+          gh api \
+            --method POST \
+            /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+            -f state="pending" \
+            -f context="${{ env.CHECK_NAME }}" \
+            -f description="Awaiting PerfEngineer performance review" \
+            -f target_url="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Comment on PR — notify PerfEngineer
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const hasFrontend = `${{ needs.detect-changes.outputs.has_frontend }}` === 'true';
+            const hasBackend = `${{ needs.detect-changes.outputs.has_backend }}` === 'true';
+            const changedFiles = `${{ needs.detect-changes.outputs.changed_files }}`;
+            const distSize = `${{ steps.bundle-size.outputs.dist_size }}`;
+
+            let sections = [];
+
+            if (hasFrontend) {
+              sections.push(`### Frontend\n\n| Check | Status |\n|-------|--------|\n| Bundle size (dist/) | \`${distSize}\` |`);
+            }
+
+            if (hasBackend) {
+              sections.push(`### Backend\n\n| Check | Status |\n|-------|--------|\n| Docker image size | Pending |\n| Memory usage | Pending |\n| API response times | Pending |`);
+            }
+
+            sections.push(`### Changed files\n\`\`\`\n${changedFiles}\n\`\`\``);
+
+            const body = `## ⚡ Performance Gate — Review Required\n\n` +
+              (hasFrontend ? '🔵 Frontend ' : '') +
+              (hasFrontend && hasBackend ? '+ ' : '') +
+              (hasBackend ? '🟢 Backend ' : '') +
+              `changes detected. This PR requires performance review by **PerfEngineer** before it can merge.\n\n` +
+              sections.join('\n\n') +
+              `\n\n### PerfEngineer checklist\n` +
+              (hasFrontend ? `- [ ] Bundle size impact is acceptable\n- [ ] No unnecessary re-renders introduced\n- [ ] Code splitting / lazy loading used where appropriate\n` : '') +
+              (hasBackend ? `- [ ] No N+1 queries introduced\n- [ ] Index usage verified for new queries\n- [ ] API response times within SLO\n- [ ] Docker image size acceptable\n- [ ] No memory-intensive dependencies added without justification\n` : '') +
+              `- [ ] No heavy dependency additions without justification\n- [ ] Cache headers (ETag, Cache-Control) are set\n\n` +
+              `### How to approve\n` +
+              `Set the status check \`${process.env.CHECK_NAME}\` to \`success\`:\n\`\`\`bash\ngh api /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \\\n  -f state="success" \\\n  -f context="${process.env.CHECK_NAME}" \\\n  -f description="Performance review approved"\n\`\`\`\n\n` +
+              `To request changes, set to \`failure\` with the reason.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body
+            });
+
+      - name: Request PerfEngineer review
+        if: ${{ secrets.PERF_ENGINEER_USER != '' }}
+        run: |
+          gh api \
+            --method POST \
+            /repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/requested-reviewers \
+            -f reviewers="[\"${{ secrets.PERF_ENGINEER_USER }}\"]" || true
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  perf-gate-skip:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has_changes == 'false'
+    steps:
+      - name: Set success status — no relevant changes
+        run: |
+          gh api \
+            --method POST \
+            /repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
+            -f state="success" \
+            -f context="${{ env.CHECK_NAME }}" \
+            -f description="No frontend or backend changes — skip performance gate"
+        env:
+          GH_TOKEN: ${{ github.token }}

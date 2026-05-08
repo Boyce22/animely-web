@@ -1,0 +1,89 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [develop, main]
+    paths:
+      - "server/**"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "docker-compose.prod.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: backend-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  check-git-flow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify Git Flow
+        run: |
+          echo "Checking Git Flow compliance..."
+          COMMITS=$(git log --oneline --left-right origin/main...origin/develop 2>/dev/null || true)
+          if echo "$COMMITS" | grep -q '^<'; then
+            echo "ERROR: main has commits not in develop — Git Flow violation"
+            exit 1
+          fi
+          echo "Git Flow OK"
+
+  test:
+    runs-on: ubuntu-latest
+    needs: check-git-flow
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+      - name: Run backend tests
+        working-directory: server
+        run: npm test
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: [check-git-flow, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          TAG="ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
+          docker build -t "$TAG" .
+          docker push "$TAG"
+
+          LATEST_TAG="ghcr.io/${{ github.repository }}:latest"
+          docker tag "$TAG" "$LATEST_TAG"
+          docker push "$LATEST_TAG"
+
+  deploy:
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || 'staging' }}
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            TAG="ghcr.io/${{ github.repository }}:${{ github.ref_name }}"
+            docker pull "$TAG"
+            cd /opt/animely-back
+            IMAGE_REPO=${{ github.repository }} IMAGE_TAG=${{ github.ref_name }} docker compose -f docker-compose.prod.yml up -d --force-recreate api
