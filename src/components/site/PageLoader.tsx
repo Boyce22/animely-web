@@ -70,8 +70,8 @@ export function PageLoader({ show }: PageLoaderProps) {
       >
         <div className="flex flex-col items-center gap-4">
           <p className="text-[56px] font-extrabold leading-none tracking-tight select-none">
-            <span className="text-primary">K</span>
-            <span className="text-foreground/70">urosaw</span>
+            <span className="text-primary">A</span>
+            <span className="text-foreground/70">nimely</span>
           </p>
           <div className="w-full h-px bg-border overflow-hidden">
             <div className="h-full w-1/3 bg-primary animate-loader-indeterminate" />

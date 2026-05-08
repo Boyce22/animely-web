@@ -10,7 +10,7 @@ const SCORE_ROWS = [
   { score: "9",  desc: "excepcional, poucas falhas",      color: "#84cc16", bar: 88 },
   { score: "8",  desc: "muito boa, recomendo fortemente", color: "#22d3ee", bar: 76 },
   { score: "7",  desc: "boa, vale o tempo",               color: "#60a5fa", bar: 62 },
-  { score: "6",  desc: "mediana, abaixo do esperado",     color: "#a78bfa", bar: 48 },
+  { score: "6",  desc: "mediana, abaixo do esperado",     color: "#e63946", bar: 48 },
   { score: "≤5", desc: "não recomendo",                   color: "#ef4444", bar: 28 },
 ]
 

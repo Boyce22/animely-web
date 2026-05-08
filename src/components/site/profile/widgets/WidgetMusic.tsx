@@ -37,8 +37,8 @@ function WidgetMusicComponent(context: Props) {
 
   const elapsed = Math.floor((progress / 100) * TRACK_DURATION)
 
-  const accent    = playing ? "#e63946" : "rgba(124,58,237,0.85)"
-  const accentRgb = playing ? "230,57,70" : "124,58,237"
+  const accent    = "#e63946"
+  const accentRgb = "230,57,70"
 
   return (
     <Widget id="music" title={t("profile.now_playing")} {...context}>
@@ -66,7 +66,7 @@ function WidgetMusicComponent(context: Props) {
             <div
               className="absolute h-[80px] w-[80px] rounded-full border border-dashed transition-[border-color] duration-[1200ms]"
               style={{
-                borderColor: playing ? "rgba(230,57,70,0.18)" : "rgba(124,58,237,0.14)",
+                borderColor: playing ? "rgba(230,57,70,0.18)" : "rgba(230,57,70,0.14)",
                 animation: playing ? "spin 10s linear infinite" : "none",
               }}
             />
@@ -74,14 +74,12 @@ function WidgetMusicComponent(context: Props) {
               className={[
                 "relative flex h-[64px] w-[64px] items-center justify-center rounded-full border-[1.5px]",
                 "transition-[border-color,box-shadow] duration-[1200ms]",
-                playing ? "animate-spin border-red-500/35" : "border-purple-500/30",
+                playing ? "animate-spin border-red-500/35" : "border-red-500/30",
               ].join(" ")}
               style={{
                 background: "radial-gradient(circle at 40% 35%, #3a0e6a 0%, #1a0a2e 40%, #0d0618 100%)",
                 animationDuration: "4s",
-                boxShadow: playing
-                  ? `0 0 0 1px rgba(230,57,70,0.22), 0 0 22px rgba(230,57,70,0.18), 0 8px 24px rgba(0,0,0,0.65)`
-                  : `0 0 0 1px rgba(124,58,237,0.14), 0 0 12px rgba(124,58,237,0.08), 0 6px 20px rgba(0,0,0,0.55)`,
+                boxShadow: `0 0 0 1px rgba(230,57,70,0.22), 0 0 22px rgba(230,57,70,0.18), 0 8px 24px rgba(0,0,0,0.65)`,
               }}
             >
               <div
@@ -91,7 +89,7 @@ function WidgetMusicComponent(context: Props) {
                 }}
               />
               <div
-                className="relative z-10 h-[18px] w-[18px] rounded-full border border-purple-300/20"
+                className="relative z-10 h-[18px] w-[18px] rounded-full border border-red-300/20"
                 style={{ background: "linear-gradient(135deg,#3a1a6a,#5a2a9a)" }}
               >
                 <div className="absolute inset-[5px] rounded-full bg-black/50" />
@@ -125,9 +123,7 @@ function WidgetMusicComponent(context: Props) {
                   width: "3px",
                   height: `${h}px`,
                   borderRadius: "2px",
-                  background: playing
-                    ? `rgba(230,57,70,${0.4 + (h / 32) * 0.55})`
-                    : `rgba(124,58,237,${0.25 + (h / 32) * 0.35})`,
+                  background: `rgba(230,57,70,${0.4 + (h / 32) * 0.55})`,
                   transformOrigin: "bottom",
                   animationDelay: WV_D[i],
                   animationDuration: playing ? WV_PD[i] : "1.4s",
@@ -143,9 +139,7 @@ function WidgetMusicComponent(context: Props) {
                 className="h-full rounded-full transition-[background] duration-[800ms]"
                 style={{
                   width: `${progress}%`,
-                  background: playing
-                    ? "linear-gradient(90deg, #c1121f, #e63946, #ff6b6b)"
-                    : "linear-gradient(90deg, rgba(90,40,160,0.8), rgba(124,58,237,0.6))",
+                  background: "linear-gradient(90deg, #c1121f, #e63946, #ff6b6b)",
                 }}
               />
               <div

@@ -44,8 +44,8 @@ export const PERIOD_PRESETS: { key: PeriodKey; tKey: string; sub?: string }[] = 
   { key: "season",  tKey: "catalog.period_season" },
   { key: "3m",      tKey: "catalog.period_3m"     },
   { key: "year",    tKey: "catalog.period_year"   },
-  { key: "2020s",   tKey: "catalog.period_2020s", sub: "2020â€“today"   },
-  { key: "2010s",   tKey: "catalog.period_2010s", sub: "2010â€“2019"    },
+  { key: "2020s",   tKey: "catalog.period_2020s", sub: "2020–today"   },
+  { key: "2010s",   tKey: "catalog.period_2010s", sub: "2010–2019"    },
   { key: "classic", tKey: "catalog.period_classic", sub: "before 2010" },
 ]
 

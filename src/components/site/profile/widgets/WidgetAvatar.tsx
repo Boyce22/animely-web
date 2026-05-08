@@ -19,7 +19,7 @@ function WidgetAvatarComponent({ profile, ...context }: Props) {
       <div className="flex h-full flex-col items-center gap-3 px-4 pb-4 pt-5">
         {/* Avatar */}
         <div className="relative shrink-0">
-          <div className="flex h-[88px] w-[88px] items-center justify-center rounded-full bg-gradient-to-br from-red-500 via-purple-700 to-purple-500 text-3xl font-[800] shadow-[0_0_0_2.5px_rgba(255,255,255,0.1),0_0_0_5px_rgba(124,58,237,0.18),0_8px_28px_rgba(0,0,0,0.6),0_0_32px_rgba(124,58,237,0.15)]">
+          <div className="flex h-[88px] w-[88px] items-center justify-center rounded-full bg-gradient-to-br from-red-500 via-red-700 to-red-500 text-3xl font-[800] shadow-[0_0_0_2.5px_rgba(255,255,255,0.1),0_0_0_5px_rgba(230,57,70,0.18),0_8px_28px_rgba(0,0,0,0.6),0_0_32px_rgba(230,57,70,0.15)]">
             {profile.profilePictureUrl ? (
               <img
                 src={profile.profilePictureUrl}
@@ -48,7 +48,7 @@ function WidgetAvatarComponent({ profile, ...context }: Props) {
           {profile.subscriptionTier === "PRO" && (
             <span className="border border-amber-400/40 bg-amber-400/10 px-[7px] py-[2px] text-[9px] font-[800] uppercase tracking-[0.1em] text-amber-300">PRO</span>
           )}
-          <span className="border border-purple-400/35 bg-purple-500/10 px-[7px] py-[2px] text-[9px] font-[800] uppercase tracking-[0.1em] text-purple-300">Early</span>
+          <span className="border border-red-400/35 bg-red-500/10 px-[7px] py-[2px] text-[9px] font-[800] uppercase tracking-[0.1em] text-red-300">Early</span>
           {profile.isVerified && (
             <span className="border border-emerald-500/30 bg-emerald-500/10 px-[7px] py-[2px] text-[9px] font-[800] uppercase tracking-[0.1em] text-emerald-300">Verified</span>
           )}

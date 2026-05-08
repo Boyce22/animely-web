@@ -14,7 +14,7 @@ export type ComponentType =
   | "divider"
   | "custom-html"
 
-export type SectionLayout = "flex-row" | "flex-col" | "grid" | "grid-2" | "grid-3" | "grid-4"
+export type SectionLayout = "flex-row" | "flex-col" | "grid" | "grid-2" | "grid-3" | "grid-4" | "grid-12"
 
 export type DataOperator = "eq" | "neq" | "gt" | "gte" | "lt" | "lte" | "contains" | "score_gte" | "score_lte"
 
@@ -48,6 +48,8 @@ export interface StyleDeclaration {
   justifyContent?: string
   overflow?: string
   position?: string
+  gridColumn?: string
+  gridRow?: string
   css?: Record<string, string>
 }
 
@@ -213,6 +215,7 @@ export const SECTION_LAYOUT_META: Record<SectionLayout, { label: string; templat
   "grid-2": { label: "Grid 2 Colunas", template: "grid grid-cols-2" },
   "grid-3": { label: "Grid 3 Colunas", template: "grid grid-cols-3" },
   "grid-4": { label: "Grid 4 Colunas", template: "grid grid-cols-4" },
+  "grid-12": { label: "Grid 12 Colunas", template: "grid" },
 }
 
 export const STYLE_CONTROLS: StyleControlOption[] = [

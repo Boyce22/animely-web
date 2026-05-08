@@ -22,7 +22,7 @@ export function ComponentPicker({ onSelect, onClose }: ComponentPickerProps) {
           <button
             key={type}
             onClick={() => { onSelect(type); onClose() }}
-            className="flex w-full cursor-pointer items-center gap-3 border border-white/[0.07] bg-transparent p-2.5 text-left hover:border-purple-500/40 hover:bg-purple-600/[0.06] transition-colors font-[inherit]"
+            className="flex w-full cursor-pointer items-center gap-3 border border-white/[0.07] bg-transparent p-2.5 text-left hover:border-red-500/40 hover:bg-red-600/[0.06] transition-colors font-[inherit]"
           >
             <div className="flex h-[32px] w-[32px] shrink-0 items-center justify-center border border-white/[0.07] bg-white/[0.05] text-[14px]">
               {meta.icon}

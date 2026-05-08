@@ -190,7 +190,7 @@ export function ProfileEditor({ profile, onChange, onClose }: ProfileEditorProps
             key={p}
             onClick={() => setPanel(p)}
             className={`flex-1 cursor-pointer border-b-2 px-3 py-2 text-[10px] font-[700] uppercase tracking-[0.08em] transition-colors font-[inherit] ${
-              panel === p ? "border-purple-500 text-purple-300" : "border-transparent text-white/30 hover:text-white/60"
+               panel === p ? "border-red-500 text-red-300" : "border-transparent text-white/30 hover:text-white/60"
             }`}
           >
             {p === "sections" ? "Seções" : p === "components" ? "Componentes" : "Estilo"}
@@ -219,7 +219,7 @@ export function ProfileEditor({ profile, onChange, onClose }: ProfileEditorProps
               </div>
               <button
                 onClick={() => setShowComponentPicker(true)}
-                className="cursor-pointer border border-purple-500/30 bg-transparent px-2 py-[3px] text-[9px] font-[600] text-purple-300 hover:bg-purple-600/12 transition-colors font-[inherit]"
+                className="cursor-pointer border border-red-500/30 bg-transparent px-2 py-[3px] text-[9px] font-[600] text-red-300 hover:bg-red-600/12 transition-colors font-[inherit]"
               >
                 + Add
               </button>
@@ -240,7 +240,7 @@ export function ProfileEditor({ profile, onChange, onClose }: ProfileEditorProps
                   key={comp.id}
                   className={`flex cursor-pointer items-center gap-2 border px-2.5 py-2 text-[11px] transition-colors ${
                     selectedComponentId === comp.id
-                      ? "border-purple-500/50 bg-purple-600/10 text-purple-300"
+                      ? "border-red-500/50 bg-red-600/10 text-red-300"
                       : "border-transparent text-white/60 hover:border-white/[0.07] hover:text-white"
                   }`}
                   onClick={() => setSelectedComponentId(comp.id)}
