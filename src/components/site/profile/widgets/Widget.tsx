@@ -23,14 +23,7 @@ interface WidgetProps {
   editMode?: boolean
   onHide?: (id: string) => void
   onToggleTransparent?: (id: string) => void
-}
-
-const STYLE_CLASSES: Record<WidgetStyle, string> = {
-  glass:    "bg-white/[0.035] backdrop-blur-sm",
-  flat:     "bg-white/[0.04]",
-  bordered: "bg-white/[0.02] border-white/[0.18]",
-  shadow:   "bg-black/55 shadow-2xl",
-  neon:     "bg-black/75 border-red-600/60 shadow-[0_0_10px_rgba(230,57,70,0.25),inset_0_0_10px_rgba(230,57,70,0.04)]",
+  getTransparent?: (id: string) => boolean
 }
 
 function WidgetComponent({
@@ -41,12 +34,14 @@ function WidgetComponent({
   style,
   className = "",
   cardStyle = "glass",
-  transparent = false,
+  transparent,
   editMode = false,
   onHide,
   onToggleTransparent,
+  getTransparent,
 }: WidgetProps) {
-  const baseClass = transparent
+  const isTransparent = transparent ?? getTransparent?.(id) ?? false
+  const baseClass = isTransparent
     ? "border-transparent bg-transparent"
     : STYLE_CLASSES[cardStyle]
 
@@ -56,9 +51,9 @@ function WidgetComponent({
       className={[
         "relative flex h-full w-full min-w-0 flex-col overflow-hidden border border-white/[0.07] transition-[border-color,box-shadow,transform] duration-[220ms]",
         "shadow-[inset_0_1px_0_rgba(255,255,255,0.055),0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.25)]",
-        !editMode && !transparent ? "hover:-translate-y-px hover:border-white/[0.13] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.075),0_2px_8px_rgba(0,0,0,0.35),0_8px_28px_rgba(0,0,0,0.35)]" : "",
+        !editMode && !isTransparent ? "hover:-translate-y-px hover:border-white/[0.13] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.075),0_2px_8px_rgba(0,0,0,0.35),0_8px_28px_rgba(0,0,0,0.35)]" : "",
         baseClass,
-        editMode && !transparent ? "border-red-600/[0.18] hover:border-red-500/50 cursor-default select-none !transform-none" : "",
+        editMode && !isTransparent ? "border-red-600/[0.18] hover:border-red-500/50 cursor-default select-none !transform-none" : "",
         className,
       ].join(" ")}
     >

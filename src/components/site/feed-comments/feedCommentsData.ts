@@ -14,15 +14,15 @@ export const MOCK_COMMENTS: Comment[] = [
   {
     id: "1",
     initial: "Y", gradient: "linear-gradient(135deg,#2d6a4f,#52b788)",
-    name: "Yuna", time: "1h atrÃ¡s",
-    text: "Concordo demais! O arco final foi pesado mas fazia sentido pra histÃ³ria do Eren.",
+    name: "Yuna", time: "1h atrás",
+    text: "Concordo demais! O arco final foi pesado mas fazia sentido pra história do Eren.",
     likes: 12, liked: false,
   },
   {
     id: "2",
     initial: "M", gradient: "linear-gradient(135deg,#6930c3,#e63946)",
     name: "miyamoto_rei", time: "45min",
-    text: "Exatamente. Ã‰ um dos finais mais corajosos da histÃ³ria da mÃ­dia.",
+    text: "Exatamente. É um dos finais mais corajosos da história da mídia.",
     likes: 8, liked: true,
     replyTo: "yuuna",
   },

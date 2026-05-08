@@ -205,51 +205,39 @@ export const WIDGET_POSTS: PostItem[] = [
 ]
 
 export const DEFAULT_WIDGET_STATES: WidgetState[] = [
-  // Section 1 — header: avatar takes rows 0-4, bio fills top-right, stats fill bottom-right
-  { id: "avatar",     visible: true, transparent: false, x: 0,  y: 0,  w: 3,  h: 5,  minW: 2, minH: 3 },
-  { id: "bio",        visible: true, transparent: false, x: 3,  y: 0,  w: 9,  h: 2,  minW: 4, minH: 2 },
-  { id: "statsAnime", visible: true, transparent: false, x: 3,  y: 2,  w: 4,  h: 3,  minW: 3, minH: 2 },
-  { id: "statsManga", visible: true, transparent: false, x: 7,  y: 2,  w: 5,  h: 3,  minW: 3, minH: 2 },
-  // Section 2 — favorite media (4 rows each)
-  { id: "favAnime",   visible: true, transparent: false, x: 0,  y: 5,  w: 6,  h: 4,  minW: 4, minH: 3 },
-  { id: "favManga",   visible: true, transparent: false, x: 6,  y: 5,  w: 6,  h: 4,  minW: 4, minH: 3 },
-  // Section 3 — characters & staff (4 rows each)
-  { id: "favChars",   visible: true, transparent: false, x: 0,  y: 9,  w: 6,  h: 4,  minW: 3, minH: 3 },
-  { id: "favStaff",   visible: true, transparent: false, x: 6,  y: 9,  w: 6,  h: 4,  minW: 3, minH: 3 },
-  // Section 4 — compact utility row: music(2) + badges(4) + social(3) + clock(3) = 12
-  { id: "music",      visible: true, transparent: false, x: 0,  y: 13, w: 2,  h: 3,  minW: 2, minH: 3 },
-  { id: "badges",     visible: true, transparent: false, x: 2,  y: 13, w: 4,  h: 3,  minW: 2, minH: 3 },
-  { id: "social",     visible: true, transparent: false, x: 6,  y: 13, w: 3,  h: 3,  minW: 2, minH: 3 },
-  { id: "clock",      visible: true, transparent: false, x: 9,  y: 13, w: 3,  h: 3,  minW: 2, minH: 2 },
-  // Divider
-  { id: "divider",    visible: true, transparent: true,  x: 0,  y: 16, w: 12, h: 1,  minW: 4, minH: 1 },
-  // Section 5 — activity(4) + text(5) + posts(3) = 12
-  { id: "activity",   visible: true, transparent: false, x: 0,  y: 17, w: 4,  h: 4,  minW: 3, minH: 3 },
-  { id: "text",       visible: true, transparent: false, x: 4,  y: 17, w: 5,  h: 4,  minW: 2, minH: 2 },
-  { id: "posts",      visible: true, transparent: false, x: 9,  y: 17, w: 3,  h: 4,  minW: 2, minH: 2 },
+  { id: "avatar",     visible: true, transparent: false, x: 0,  y: 0,  w: 3,  h: 6,  minW: 2, minH: 3 },
+  { id: "bio",        visible: true, transparent: false, x: 3,  y: 0,  w: 9,  h: 3,  minW: 4, minH: 2 },
+  { id: "statsAnime", visible: true, transparent: false, x: 3,  y: 3,  w: 4,  h: 3,  minW: 3, minH: 2 },
+  { id: "statsManga", visible: true, transparent: false, x: 7,  y: 3,  w: 5,  h: 3,  minW: 3, minH: 2 },
+  { id: "favAnime",   visible: true, transparent: false, x: 0,  y: 6,  w: 6,  h: 6,  minW: 4, minH: 3 },
+  { id: "favManga",   visible: true, transparent: false, x: 6,  y: 6,  w: 6,  h: 6,  minW: 4, minH: 3 },
+  { id: "favChars",   visible: true, transparent: false, x: 0,  y: 12, w: 6,  h: 5,  minW: 3, minH: 3 },
+  { id: "favStaff",   visible: true, transparent: false, x: 6,  y: 12, w: 6,  h: 5,  minW: 3, minH: 3 },
+  { id: "music",      visible: true, transparent: false, x: 0,  y: 17, w: 2,  h: 4,  minW: 2, minH: 3 },
+  { id: "badges",     visible: true, transparent: false, x: 2,  y: 17, w: 3,  h: 5,  minW: 2, minH: 3 },
+  { id: "divider",    visible: true, transparent: true,  x: 0,  y: 22, w: 12, h: 1,  minW: 4, minH: 1 },
+  { id: "activity",   visible: true, transparent: false, x: 0,  y: 23, w: 4,  h: 7,  minW: 3, minH: 3 },
+  { id: "social",     visible: true, transparent: false, x: 4,  y: 23, w: 3,  h: 7,  minW: 2, minH: 2 },
+  { id: "text",       visible: true, transparent: false, x: 7,  y: 23, w: 5,  h: 4,  minW: 2, minH: 2 },
+  { id: "clock",      visible: true, transparent: false, x: 7,  y: 27, w: 2,  h: 3,  minW: 2, minH: 2 },
+  { id: "posts",      visible: true, transparent: false, x: 9,  y: 27, w: 3,  h: 3,  minW: 2, minH: 2 },
 ]
 
 export const VIEW_LAYOUT: Record<string, { gridColumn: string; gridRow: string; display?: string }> = {
-  // Section 1
-  avatar:     { gridColumn: "1 / span 3",  gridRow: "1 / span 5"  },
-  bio:        { gridColumn: "4 / span 9",  gridRow: "1 / span 2"  },
-  statsAnime: { gridColumn: "4 / span 4",  gridRow: "3 / span 3"  },
-  statsManga: { gridColumn: "8 / span 5",  gridRow: "3 / span 3"  },
-  // Section 2
-  favAnime:   { gridColumn: "1 / span 6",  gridRow: "6 / span 4"  },
-  favManga:   { gridColumn: "7 / span 6",  gridRow: "6 / span 4"  },
-  // Section 3
-  favChars:   { gridColumn: "1 / span 6",  gridRow: "10 / span 4" },
-  favStaff:   { gridColumn: "7 / span 6",  gridRow: "10 / span 4" },
-  // Section 4 — col totals: 2+4+3+3 = 12
-  music:      { gridColumn: "1 / span 2",  gridRow: "14 / span 3" },
-  badges:     { gridColumn: "3 / span 4",  gridRow: "14 / span 3" },
-  social:     { gridColumn: "7 / span 3",  gridRow: "14 / span 3" },
-  clock:      { gridColumn: "10 / span 3", gridRow: "14 / span 3" },
-  // Divider
-  divider:    { gridColumn: "1 / span 12", gridRow: "17 / span 1" },
-  // Section 5 — col totals: 4+5+3 = 12
-  activity:   { gridColumn: "1 / span 4",  gridRow: "18 / span 4" },
-  text:       { gridColumn: "5 / span 5",  gridRow: "18 / span 4" },
-  posts:      { gridColumn: "10 / span 3", gridRow: "18 / span 4" },
+  avatar:     { gridColumn: "1 / span 3",  gridRow: "1 / span 6"  },
+  bio:        { gridColumn: "4 / span 9",  gridRow: "1 / span 3"  },
+  statsAnime: { gridColumn: "4 / span 4",  gridRow: "4 / span 3"  },
+  statsManga: { gridColumn: "8 / span 5",  gridRow: "4 / span 3"  },
+  favAnime:   { gridColumn: "1 / span 6",  gridRow: "7 / span 6"  },
+  favManga:   { gridColumn: "7 / span 6",  gridRow: "7 / span 6"  },
+  favChars:   { gridColumn: "1 / span 6",  gridRow: "13 / span 5" },
+  favStaff:   { gridColumn: "7 / span 6",  gridRow: "13 / span 5" },
+  music:      { gridColumn: "1 / span 2",  gridRow: "18 / span 4" },
+  badges:     { gridColumn: "3 / span 3",  gridRow: "18 / span 5" },
+  divider:    { gridColumn: "1 / span 12", gridRow: "23 / span 1" },
+  activity:   { gridColumn: "1 / span 4",  gridRow: "24 / span 7" },
+  social:     { gridColumn: "5 / span 3",  gridRow: "24 / span 7" },
+  text:       { gridColumn: "8 / span 5",  gridRow: "24 / span 4" },
+  clock:      { gridColumn: "8 / span 2",  gridRow: "28 / span 3" },
+  posts:      { gridColumn: "10 / span 3", gridRow: "28 / span 3" },
 }

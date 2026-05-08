@@ -19,6 +19,7 @@ function sectionLayoutClass(layout: string): string {
     case "grid-2": return "grid grid-cols-1 md:grid-cols-2"
     case "grid-3": return "grid grid-cols-1 md:grid-cols-3"
     case "grid-4": return "grid grid-cols-2 md:grid-cols-4"
+    case "grid-12": return "grid"
     default: return "flex flex-row flex-wrap"
   }
 }
@@ -45,6 +46,21 @@ function RenderSection({
   onComponentClick?: (sectionId: string, componentId: string) => void
 }) {
   const layoutClass = sectionLayoutClass(section.layout)
+  const isGrid12 = section.layout === "grid-12"
+
+  const sectionInlineStyle = useMemo((): React.CSSProperties => {
+    const base = styleToInline(section.style as Record<string, unknown>)
+    if (isGrid12) {
+      return {
+        ...base,
+        display: "grid",
+        gridTemplateColumns: "repeat(12, 1fr)",
+        gap: base.gap || "18px",
+        padding: base.padding || "40px",
+      }
+    }
+    return base
+  }, [section, isGrid12])
 
   return (
     <div className={`mb-[18px] ${editMode ? "relative rounded-[8px] border-2 border-dashed border-red-600/20 p-2" : ""}`}>
@@ -53,7 +69,7 @@ function RenderSection({
           {section.label || `Section: ${section.id}`}
         </div>
       )}
-      <div className={layoutClass} style={styleToInline(section.style as Record<string, unknown>)}>
+      <div className={isGrid12 ? "" : layoutClass} style={sectionInlineStyle}>
         {section.components
           .filter((c) => !editMode || c.type !== "divider" || c.id === "divider")
           .map((component) => (
