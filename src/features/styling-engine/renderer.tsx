@@ -47,9 +47,9 @@ function RenderSection({
   const layoutClass = sectionLayoutClass(section.layout)
 
   return (
-    <div className={`mb-[18px] ${editMode ? "relative rounded-[8px] border-2 border-dashed border-purple-600/20 p-2" : ""}`}>
+    <div className={`mb-[18px] ${editMode ? "relative rounded-[8px] border-2 border-dashed border-red-600/20 p-2" : ""}`}>
       {editMode && (
-        <div className="mb-2 text-[9px] font-[700] uppercase tracking-[0.12em] text-purple-400/60">
+        <div className="mb-2 text-[9px] font-[700] uppercase tracking-[0.12em] text-red-400/60">
           {section.label || `Section: ${section.id}`}
         </div>
       )}

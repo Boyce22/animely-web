@@ -73,7 +73,7 @@ function wxInfo(code: number, isDay: boolean): { label: string; color: string } 
   if (code <= 65)  return { label: "Rain",    color: "#3b82f6" }
   if (code <= 75)  return { label: "Snow",    color: "#e2e8f0" }
   if (code <= 82)  return { label: "Showers", color: "#60a5fa" }
-  return                  { label: "Storm",   color: "#a78bfa" }
+  return                  { label: "Storm",   color: "#e63946" }
 }
 
 function useWeather(city: string | undefined) {
@@ -163,7 +163,7 @@ function WidgetClockComponent({ timeZone, location, ...context }: Props) {
             <circle cx="90" cy="90" r={R_M} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="5" />
             <circle cx="90" cy="90" r={R_S} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="5" />
 
-            <circle cx="90" cy="90" r={R_H} fill="none" stroke="rgba(139,92,246,0.85)" strokeWidth="5"
+            <circle cx="90" cy="90" r={R_H} fill="none" stroke="rgba(230,57,70,0.85)" strokeWidth="5"
               strokeLinecap="butt" strokeDasharray={C_H} strokeDashoffset={offsetH}
               filter="url(#ck-glow-h)" style={{ transition: "stroke-dashoffset 0.95s linear" }} />
 
@@ -193,7 +193,7 @@ function WidgetClockComponent({ timeZone, location, ...context }: Props) {
           {/* H / M / S legend */}
           <div className="flex items-center gap-[14px]">
             {([
-              { label: "H", color: "rgba(139,92,246,0.9)"  },
+              { label: "H", color: "rgba(230,57,70,0.9)"  },
               { label: "M", color: "rgba(56,189,248,0.85)" },
               { label: "S", color: "rgba(244,63,94,0.9)"   },
             ] as const).map(({ label, color }) => (

@@ -22,7 +22,7 @@ const MOCK_COLLECTIONS: Record<string, Record<string, unknown>[]> = {
   ],
   "collection-badges": [
     { emoji: "⚔️", name: "Guerreiro", bg: "rgba(230,57,70,.18)", rarity: "rare" },
-    { emoji: "📚", name: "1k Caps", bg: "rgba(124,58,237,.18)", rarity: "epic" },
+    { emoji: "📚", name: "1k Caps", bg: "rgba(230,57,70,.18)", rarity: "epic" },
     { emoji: "⭐", name: "Reviewer", bg: "rgba(244,162,97,.18)", rarity: "rare" },
     { emoji: "🎯", name: "Early Bird", bg: "rgba(82,183,136,.18)", rarity: "legendary" },
     { emoji: "🔥", name: "Streak 30", bg: "rgba(230,57,70,.18)", rarity: "rare" },

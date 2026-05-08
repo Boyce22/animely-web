@@ -119,7 +119,7 @@ export const PROFILE_ACTIVITY: ProfileActivityItem[] = [
 const G = {
   dark_red:     "linear-gradient(160deg,#1a0800,#4a1500 40%,#0d0400)",
   dark_blue:    "linear-gradient(160deg,#0a0a1f,#1a1a4a 40%,#050510)",
-  dark_purple:  "linear-gradient(160deg,#100010,#300030 40%,#080008)",
+  dark_red2:  "linear-gradient(160deg,#1a0000,#4a0000 40%,#0d0000)",
   dark_green:   "linear-gradient(160deg,#001510,#003328 40%,#000d08)",
   dark_navy:    "linear-gradient(160deg,#00111f,#002a44 40%,#000810)",
   dark_orange:  "linear-gradient(160deg,#1a1000,#3d2800 40%,#0d0800)",
@@ -158,7 +158,7 @@ export const FAV_CHARS: CharItem[] = [
   { name: "Punpun",    gradient: G.dark_indigo, series: "Oyasumi Punpun" },
   { name: "Laios",     gradient: G.dark_green,  series: "Dungeon Meshi" },
   { name: "Frieren",   gradient: G.dark_blue,   series: "Frieren" },
-  { name: "Griffith",  gradient: G.dark_purple, series: "Berserk" },
+  { name: "Griffith",  gradient: G.dark_red2, series: "Berserk" },
   { name: "Askeladd",  gradient: G.dark_orange, series: "Vinland Saga" },
 ]
 
@@ -175,7 +175,7 @@ export const FAV_STAFF: CharItem[] = [
 
 export const WIDGET_BADGES: BadgeItem[] = [
   { emoji: "⚔️", name: "Guerreiro",  bg: "rgba(230,57,70,.18)",   rarity: "rare" },
-  { emoji: "📚", name: "1k Caps",    bg: "rgba(124,58,237,.18)",  rarity: "epic" },
+  { emoji: "📚", name: "1k Caps",    bg: "rgba(230,57,70,.18)",  rarity: "epic" },
   { emoji: "⭐", name: "Reviewer",   bg: "rgba(244,162,97,.18)",  rarity: "rare" },
   { emoji: "🎯", name: "Early Bird", bg: "rgba(82,183,136,.18)",  rarity: "legendary" },
   { emoji: "🌙", name: "Noturno",    bg: "rgba(96,165,250,.18)",  rarity: "common" },

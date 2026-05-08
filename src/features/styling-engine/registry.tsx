@@ -22,7 +22,7 @@ function SectionContainer({ component, children, editMode }: { component: Compon
   return (
     <div
       style={styleToCss(component.style as Record<string, unknown>)}
-      className={`relative h-full w-full min-w-0 ${editMode ? "border border-purple-600/[0.18] hover:border-purple-500/50" : ""}`}
+      className={`relative h-full w-full min-w-0 ${editMode ? "border border-red-600/[0.18] hover:border-red-500/50" : ""}`}
     >
       {children}
     </div>
@@ -253,7 +253,7 @@ function RenderMusic({ component }: RenderComponentProps) {
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="w-[3px] rounded-full bg-purple-500/60"
+              className="w-[3px] rounded-full bg-red-500/60"
               style={{
                 height: `${[12, 20, 8, 16, 10][i]}px`,
                 animation: `bounce 0.${i + 3}s ease-in-out infinite alternate`,

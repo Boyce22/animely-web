@@ -81,7 +81,7 @@ function StyleRow({
           max={100}
           value={parseInt(current) || 0}
           onChange={(e) => onChange(e.target.value + (control.id === "radius" ? "px" : ""))}
-          className="w-20 accent-purple-500"
+          className="w-20 accent-red-500"
         />
       </div>
     )

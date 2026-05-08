@@ -28,7 +28,7 @@ function ProfileBannerComponent({ profile, bannerUrl }: ProfileBannerProps) {
         <div className="absolute inset-0 bg-gradient-to-br from-[#12082a] via-[#0d0d1a] to-[#0a0d20]">
           <div className="absolute inset-0" style={{
             background:
-              "radial-gradient(ellipse 70% 60% at 65% 50%, rgba(124,58,237,0.22) 0%, transparent 65%)," +
+              "radial-gradient(ellipse 70% 60% at 65% 50%, rgba(230,57,70,0.22) 0%, transparent 65%)," +
               "radial-gradient(ellipse 40% 40% at 15% 80%, rgba(230,57,70,0.14) 0%, transparent 55%)",
           }} />
         </div>
@@ -42,7 +42,7 @@ function ProfileBannerComponent({ profile, bannerUrl }: ProfileBannerProps) {
       }} />
       <div className="pointer-events-none absolute inset-0" style={{
         background:
-          "radial-gradient(ellipse 50% 80% at 15% 100%, rgba(124,58,237,0.22) 0%, transparent 70%)," +
+          "radial-gradient(ellipse 50% 80% at 15% 100%, rgba(230,57,70,0.22) 0%, transparent 70%)," +
           "radial-gradient(ellipse 30% 50% at 80% 60%, rgba(230,57,70,0.1) 0%, transparent 60%)",
       }} />
 
@@ -77,7 +77,7 @@ function ProfileBannerComponent({ profile, bannerUrl }: ProfileBannerProps) {
                 Pro
               </span>
             )}
-            <span className="border border-purple-500/30 bg-purple-500/15 px-[10px] py-[2px] text-[12px] font-[800] uppercase tracking-[0.08em] text-purple-300">
+            <span className="border border-red-500/30 bg-red-500/15 px-[10px] py-[2px] text-[12px] font-[800] uppercase tracking-[0.08em] text-red-300">
               Early
             </span>
             <span className="font-mono text-[14px] font-medium text-white/45">• {profile.address}</span>

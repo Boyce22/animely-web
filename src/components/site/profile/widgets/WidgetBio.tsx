@@ -24,7 +24,7 @@ function WidgetBioComponent({ profile, ...context }: Props) {
     >
       <div className="flex h-full w-full flex-col justify-between">
         <div className="relative px-4 py-3.5">
-          <div className="absolute left-0 top-3.5 bottom-3.5 w-[2px] bg-gradient-to-b from-purple-500/70 via-purple-500/20 to-transparent" />
+          <div className="absolute left-0 top-3.5 bottom-3.5 w-[2px] bg-gradient-to-b from-red-500/70 via-red-500/20 to-transparent" />
           <p className="text-[13px] leading-[1.75] text-white/[0.7]">
             {profile.biography}
           </p>

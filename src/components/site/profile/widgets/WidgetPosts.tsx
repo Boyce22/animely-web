@@ -40,7 +40,7 @@ function WidgetPostsComponent({ items, username, ...context }: Props) {
             >
               {/* Header */}
               <div className="mb-[6px] flex items-center gap-[7px]">
-                <div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-purple-600 text-[8px] font-[800] shadow-[0_0_0_1px_rgba(255,255,255,0.1)]">
+                <div className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 text-[8px] font-[800] shadow-[0_0_0_1px_rgba(255,255,255,0.1)]">
                   {initial}
                 </div>
                 <div className="text-[11px] font-[700] text-white/[0.78]">{username}</div>

@@ -5,7 +5,7 @@ export const DEFAULT_STYLING_PROFILE: StylingProfile = {
   name: "Default",
   canvas: {
     background: "#0a0a0a",
-    accentColor: "#7c3aed",
+    accentColor: "#e63946",
     maxWidth: "1400px",
     padding: "40px",
   },
@@ -55,7 +55,7 @@ export const DEFAULT_STYLING_PROFILE: StylingProfile = {
           style: { flex: "1" },
           data: {
             items: [
-              { label: "Capítulos Lidos", value: 12840, color: "#a78bfa" },
+              { label: "Capítulos Lidos", value: 12840, color: "#e63946" },
               { label: "Completos", value: 178, color: "#555" },
               { label: "Pausados", value: 21, color: "#f4a261" },
               { label: "Dropados", value: 3, color: "#e63946" },
