@@ -3,8 +3,6 @@ interface FlagIconProps {
   className?: string
 }
 
-const SIZES = { w: 20, h: 15 }
-
 function USFlag({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 15" className={className}>
@@ -53,6 +51,7 @@ export function FlagIcon({ country, className }: FlagIconProps) {
     case "us": return <USFlag {...props} />
     case "br": return <BRFlag {...props} />
     case "es": return <ESFlag {...props} />
+    default: return null
   }
 }
 
