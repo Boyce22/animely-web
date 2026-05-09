@@ -45,3 +45,15 @@ jobs:
             exit 1
           fi
           echo "✅ Git Flow OK — main is not ahead of develop"
+
+      - name: Secondary verification
+        run: |
+          COMMITS=$(git log --oneline --left-right main...develop 2>/dev/null)
+          if echo "$COMMITS" | grep -q '^<'; then
+            echo "❌ ERROR: main has commits not in develop"
+            echo "$COMMITS" | grep '^<'
+            echo ""
+            echo "Fix: git checkout develop && git merge main && git push origin develop"
+            exit 1
+          fi
+          echo "✅ Git Flow OK — main is not ahead of develop"
