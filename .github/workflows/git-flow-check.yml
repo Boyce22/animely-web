@@ -26,23 +26,20 @@ jobs:
       - name: Check main is not ahead of develop
         run: |
           set +e
+
+          # Content check first — if trees are identical, ancestry difference is harmless
+          if git diff main develop --quiet 2>/dev/null; then
+            echo "✅ Git Flow OK — main and develop have identical content"
+            exit 0
+          fi
+
+          # Content differs — verify direction
           AHEAD=$(git rev-list --count develop..main 2>/dev/null)
           if [ -n "$AHEAD" ] && [ "$AHEAD" -gt 0 ] 2>/dev/null; then
             echo "❌ ERROR: main is $AHEAD commit(s) ahead of develop — Git Flow violation"
             echo ""
             echo "Commits in main but not in develop:"
             git log --oneline develop..main 2>/dev/null
-            echo ""
-            echo "Fix: git checkout develop && git merge main && git push origin develop"
-            exit 1
-          fi
-
-      - name: Secondary verification
-        run: |
-          COMMITS=$(git log --oneline --left-right main...develop 2>/dev/null)
-          if echo "$COMMITS" | grep -q '^<'; then
-            echo "❌ ERROR: main has commits not in develop"
-            echo "$COMMITS" | grep '^<'
             echo ""
             echo "Fix: git checkout develop && git merge main && git push origin develop"
             exit 1
