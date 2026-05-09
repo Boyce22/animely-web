@@ -27,19 +27,46 @@ jobs:
         run: |
           set +e
 
+          # Compare origin/main with the proposed develop state.
+          # On PR events, HEAD is the PR branch (proposed develop content).
+          # On push events, HEAD is the pushed branch.
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            DEVELOP_REF="HEAD"
+          else
+            DEVELOP_REF="origin/develop"
+          fi
+
           # Content check first — if trees are identical, ancestry difference is harmless
-          if git diff main develop --quiet 2>/dev/null; then
+          if git diff origin/main "$DEVELOP_REF" --quiet 2>/dev/null; then
             echo "✅ Git Flow OK — main and develop have identical content"
             exit 0
           fi
 
           # Content differs — verify direction
-          AHEAD=$(git rev-list --count develop..main 2>/dev/null)
+          AHEAD=$(git rev-list --count "$DEVELOP_REF"..origin/main 2>/dev/null)
           if [ -n "$AHEAD" ] && [ "$AHEAD" -gt 0 ] 2>/dev/null; then
             echo "❌ ERROR: main is $AHEAD commit(s) ahead of develop — Git Flow violation"
             echo ""
             echo "Commits in main but not in develop:"
-            git log --oneline develop..main 2>/dev/null
+            git log --oneline "$DEVELOP_REF"..origin/main 2>/dev/null
+            echo ""
+            echo "Fix: git checkout develop && git merge main && git push origin develop"
+            exit 1
+          fi
+          echo "✅ Git Flow OK — main is not ahead of develop"
+
+      - name: Secondary verification
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            DEVELOP_REF="HEAD"
+          else
+            DEVELOP_REF="origin/develop"
+          fi
+
+          COMMITS=$(git log --oneline --left-right origin/main..."$DEVELOP_REF" 2>/dev/null)
+          if echo "$COMMITS" | grep -q '^<'; then
+            echo "❌ ERROR: main has commits not in develop"
+            echo "$COMMITS" | grep '^<'
             echo ""
             echo "Fix: git checkout develop && git merge main && git push origin develop"
             exit 1

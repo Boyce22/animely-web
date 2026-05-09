@@ -6,9 +6,9 @@ All TSUAA agents **must** follow this protocol. Violations (e.g. `main` ahead of
 
 ```
 main        ─────●────────────────────●── (production)
-                  \                  /
+                   \                  /
 develop     ──●────●────●────●────●── (integration)
-               \  /      \  /
+                \  /      \  /
 feature/*    ───●──      ──●──
 ```
 
@@ -59,6 +59,7 @@ A content-aware check is defined in [`.github/workflows/git-flow-check.yml`](../
 1. First checks content equality: `git diff main develop --quiet`
 2. If content is identical, exits early (✅ OK — release merge commits are allowed)
 3. If content differs AND `main` has commits not in `develop`, it fails (❌ violation)
+4. A secondary `git log --left-right` verification confirms the direction
 
 ## Pre-Push Hook (recommended for all agents)
 
