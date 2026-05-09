@@ -65,27 +65,34 @@ Additional checks:
 
 ## Override Procedure
 
-If PerfEngineer is unavailable and a frontend PR must be merged urgently:
+If PerfEngineer is unavailable for > 24h and a frontend PR must be merged urgently:
 
-1. **CTO** must approve the override in the PR comment thread
-2. Once approved, the status can be set manually via GitHub CLI:
+1. **Senior Frontend Engineer** may temporarily approve by updating the status via GitHub CLI
+2. Document the override reason in the PR comments (e.g. "PerfEngineer unavailable, override by [name], risk: [low/medium/high]")
+3. The override must be reported to CTO within one business day
+4. Once approved, set the status:
    ```bash
    gh api repos/{owner}/{repo}/statuses/{sha} \
      -f state=success \
      -f context='gate/performance-review' \
-     -f description='Override approved by CTO'
+     -f description='Override: [reason]'
    ```
-3. The override and reason must be documented in the PR description
+
+### Escalation
+If both PerfEngineer and Senior Frontend Engineer are unavailable, CTO may approve directly.
 
 **Overrides are audited.** The CTO reviews all overrides during sprint retrospectives.
 
 ## Post-Merge Verification
 
-After a frontend PR is merged and deployed:
+After a frontend PR is merged to `main` and deployed by [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml):
 
-1. `deploy.yml` runs a post-deploy performance check
-2. If Core Web Vitals regress post-deploy, PerfEngineer is notified
-3. A hotfix or revert may be required
+1. The deploy workflow creates a `post-deploy/perf-verification` commit status (pending) on the merge commit
+2. PerfEngineer verifies Core Web Vitals (LCP < 2.5s, INP < 200ms, CLS < 0.1) on the live deployment
+3. If metrics regress, the PerfEngineer is notified via the commit status
+4. A hotfix or revert may be required if thresholds are exceeded
+
+> **Note:** The `post-deploy/perf-verification` status is set to `pending` automatically but must be resolved manually by PerfEngineer. This is not a merge blocker — it is a post-deployment monitoring signal.
 
 ## Responsibilities
 

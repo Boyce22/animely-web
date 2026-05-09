@@ -6,9 +6,9 @@ All TSUAA agents **must** follow this protocol. Violations (e.g. `main` ahead of
 
 ```
 main        ─────●────────────────────●── (production)
-                  \                  /
+                   \                  /
 develop     ──●────●────●────●────●── (integration)
-               \  /      \  /
+                \  /      \  /
 feature/*    ───●──      ──●──
 ```
 
@@ -33,10 +33,14 @@ feature/*    ───●──      ──●──
 Run this to detect violations:
 
 ```bash
+# Quick content check (recommended — avoids false positives from release merge commits)
+git diff main develop --quiet || echo "WARNING: content diverged"
+
+# Detailed commit ancestry check (use when content check fails)
 git log --oneline --left-right main...develop
 ```
 
-If output shows commits on the `main` side (`<`) that are not on `develop`, the protocol is **violated**.
+If `git diff` reports divergence and commits exist on the `main` side (`<`) that are not on `develop`, the protocol is **violated**.
 
 Fix:
 
@@ -46,27 +50,16 @@ git merge main
 git push origin develop
 ```
 
+> **Note:** Release merge commits on `main` that have identical content in `develop` are NOT violations. The check uses content comparison (`git diff`) to avoid false positives.
+
 ## CI Enforcement
 
-Add the following check to CI pipelines (GitHub Actions / GitLab CI):
+A content-aware check is defined in [`.github/workflows/git-flow-check.yml`](../.github/workflows/git-flow-check.yml). The CI pipeline:
 
-```yaml
-check-git-flow:
-  steps:
-    - run: |
-        AHEAD=$(git rev-list --count develop..main 2>/dev/null)
-        if [ -n "$AHEAD" ] && [ "$AHEAD" -gt 0 ] 2>/dev/null; then
-          echo "ERROR: main is $AHEAD commit(s) ahead of develop — Git Flow violation"
-          exit 1
-        fi
-    - run: |
-        COMMITS=$(git log --oneline --left-right main...develop 2>/dev/null)
-        if echo "$COMMITS" | grep -q '^<'; then
-          echo "ERROR: main has commits not in develop"
-          exit 1
-        fi
-        echo "Git Flow OK"
-```
+1. First checks content equality: `git diff main develop --quiet`
+2. If content is identical, exits early (✅ OK — release merge commits are allowed)
+3. If content differs AND `main` has commits not in `develop`, it fails (❌ violation)
+4. A secondary `git log --left-right` verification confirms the direction
 
 ## Pre-Push Hook (recommended for all agents)
 
@@ -74,14 +67,18 @@ Place this in `.git/hooks/pre-push` on every clone:
 
 ```bash
 #!/bin/bash
-current_branch=$(git symbolic-ref HEAD | sed 's|refs/heads/||')
-if [ "$current_branch" = "main" ]; then
-  ahead=$(git rev-list --count main..develop)
-  if [ "$ahead" -lt 0 ] 2>/dev/null; then
-    echo "BLOCKED: main is ahead of develop. Merge main into develop first."
-    exit 1
+# Content-aware Git Flow check — prevents false positives from release merge commits
+while read local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    if ! git diff origin/main origin/develop --quiet 2>/dev/null; then
+      if git rev-list --count origin/develop..origin/main 2>/dev/null | grep -q '[1-9]'; then
+        echo "BLOCKED: main has content commits not in develop. Merge main into develop first."
+        exit 1
+      fi
+    fi
   fi
-fi
+done
+exit 0
 ```
 
 Make it executable: `chmod +x .git/hooks/pre-push`
